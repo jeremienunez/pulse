@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 import { readPulseStatus } from "../.pulse/scripts/pulse_state.mjs";
@@ -18,6 +19,8 @@ const DEFAULT_PACKET_FILE = "benchmark-packet.md";
 const CHAT_RUN_NOTE = "chat-run benchmark: scenario execution and scoring were captured in the interactive session, not spawned headlessly by the evaluator.";
 const DISCRIMINATION_NOTE = "non-discriminating signal unavailable in chat-run mode: no normalized baseline is collected by the evaluator.";
 const REQUIRED_RUNNER_PROFILE_FIELDS = ["model_id", "model_version", "reasoning_effort", "runtime"];
+const EVIDENCE_KIND = "pulse-chat-benchmark-evidence";
+const EVIDENCE_SCHEMA_VERSION = 3;
 
 function parseArgs(argv) {
   const subcommands = new Set(["run", "analyze", "scout", "benchmark"]);
@@ -251,15 +254,32 @@ function buildPacketMarkdown({ iterationName, evidencePath, selectedScenarios })
   return `${lines.join("\n")}\n`;
 }
 
+function scenarioBindingPayload(selectedScenarios) {
+  return selectedScenarios.map((scenario) => ({
+    id: scenario.id,
+    skill: scenario.skill,
+    skill_path: scenario.skill_path,
+    prompt: scenario.prompt,
+    expected_output: scenario.expected_output,
+    expectations: scenario.expectations,
+  }));
+}
+
+function buildScenarioDigest(selectedScenarios) {
+  const payload = JSON.stringify(scenarioBindingPayload(selectedScenarios));
+  return `sha256:${createHash("sha256").update(payload, "utf8").digest("hex")}`;
+}
+
 function buildEvidenceTemplate({ configPath, sourcePath, iterationName, selectedScenarios }) {
   return {
-    kind: "pulse-chat-benchmark-evidence",
-    schemaVersion: 2,
+    kind: EVIDENCE_KIND,
+    schemaVersion: EVIDENCE_SCHEMA_VERSION,
     created_at: new Date().toISOString(),
     iteration: iterationName,
     config_path: relativeToRepo(configPath),
     scenario_source: relativeToRepo(sourcePath),
     selected_scenario_ids: selectedScenarios.map((scenario) => scenario.id),
+    scenario_digest: buildScenarioDigest(selectedScenarios),
     runner: {
       mode: "chat",
       label: "current interactive chat",
@@ -309,6 +329,46 @@ function sanitizeRunnerProfile(rawRunner) {
 
 function missingRunnerProfileFields(runner) {
   return REQUIRED_RUNNER_PROFILE_FIELDS.filter((field) => !runner[field]);
+}
+
+function exactArrayMatch(left, right) {
+  return Array.isArray(left)
+    && left.length === right.length
+    && left.every((value, index) => value === right[index]);
+}
+
+function evidenceBindingErrors({ evidence, configPath, sourcePath, iterationName, selectedScenarios }) {
+  const errors = [];
+  const expectedIds = selectedScenarios.map((scenario) => scenario.id);
+  const scenarioEntries = Array.isArray(evidence?.scenarios) ? evidence.scenarios : [];
+  const scenarioEntryIds = scenarioEntries.map((entry) => entry?.id);
+
+  if (evidence?.kind !== EVIDENCE_KIND) errors.push(`kind must be ${EVIDENCE_KIND}`);
+  if (evidence?.schemaVersion !== EVIDENCE_SCHEMA_VERSION) {
+    errors.push(`schemaVersion must be ${EVIDENCE_SCHEMA_VERSION}`);
+  }
+  if (evidence?.iteration !== iterationName) errors.push(`iteration must be ${iterationName}`);
+  if (evidence?.config_path !== relativeToRepo(configPath)) {
+    errors.push(`config_path must be ${relativeToRepo(configPath)}`);
+  }
+  if (evidence?.scenario_source !== relativeToRepo(sourcePath)) {
+    errors.push(`scenario_source must be ${relativeToRepo(sourcePath)}`);
+  }
+  if (!exactArrayMatch(evidence?.selected_scenario_ids, expectedIds)) {
+    errors.push(`selected_scenario_ids must exactly equal ${expectedIds.join(",")}`);
+  }
+  if (!exactArrayMatch(scenarioEntryIds, expectedIds)) {
+    errors.push(`scenario entry IDs must exactly equal ${expectedIds.join(",")}`);
+  }
+  if (new Set(scenarioEntryIds).size !== scenarioEntryIds.length) {
+    errors.push("scenario entry IDs must be unique");
+  }
+  const expectedDigest = buildScenarioDigest(selectedScenarios);
+  if (evidence?.scenario_digest !== expectedDigest) {
+    errors.push(`scenario_digest must be ${expectedDigest}`);
+  }
+
+  return errors;
 }
 
 function sanitizeJudge(rawJudge) {
@@ -559,6 +619,33 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
   }
 
   const evidence = readJson(evidencePath);
+  const packetPath = path.join(iterationPath, DEFAULT_PACKET_FILE);
+  const bindingErrors = evidenceBindingErrors({
+    evidence,
+    configPath: args.config,
+    sourcePath,
+    iterationName,
+    selectedScenarios,
+  });
+  addResult(
+    results,
+    "benchmark",
+    "evidence-binding",
+    bindingErrors.length === 0 ? "PASS" : "FAIL",
+    bindingErrors.length === 0 ? evidence.scenario_digest : bindingErrors.join("; "),
+  );
+  if (bindingErrors.length > 0) {
+    return {
+      mode: "rejected",
+      iterationName,
+      iterationPath,
+      scenarioSourcePath: sourcePath,
+      evidencePath,
+      packetPath: exists(packetPath) ? packetPath : null,
+      benchmarkJsonPath: null,
+    };
+  }
+
   const runner = sanitizeRunnerProfile(evidence.runner);
   const missingProfileFields = missingRunnerProfileFields(runner);
 
@@ -589,7 +676,6 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
   const coverage = buildCoverage(selectedScenarios, evidence);
   const scenarioEntries = buildScenarioEntries(selectedScenarios, evidence);
   const summary = buildScenarioSummary(scenarioEntries);
-  const packetPath = path.join(iterationPath, DEFAULT_PACKET_FILE);
 
   addResult(results, "benchmark", "artifact:benchmark-evidence", "PASS", relativeToRepo(evidencePath));
   addResult(

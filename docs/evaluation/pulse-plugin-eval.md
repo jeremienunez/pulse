@@ -120,6 +120,8 @@ Numeric iterations are auto-numbered. Explicit descriptive names such as `baseli
 
 All four runner fields are mandatory. Finalization records an `evidence-profile` failure and exits non-zero when any value is missing. Do not infer a model version or reasoning effort from a previous run: a new profile requires a new replay.
 
+The evidence template also binds the run to its schema version, iteration, config path, scenario source, exact ordered scenario IDs, and a SHA-256 digest of the selected frozen scenario content. Finalization rejects stale, reordered, duplicate, or corpus-mismatched evidence before it writes final benchmark artifacts.
+
 The evaluator intentionally stops here with a warning-level reminder telling you to run the selected scenarios in chat and rerun with `--evidence`.
 
 ### Step 2 — finalize from filled evidence
@@ -143,6 +145,8 @@ This reads the filled evidence file, runs shared verifier commands, and writes:
 After finalization, the evaluator also runs the `scenarios` checks against the generated benchmark artifacts.
 
 The compiled JSON, Markdown, and HTML preserve the exact runner tuple. The scenario stage independently rejects a compiled result whose tuple is incomplete.
+
+Every selected scenario must also contain a non-empty response and a valid manual verdict. Incomplete evidence is rejected before final JSON, Markdown, or HTML is published. A complete judged failure remains publishable audit evidence, but the evaluator exits non-zero.
 
 ## Scenario validation stage
 

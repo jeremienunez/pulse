@@ -19,8 +19,9 @@ function runEvaluator(args) {
   });
 }
 
-function prepareCase(root, caseName, mutateEvidence) {
+function prepareCase(root, caseName, mutateEvidence, options = {}) {
   const iteration = `case-${caseName}`;
+  const evalIds = options.evalIds || "21";
   const commonArgs = [
     "benchmark",
     "--workspace",
@@ -28,7 +29,7 @@ function prepareCase(root, caseName, mutateEvidence) {
     "--iteration",
     iteration,
     "--eval-ids",
-    "21",
+    evalIds,
   ];
   const prepared = runEvaluator(commonArgs);
   assert.equal(prepared.status, 0, prepared.stderr || prepared.stdout);
@@ -134,5 +135,33 @@ test("evaluator publishes complete failing evidence but returns failure", () => 
     assert.equal(fs.existsSync(path.join(run.iterationPath, "benchmark.md")), true);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("evaluator rejects evidence not bound to the exact schema and corpus", async (t) => {
+  const cases = [
+    ["kind", (evidence) => { evidence.kind = "other-evidence"; }, "21"],
+    ["schema", (evidence) => { evidence.schemaVersion = 2; }, "21"],
+    ["iteration", (evidence) => { evidence.iteration = "case-old"; }, "21"],
+    ["config", (evidence) => { evidence.config_path = "other-config.json"; }, "21"],
+    ["source", (evidence) => { evidence.scenario_source = "other-evals.json"; }, "21"],
+    ["selected-ids", (evidence) => { evidence.selected_scenario_ids.reverse(); }, "21,2"],
+    ["scenario-digest", (evidence) => { evidence.scenario_digest = "sha256:stale"; }, "21"],
+    ["duplicate-ids", (evidence) => { evidence.scenarios.push({ ...evidence.scenarios[0] }); }, "21"],
+  ];
+
+  for (const [name, mutateEvidence, evalIds] of cases) {
+    await t.test(name, () => {
+      const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-eval-test-"));
+      try {
+        const run = prepareCase(root, `binding-${name}`, mutateEvidence, { evalIds });
+        assert.equal(run.result.status, 1);
+        assert.equal(run.output.status, "FAIL");
+        assert.equal(run.output.benchmark.mode, "rejected");
+        assertNoFinalArtifacts(run);
+      } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+      }
+    });
   }
 });
