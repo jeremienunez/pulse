@@ -1,0 +1,341 @@
+{
+  "kind": "pulse-exact-profile-case-results",
+  "schemaVersion": 1,
+  "profile_id": "gpt-5.6-terra-low-codex-native",
+  "runner": {
+    "model_id": "gpt-5.6-terra",
+    "model_version": "5.6",
+    "reasoning_effort": "low",
+    "runtime": "Codex native subagent"
+  },
+  "run_date": "2026-08-04",
+  "oracle_exposure": "withheld",
+  "prior_result_exposure": "withheld",
+  "raw_response": "gpt-5.6-terra-low-codex-native.md",
+  "material_uncertainty": false,
+  "summary": {
+    "passed": 45,
+    "total": 45,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "case_id": "S1",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "B",
+      "rationalization": "Add focused failing duplicate-charge proof, minimally fix, then run targeted regression.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S2",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Retain lower-layer coverage; add one thin browser journey only where UI proof is necessary.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S3",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Test observable keyboard navigation with only necessary isolation, not mock existence.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S4",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Verify runtime compatibility and clarify/push back on the ambiguous removal with evidence.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S5",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Run and inspect the required release command before any completion claim.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S6",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Preserve user work; establish ignored, dedicated isolation and baseline first.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S7",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Baseline, minimally edit, replay, and publish only recorded behavioral evidence.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S8",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Replay frozen cases on every exact declared model/profile and certify version-specifically.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S9",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Compare actual diff to requirements, including missing and extra behavior, before quality approval.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "S10",
+      "corpus_path": "corpus/red-scenarios.md",
+      "observed_choice": "C",
+      "rationalization": "Trace to source and add boundary defenses/regression; label any immediate fallback containment.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "P1",
+      "corpus_path": "corpus/current-pulse-red-scenarios.md",
+      "observed_choice": "A",
+      "rationalization": "Preserve scoped candidate code and use a controlled pre-change comparison for honest behavior evidence.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "P2",
+      "corpus_path": "corpus/current-pulse-red-scenarios.md",
+      "observed_choice": "A",
+      "rationalization": "Repair to a `preserve` contract, record green baseline, minimally refactor, replay it.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "P3",
+      "corpus_path": "corpus/current-pulse-red-scenarios.md",
+      "observed_choice": "B",
+      "rationalization": "Stabilize reproduction and trace the causal boundary before encoding a scenario or patching.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "E1",
+      "corpus_path": "corpus/B2-skill-evaluation-cases.md",
+      "observed_choice": "C",
+      "rationalization": "Record pass and add no unsupported warning.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "E2",
+      "corpus_path": "corpus/B2-skill-evaluation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Preserve candidate/user work and use a clean tag/worktree, control, or reverse application.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "E3",
+      "corpus_path": "corpus/B2-skill-evaluation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Replay the frozen corpus on the exact new model/version/reasoning tuple.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "E4",
+      "corpus_path": "corpus/B2-skill-evaluation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Remove unproven multiplier and state only scoped provenance/observed Pulse results.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "E5",
+      "corpus_path": "corpus/B2-skill-evaluation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Add the smallest evidence-backed guidance and replay unchanged corpus on both profiles.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "E6",
+      "corpus_path": "corpus/B2-skill-evaluation-cases.md",
+      "observed_choice": "C",
+      "rationalization": "Block release, minimally revise/revert, then replay all profiles.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "I1",
+      "corpus_path": "corpus/W1-worktree-isolation-cases.md",
+      "observed_choice": "C",
+      "rationalization": "Inspect first, preserve user state, use proven-safe isolation, setup, and pre-change baseline.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "I2",
+      "corpus_path": "corpus/W1-worktree-isolation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Reuse externally managed linked workspace; report detached ownership and leave lifecycle mechanics to harness.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "I3",
+      "corpus_path": "corpus/W1-worktree-isolation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Use the visible native isolation primitive rather than manual Git.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "I4",
+      "corpus_path": "corpus/W1-worktree-isolation-cases.md",
+      "observed_choice": "C",
+      "rationalization": "Do not use unignored local path; choose safe external location or request separately scoped ignore change.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "I5",
+      "corpus_path": "corpus/W1-worktree-isolation-cases.md",
+      "observed_choice": "C",
+      "rationalization": "Stop on pre-change baseline failure and request separate investigation authorization.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "I6",
+      "corpus_path": "corpus/W1-worktree-isolation-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Treat it as submodule boundary, preserve both states, and isolate at the owning boundary.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G1",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "A",
+      "rationalization": "Strong-route one Pulse governance overlay tied to approved CONTEXT, then return to planning/Gate 2.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G2",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Classify none/light without artifact and use ordinary lightweight Pulse path.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G3",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "A",
+      "rationalization": "Keep disposable spike evidence in Pulse; do not manufacture governance lifecycle.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G4",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Return to exploring for CONTEXT update/reapproval, then refresh affected overlay dimensions.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G5",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Execute preservation proof, then synchronize only affected operational/structural governance facts.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G6",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Restore under incident authority, distinguish containment, and capture follow-up evidence.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G7",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Block conflicting overlay change; CONTEXT authority requires reapproved intent first.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "G8",
+      "corpus_path": "corpus/G1-governed-feature-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Treat structural pass as non-semantic; block pending appropriate human intent review.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H1",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Create/structurally validate strong-fit overlay before Gate 2.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H2",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Continue light route without placeholder overlay.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H3",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "A",
+      "rationalization": "Block Gate 3 and route invalid strong overlay to planning/governance repair.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H4",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Record semantic contradiction, keep gate closed, and route alignment repair to owner.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H5",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Stop on governance/CONTEXT conflict; CONTEXT and authorized bead control.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H6",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "A",
+      "rationalization": "Stay within authorized bead and capture mapped OP-2 verification evidence.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H7",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "B",
+      "rationalization": "Materialize blocking finding and keep Gate 4 closed until corrected/evidenced.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "H8",
+      "corpus_path": "corpus/G2-governance-gate-cases.md",
+      "observed_choice": "A",
+      "rationalization": "Report structural PASS only, explicitly no semantic validation or approval.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "A1",
+      "corpus_path": "corpus/candidate-delta-scenarios.md",
+      "observed_choice": "B",
+      "rationalization": "Put cleanup in test utility at actual lifecycle owner; no test-only production API.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "A2",
+      "corpus_path": "corpus/candidate-delta-scenarios.md",
+      "observed_choice": "B",
+      "rationalization": "Keep account/index behavior real and double only external email boundary.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "A3",
+      "corpus_path": "corpus/candidate-delta-scenarios.md",
+      "observed_choice": "B",
+      "rationalization": "Use real contract/schema-validated fixture with required downstream fields.",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "R1",
+      "corpus_path": "corpus/candidate-delta-scenarios.md",
+      "observed_choice": [
+        "D1",
+        "D2"
+      ],
+      "rationalization": "D1 is violated because JSON stdout changed to YAML; D2 is violated by persistent cache and the new `--cache` CLI flag.",
+      "verdict": "PASS"
+    }
+  ]
+}

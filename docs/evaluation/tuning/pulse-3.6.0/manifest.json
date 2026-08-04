@@ -1,0 +1,166 @@
+{
+  "kind": "pulse-tuning-replay-manifest",
+  "schemaVersion": 1,
+  "plugin": {
+    "name": "pulse",
+    "version": "3.6.0"
+  },
+  "certified_on": "2026-08-04",
+  "claim_scope": "superior on the frozen Pulse tuning corpus for the two exact declared profiles",
+  "replay_policy": "Replay unchanged frozen cases for every new model, version, reasoning effort, or materially changed runtime.",
+  "certified_case_ids": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "P1",
+    "P2",
+    "P3",
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "I1",
+    "I2",
+    "I3",
+    "I4",
+    "I5",
+    "I6",
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7",
+    "G8",
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "H7",
+    "H8",
+    "A1",
+    "A2",
+    "A3",
+    "R1"
+  ],
+  "profiles": [
+    {
+      "profile_id": "gpt-5.6-sol-medium-codex-native",
+      "runner": {
+        "model_id": "gpt-5.6-sol",
+        "model_version": "5.6",
+        "reasoning_effort": "medium",
+        "runtime": "Codex native subagent"
+      },
+      "evidence": "evidence/gpt-5.6-sol-medium-codex-native.json",
+      "raw_response": "evidence/gpt-5.6-sol-medium-codex-native.md"
+    },
+    {
+      "profile_id": "gpt-5.6-terra-low-codex-native",
+      "runner": {
+        "model_id": "gpt-5.6-terra",
+        "model_version": "5.6",
+        "reasoning_effort": "low",
+        "runtime": "Codex native subagent"
+      },
+      "evidence": "evidence/gpt-5.6-terra-low-codex-native.json",
+      "raw_response": "evidence/gpt-5.6-terra-low-codex-native.md"
+    }
+  ],
+  "paired_comparison": {
+    "baseline_passed": 47,
+    "final_passed": 52,
+    "total": 52,
+    "delta": 5,
+    "previously_passing_regressions": 0
+  },
+  "final_non_regression": {
+    "passed": 90,
+    "total": 90,
+    "failed": 0
+  },
+  "commit_chain": {
+    "behavior_candidate": "df5767e",
+    "certification_publication": "f208730",
+    "post_certification_install_smoke_candidate": "2699137"
+  },
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "e67268f9b01083c04a63dbb1c0f8a49253ad4faf162b64e62e262cd448917cd9",
+      "role": "bundle-runbook"
+    },
+    {
+      "path": "corpus/B1-contract-cases.md",
+      "sha256": "d244051d40952161fe87d6f10bee479be32cf234bfca78c7fcd787906bf0ecac",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/B2-skill-evaluation-cases.md",
+      "sha256": "d50fd1835d5fd335a5331a686e1c32e658145d47145f232a972693fb4ec714c3",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/G1-governed-feature-cases.md",
+      "sha256": "33cf638f34db05f711f6dc955b6c1c555cdb02a28269078824e4e2112f0087ea",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/G2-governance-gate-cases.md",
+      "sha256": "930c848d51e51435d51084c30d88f5987ffc935a26a627cb08dd59cdd8341905",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/W1-worktree-isolation-cases.md",
+      "sha256": "ab6d90270b8304db4d7af7224b11f37575757a4c276e85e8e1df0aa415135f25",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/candidate-delta-scenarios.md",
+      "sha256": "41d4333650f9f24026a96f3fbc50614aa97c284b8345249825503522cd11a597",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/current-pulse-red-scenarios.md",
+      "sha256": "1804b3da891cadcb1966a5073e7b2947dd6452e006de83df2e2386dd13ca141f",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "corpus/red-scenarios.md",
+      "sha256": "60db5ca74c39c49eb72aa135151664ffe72a3a4b1025413bc0ca412ee3e914dd",
+      "role": "frozen-input-and-oracle"
+    },
+    {
+      "path": "evidence/gpt-5.6-sol-medium-codex-native.json",
+      "sha256": "a8dc0cd38094b7b9f3d73b48cda62083a04d1e4de0b784a9f6ee73fd6f39db54",
+      "role": "structured-profile-evidence"
+    },
+    {
+      "path": "evidence/gpt-5.6-sol-medium-codex-native.md",
+      "sha256": "d8f91333d576a036c58fffc10ed302d5bddf1a13ed501d917344f14bce1f3517",
+      "role": "verbatim-profile-response"
+    },
+    {
+      "path": "evidence/gpt-5.6-terra-low-codex-native.json",
+      "sha256": "9fb8a5336a12ff0c2521d12130bebc32e5741267bc50723827e7c175da7fc136",
+      "role": "structured-profile-evidence"
+    },
+    {
+      "path": "evidence/gpt-5.6-terra-low-codex-native.md",
+      "sha256": "a2008839d939a5f04973416c558873462b81d17a97125c8966d7331f655eff6d",
+      "role": "verbatim-profile-response"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Pulse 3.6.0 Exact-Profile Certification
 
-Certified on 2026-08-04 against candidate behavior/distribution commit `df5767e`.
+Certified on 2026-08-04 against candidate behavior/distribution commit `df5767e`. The certification was published at `f208730`, then the post-certification install smoke used `2699137`.
 
 ## Decision
 
@@ -57,6 +57,12 @@ The A1–A3 and R1 no-import controls remained 8/8 across both profiles. They co
 - onboarding and scout checks: 31/31 PASS, 0 WARN, 0 FAIL.
 
 The machine-readable record is [`pulse-3.6.0.json`](pulse-3.6.0.json).
+
+The tracked [replay bundle](../tuning/pulse-3.6.0/README.md) contains the frozen prompts/oracles, baseline and intervention records, both verbatim final responses, and 90 structured per-case choices, rationalizations, and verdicts. Its [manifest](../tuning/pulse-3.6.0/manifest.json) and [SHA256SUMS](../tuning/pulse-3.6.0/SHA256SUMS) bind the exact contents. From the repository root, verify it with:
+
+```bash
+node scripts/verify-tuning-evidence.mjs docs/evaluation/tuning/pulse-3.6.0/manifest.json
+```
 
 ## Replay boundary
 

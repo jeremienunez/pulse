@@ -7,6 +7,11 @@
     "candidate_commit": "df5767e",
     "candidate_commit_note": "Behavior and distribution candidate complete through D2; this certificate and profile enforcement are published by C1."
   },
+  "commit_chain": {
+    "behavior_candidate": "df5767e",
+    "certification_publication": "f208730",
+    "post_certification_install_smoke_candidate": "2699137"
+  },
   "certified_on": "2026-08-04",
   "scope": {
     "claim": "superior on the frozen Pulse tuning corpus for the two exact declared profiles",
@@ -46,6 +51,14 @@
     }
   ],
   "frozen_corpus": {
+    "tracked_replay_bundle": {
+      "manifest_path": "docs/evaluation/tuning/pulse-3.6.0/manifest.json",
+      "manifest_sha256": "d528c382273be0d46d94369dab42a4affa767ff4dbee4d634fab6d7c207a0328",
+      "sha256sums_path": "docs/evaluation/tuning/pulse-3.6.0/SHA256SUMS",
+      "sha256sums_sha256": "058d823e014fe923db9b6154c3c8535f60645b9fc1f0cf698b453d30ae5c0d33",
+      "verification_command": "node scripts/verify-tuning-evidence.mjs docs/evaluation/tuning/pulse-3.6.0/manifest.json",
+      "contains": "frozen prompts and oracles, baseline/intervention records, two verbatim final responses, and 90 structured per-case choices/rationalizations/verdicts"
+    },
     "case_families": [
       { "id": "S", "range": "S1-S10", "cases_per_profile": 10 },
       { "id": "P", "range": "P1-P3", "cases_per_profile": 3 },
