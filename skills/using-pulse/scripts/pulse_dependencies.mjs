@@ -468,7 +468,7 @@ export function buildPulseDependencyReport(options = {}) {
   const skillsRoot = path.resolve(
     options.skillsRoot || path.join(repoRoot, "skills"),
   );
-  const inventoryState = !options.skillsRoot && !fs.existsSync(skillsRoot)
+  const inventoryState = !options.skillsRoot
     ? readPulseDependencyInventory(repoRoot)
     : null;
   const declarations = inventoryState?.inventory.skills

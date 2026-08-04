@@ -15,6 +15,36 @@ import { syncPulseRuntimeArtifacts } from "./pulse_state.mjs";
 const LOCAL_USING_PULSE_SKILL_PATH = fileURLToPath(new URL("../SKILL.md", import.meta.url));
 const LOCAL_REPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 
+function writeMissingDependencyInventory(root) {
+  const inventoryPath = path.join(root, ".pulse", "dependency-inventory.json");
+  const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
+  inventory.skills = [
+    {
+      skill_name: "alpha",
+      skill_file: "skills/alpha/SKILL.md",
+      dependencies_declared: true,
+      dependencies: [
+        {
+          id: "missing-cli",
+          kind: "command",
+          command: "definitely-missing-command",
+          missing_effect: "unavailable",
+          reason: "required for test",
+        },
+        {
+          id: "missing-server",
+          kind: "mcp_server",
+          server_names: ["definitely_missing_mcp_server_name"],
+          config_sources: ["repo_codex_config", "global_codex_config"],
+          missing_effect: "degraded",
+          reason: "required for test",
+        },
+      ],
+    },
+  ];
+  fs.writeFileSync(inventoryPath, `${JSON.stringify(inventory, null, 2)}\n`, "utf8");
+}
+
 test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
 
@@ -50,6 +80,12 @@ test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
     assert.equal(fs.existsSync(path.join(root, ".codex", "pulse_reservations.mjs")), false);
 
     const packagedReport = buildPulseDependencyReport({ repoRoot: LOCAL_REPO_ROOT });
+    fs.mkdirSync(path.join(root, "skills", "host-only"), { recursive: true });
+    fs.writeFileSync(
+      path.join(root, "skills", "host-only", "SKILL.md"),
+      "---\nname: host-only\ndescription: Unrelated host skill.\n---\n",
+      "utf8",
+    );
     const installedStatus = JSON.parse(
       execFileSync(
         "node",
@@ -57,7 +93,7 @@ test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
         { cwd: root, encoding: "utf8" },
       ),
     );
-    assert.equal(fs.existsSync(path.join(root, "skills")), false);
+    assert.equal(fs.existsSync(path.join(root, "skills")), true);
     assert.equal(
       installedStatus.dependency_health.summary.skills_total,
       packagedReport.summary.skills_total,
@@ -1919,34 +1955,7 @@ test("checkRepo promotes missing dependency data into an operator-facing warning
 
   try {
     applyRepo(root, false);
-    const skillsRoot = path.join(root, "skills");
-    const alphaDir = path.join(skillsRoot, "alpha");
-    fs.mkdirSync(alphaDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(alphaDir, "SKILL.md"),
-      [
-        "---",
-        "name: alpha",
-        "metadata:",
-        "  dependencies:",
-        "    - id: missing-cli",
-        "      kind: command",
-        "      command: definitely-missing-command",
-        "      missing_effect: unavailable",
-        "      reason: required for test",
-        "    - id: missing-server",
-        "      kind: mcp_server",
-        "      server_names: [definitely_missing_mcp_server_name]",
-        "      config_sources: [repo_codex_config, global_codex_config]",
-        "      missing_effect: degraded",
-        "      reason: required for test",
-        "---",
-        "",
-        "# alpha",
-        "",
-      ].join("\n"),
-      "utf8",
-    );
+    writeMissingDependencyInventory(root);
 
     const payload = checkRepo(root);
     const warning = payload.details.dependency_warning;
@@ -1975,34 +1984,7 @@ test("installed pulse_status text distinguishes missing commands from missing MC
 
   try {
     applyRepo(root, false);
-    const skillsRoot = path.join(root, "skills");
-    const alphaDir = path.join(skillsRoot, "alpha");
-    fs.mkdirSync(alphaDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(alphaDir, "SKILL.md"),
-      [
-        "---",
-        "name: alpha",
-        "metadata:",
-        "  dependencies:",
-        "    - id: missing-cli",
-        "      kind: command",
-        "      command: definitely-missing-command",
-        "      missing_effect: unavailable",
-        "      reason: required for test",
-        "    - id: missing-server",
-        "      kind: mcp_server",
-        "      server_names: [definitely_missing_mcp_server_name]",
-        "      config_sources: [repo_codex_config, global_codex_config]",
-        "      missing_effect: degraded",
-        "      reason: required for test",
-        "---",
-        "",
-        "# alpha",
-        "",
-      ].join("\n"),
-      "utf8",
-    );
+    writeMissingDependencyInventory(root);
 
     const stdout = execFileSync("node", [path.join(root, ".pulse", "scripts", "pulse_status.mjs")], {
       cwd: root,
