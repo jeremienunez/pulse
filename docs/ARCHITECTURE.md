@@ -285,6 +285,8 @@ The high-level grouping matters more than a full per-skill manual here.
 | --- | --- |
 | `gitnexus` | You need graph-backed discovery |
 | `systematic-debug-fix` | Execution is blocked by bugs or failing behavior |
+| `worktree-isolation` | Work must be isolated without disturbing dirty user state or externally managed workspaces |
+| `governed-feature` | Durable domain/API, compliance/security, or cross-cutting work needs explicit invariants and traceability inside Pulse's existing gates |
 | `architecture-rescue` | The repo shape needs a report-first rescue view |
 | `bootstrap-project-context` | Repo docs need onboarding or mapping |
 | `refresh-project-docs` | Public docs drift from repo reality |

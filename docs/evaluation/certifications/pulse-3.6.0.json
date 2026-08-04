@@ -104,7 +104,11 @@
   },
   "structural_checks": {
     "plugin_evaluator": { "passed": 29, "total": 29, "warnings": 0, "failed": 0 },
-    "onboarding_and_scout": { "passed": 31, "total": 31, "warnings": 0, "failed": 0 }
+    "onboarding_and_scout": { "passed": 31, "total": 31, "warnings": 0, "failed": 0 },
+    "post_review_source": {
+      "plugin_evaluator": { "passed": 31, "total": 31, "warnings": 0, "failed": 0 },
+      "onboarding": { "passed": 35, "total": 35, "failed": 0 }
+    }
   },
   "capability_gains": [
     "Governed-feature routing and artifacts are shipped even though G-family baseline choices already passed.",

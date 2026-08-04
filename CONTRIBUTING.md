@@ -19,7 +19,7 @@ These paths matter most:
 This repository is structured as a root-scoped packaged plugin repo. It ships a single plugin, `pulse`, from the repository root.
 
 - The Codex package manifest lives at [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json). It declares the plugin name, version, and packaged runtime contract, including packaged Codex lifecycle config.
-- Codex packaged lifecycle config lives at [`hooks/codex-hooks.json`](hooks/codex-hooks.json) and executes the packaged hook scripts in [`hooks/`](hooks/) via git-root-resolved commands. Onboarding manages repo-local Pulse runtime helpers under `.pulse/scripts/` and repo-local state under `.pulse/`, while `.codex/hooks.json` and removed `.codex/*` Pulse helper files are legacy cleanup concerns.
+- Codex packaged lifecycle config lives at [`hooks/codex-hooks.json`](hooks/codex-hooks.json) and executes the packaged hook scripts in [`hooks/`](hooks/) through `${PLUGIN_ROOT}`. This installed-plugin root is the runtime authority; hook commands must not infer the package location from the target repository's Git root. Onboarding manages repo-local Pulse runtime helpers under `.pulse/scripts/` and repo-local state under `.pulse/`, while `.codex/hooks.json` and removed `.codex/*` Pulse helper files are legacy cleanup concerns.
 - The Claude manifest lives at [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). It declares the packaged skill directory and shared MCP config for Claude Code.
 - Shared packaged hook sources live under [`hooks/`](hooks/). Claude plugin SessionStart bootstrap uses [`hooks/hooks.json`](hooks/hooks.json) and [`hooks/session-start.mjs`](hooks/session-start.mjs). Treat those files as package-surface runtime contract, not repo-local onboarding assets.
 - The repo-level marketplace at [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) exposes the packaged `pulse` plugin to Codex. When Codex opens a clone of this repo, it reads the marketplace file and offers `pulse` for installation.
@@ -42,6 +42,7 @@ skills/
 ├── executing/
 ├── exploring/                 references/
 ├── gitnexus/
+├── governed-feature/          references/ scripts/
 ├── planning/                  mcp.json references/
 ├── preflight/                 agents/ references/
 ├── prompt-leverage/           agents/ references/ scripts/
@@ -51,6 +52,7 @@ skills/
 ├── systematic-debug-fix/      agents/ references/
 ├── using-pulse/               references/ scripts/ templates/
 ├── validating/                references/
+├── worktree-isolation/
 └── writing-pulse-skills/      references/
 ```
 
@@ -168,7 +170,7 @@ The delivery chain is:
 pulse:exploring -> pulse:planning -> pulse:validating -> pulse:swarming -> pulse:executing -> pulse:reviewing -> pulse:compounding
 ```
 
-Support routing may also invoke `pulse:systematic-debug-fix`, `pulse:gitnexus`, or `pulse:dream`.
+Support routing may also invoke `pulse:systematic-debug-fix`, `pulse:worktree-isolation`, `pulse:governed-feature`, `pulse:gitnexus`, or `pulse:dream`. `governed-feature` remains an overlay owned by the Pulse lifecycle, while `worktree-isolation` protects user state and establishes a clean implementation baseline.
 
 ### Hard Contract Rules
 

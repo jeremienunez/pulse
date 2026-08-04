@@ -13,7 +13,7 @@ The decision threshold required all four conditions:
 3. a perfect fresh final sweep;
 4. green structural checks.
 
-All four conditions passed. The tuned distribution is eligible for installation smoke testing; Superpowers remained enabled throughout certification.
+All four conditions passed. The tuned distribution subsequently passed installation smoke testing and completed the reversible cutover. Superpowers remained enabled throughout certification; it is now still installed but disabled, while Pulse is installed and enabled.
 
 ## Certified profiles
 
@@ -53,8 +53,10 @@ The A1–A3 and R1 no-import controls remained 8/8 across both profiles. They co
 
 ## Structural evidence
 
-- plugin evaluator: 29/29 PASS, 0 WARN, 0 FAIL;
-- onboarding and scout checks: 31/31 PASS, 0 WARN, 0 FAIL.
+- certification-time plugin evaluator: 29/29 PASS, 0 WARN, 0 FAIL;
+- certification-time onboarding and scout checks: 31/31 PASS, 0 WARN, 0 FAIL;
+- post-review source plugin evaluator: 31/31 PASS, 0 WARN, 0 FAIL;
+- post-review source onboarding suite: 35/35 PASS.
 
 The machine-readable record is [`pulse-3.6.0.json`](pulse-3.6.0.json).
 
