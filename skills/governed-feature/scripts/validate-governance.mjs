@@ -106,6 +106,11 @@ function cleanValue(value) {
   return value?.replace(/^`|`$/g, '') ?? '';
 }
 
+function stableIntentRefs(value) {
+  return [...String(value || '').matchAll(/\b[DS][A-Za-z0-9._-]*\d+\b/g)]
+    .map((match) => match[0]);
+}
+
 export function validateGovernanceText(markdown, file = '<memory>') {
   const normalized = markdown.replace(/\r\n?/g, '\n');
   const errors = [];
@@ -144,10 +149,13 @@ export function validateGovernanceText(markdown, file = '<memory>') {
   if (requirementRows.length === 0) {
     errors.push('Requirements References must include at least one data row');
   }
+  const declaredRequirementRefs = new Set();
   for (const [reference = ''] of requirementRows) {
-    if (!/\b[DS][A-Za-z0-9._-]*\d+\b/.test(reference)) {
+    const refs = stableIntentRefs(reference);
+    if (refs.length === 0) {
       errors.push(`Requirements reference lacks a stable decision/scenario ID: ${reference || '(empty)'}`);
     }
+    for (const ref of refs) declaredRequirementRefs.add(ref);
   }
 
   const requirements = getSection(normalized, 'Requirements References');
@@ -160,6 +168,7 @@ export function validateGovernanceText(markdown, file = '<memory>') {
   if (operations.length === 0) errors.push('Operations must define at least one OP-n');
 
   const seen = new Set();
+  const operationIntentRefs = new Map();
   for (const operation of operations) {
     if (seen.has(operation.id)) errors.push(`Duplicate operation ID: ${operation.id}`);
     seen.add(operation.id);
@@ -170,15 +179,34 @@ export function validateGovernanceText(markdown, file = '<memory>') {
     if (status && !['active', 'retired'].includes(status)) {
       errors.push(`${operation.id} has unsupported Status: ${status}`);
     }
+    const intentRefs = stableIntentRefs(operation.fields['Intent refs']);
+    operationIntentRefs.set(operation.id, new Set(intentRefs));
+    if (operation.fields['Intent refs'] && intentRefs.length === 0) {
+      errors.push(`${operation.id} Intent refs lacks a stable decision/scenario ID`);
+    }
+    for (const ref of intentRefs) {
+      if (!declaredRequirementRefs.has(ref)) {
+        errors.push(`${operation.id} Intent refs references undeclared requirement: ${ref}`);
+      }
+    }
   }
 
   const traceRows = tableRows(getSection(normalized, 'Traceability'));
   if (traceRows.length === 0) errors.push('Traceability must include at least one data row');
   const tracedOperations = new Set();
+  const tracedRequirementRefs = new Set();
+  const tracedOperationRefs = new Map();
   for (const row of traceRows) {
     const [reference = '', operationCell = '', , verification = ''] = row;
-    if (!/\b[DS][A-Za-z0-9._-]*\d+\b/.test(reference)) {
+    const requirementRefs = stableIntentRefs(reference);
+    if (requirementRefs.length === 0) {
       errors.push(`Traceability row lacks a stable decision/scenario ID: ${reference || '(empty)'}`);
+    }
+    for (const ref of requirementRefs) {
+      tracedRequirementRefs.add(ref);
+      if (!declaredRequirementRefs.has(ref)) {
+        errors.push(`Traceability references undeclared requirement: ${ref}`);
+      }
     }
     const operationRefs = [...operationCell.matchAll(/\bOP-\d+\b/g)].map((match) => match[0]);
     if (operationRefs.length === 0) {
@@ -187,6 +215,15 @@ export function validateGovernanceText(markdown, file = '<memory>') {
     for (const operationRef of operationRefs) {
       tracedOperations.add(operationRef);
       if (!seen.has(operationRef)) errors.push(`Traceability references unknown operation: ${operationRef}`);
+      const mappedRefs = tracedOperationRefs.get(operationRef) || new Set();
+      for (const ref of requirementRefs) mappedRefs.add(ref);
+      tracedOperationRefs.set(operationRef, mappedRefs);
+      const declaredByOperation = operationIntentRefs.get(operationRef) || new Set();
+      for (const ref of requirementRefs) {
+        if (seen.has(operationRef) && !declaredByOperation.has(ref)) {
+          errors.push(`Traceability maps ${ref} to ${operationRef}, but ${operationRef} Intent refs does not include it`);
+        }
+      }
     }
     if (!verification) errors.push(`Traceability row lacks a verification target for ${reference || '(unknown reference)'}`);
   }
@@ -194,6 +231,21 @@ export function validateGovernanceText(markdown, file = '<memory>') {
   for (const operation of operations) {
     if (cleanValue(operation.fields.Status) === 'active' && !tracedOperations.has(operation.id)) {
       errors.push(`Active operation is not referenced by Traceability: ${operation.id}`);
+    }
+    for (const ref of operationIntentRefs.get(operation.id) || []) {
+      if (!(tracedOperationRefs.get(operation.id) || new Set()).has(ref)) {
+        errors.push(`${operation.id} Intent ref is not mapped through Traceability: ${ref}`);
+      }
+    }
+  }
+
+  for (const ref of declaredRequirementRefs) {
+    const mappedToOperation = [...operationIntentRefs.values()].some((refs) => refs.has(ref));
+    if (!mappedToOperation) {
+      errors.push(`Declared requirement is not referenced by any operation: ${ref}`);
+    }
+    if (!tracedRequirementRefs.has(ref)) {
+      errors.push(`Declared requirement is not referenced by Traceability: ${ref}`);
     }
   }
 

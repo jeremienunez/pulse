@@ -144,6 +144,33 @@ test('rejects traceability to an unknown operation', () => {
   assert.match(result.errors.join('\n'), /unknown operation: OP-9/);
 });
 
+test('rejects a declared requirement omitted from operations and traceability', () => {
+  const result = validateGovernanceText(
+    VALID.replace('| D1, S2 | Payment approval remains traceable', '| D1, S2, D2 | Payment approval remains traceable'),
+  );
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /not referenced by any operation: D2/);
+  assert.match(result.errors.join('\n'), /not referenced by Traceability: D2/);
+});
+
+test('rejects an undeclared operation intent reference', () => {
+  const result = validateGovernanceText(
+    VALID.replace('- Intent refs: D1, S2', '- Intent refs: D1, S2, S9'),
+  );
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /OP-1 Intent refs references undeclared requirement: S9/);
+  assert.match(result.errors.join('\n'), /OP-1 Intent ref is not mapped through Traceability: S9/);
+});
+
+test('rejects an undeclared trace-only reference', () => {
+  const result = validateGovernanceText(
+    VALID.replace('| D1, S2 | OP-1 | Token confidentiality', '| D1, S2, D9 | OP-1 | Token confidentiality'),
+  );
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /Traceability references undeclared requirement: D9/);
+  assert.match(result.errors.join('\n'), /OP-1 Intent refs does not include it/);
+});
+
 test('keeps a structurally valid but wrong domain rule uncertified', () => {
   const result = validateGovernanceText(VALID.replaceAll('Token remains confidential', 'Tokens may be published'));
   assert.equal(result.valid, true);
