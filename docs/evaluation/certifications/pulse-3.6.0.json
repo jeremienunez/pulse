@@ -105,8 +105,52 @@
     "superior": true
   },
   "cutover": {
-    "status": "eligible_for_install_smoke",
+    "status": "complete",
     "superpowers_enabled_during_certification": true,
-    "next_gate": "Install the tuned plugin and pass C2 smoke checks before a reversible Superpowers disable action."
+    "superiority_precondition_met": true,
+    "install_smoke": {
+      "candidate_commit": "2699137",
+      "codex_cli_version": "0.146.0",
+      "plugin_id": "pulse@pulse-tuned-local",
+      "installed_version": "3.6.0",
+      "installed_path": "~/.codex/plugins/cache/pulse-tuned-local/pulse/3.6.0",
+      "snapshot_matches_installed": true,
+      "installed_onboarding": {
+        "passed": 31,
+        "total": 31,
+        "failed": 0
+      },
+      "isolated_target_scout": {
+        "skills_total": 22,
+        "skills_covered": 22,
+        "skills_uncovered": 0
+      },
+      "fresh_runtime": {
+        "model_id": "gpt-5.6-terra",
+        "reasoning_effort": "low",
+        "pulse_skill_visible": true,
+        "pulse_plugin_enabled": true,
+        "pulse_version": "3.6.0",
+        "hook_failures": 0
+      }
+    },
+    "final_state": {
+      "pulse": {
+        "installed": true,
+        "enabled": true,
+        "version": "3.6.0"
+      },
+      "superpowers": {
+        "installed": true,
+        "enabled": false,
+        "version": "11c74d6b"
+      },
+      "unrelated_plugin_enable_states_changed": 0
+    },
+    "rollback": {
+      "verified_round_trip": "true -> false -> true -> false",
+      "action": "Set enabled = true under [plugins.\"superpowers@openai-curated\"] in ~/.codex/config.toml.",
+      "superpowers_uninstalled": false
+    }
   }
 }

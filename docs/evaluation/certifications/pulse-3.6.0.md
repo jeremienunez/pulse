@@ -58,8 +58,19 @@ The A1–A3 and R1 no-import controls remained 8/8 across both profiles. They co
 
 The machine-readable record is [`pulse-3.6.0.json`](pulse-3.6.0.json).
 
-## Replay and cutover boundary
+## Replay boundary
 
 Every newly declared model, version, reasoning effort, or materially changed runtime must replay the frozen corpus. Results are never inherited from this certificate.
 
-This certificate authorizes only the next step: install the tuned Pulse plugin and run C2 smoke checks. Replace or disable Superpowers only after that smoke passes, and keep the cutover reversible.
+## Installation and reversible cutover
+
+The exact tuned snapshot at commit `2699137` passed the installation smoke with Codex CLI `0.146.0`:
+
+- the installed Pulse `3.6.0` snapshot matched the marketplace source exactly;
+- its installed onboarding suite passed 31/31 checks;
+- an isolated onboarded target reported all 22 skills covered, with none uncovered;
+- a fresh `gpt-5.6-terra` / low session discovered Pulse `3.6.0`, and the `SessionStart`, `PreToolUse`, and `Stop` hooks all completed without a Pulse hook failure.
+
+The Superpowers enable flag completed a `true → false → true → false` round trip. The restored `true` state matched the pre-toggle plugin state exactly, proving the rollback path before the final cutover. No unrelated plugin enable state changed.
+
+Final local state: Pulse `3.6.0` is installed and enabled; Superpowers remains installed but is disabled. To roll back, set `enabled = true` under `[plugins."superpowers@openai-curated"]` in `~/.codex/config.toml`.
