@@ -4,7 +4,7 @@ description: >-
   Use after planning and before execution to verify approved current work is
   reality-fit, feasibility-ready, and explicitly approved at Gate 3.
 metadata:
-  version: '1.5'
+  version: '1.6'
   position: 3
   chain: exploring → planning → validating → (swarming | executing)
   dependencies:
@@ -117,10 +117,26 @@ Run schema gate only when current-work beads exist.
 
 Before any structural checker:
 - verify every bead has canonical required fields
-- verify `testing_mode: tdd-required` beads include red/green `tdd_steps`
+- verify `behavior_mode` is exactly `change`, `preserve`, or `investigate`; no catch-all is accepted
+- verify `change` and `preserve` beads have non-empty `behavior_scenarios` plus concrete `behavior_steps.baseline`, `behavior_steps.retest`, and an explicit `behavior_steps.regression` list
+- verify `change` baselines prove pre-change failure or absence; verify `preserve` baselines are green and retests replay the same observable proof
+- verify `investigate` beads include concrete `investigation_steps.reproduce` and `investigation_steps.trace`, stay evidence-only, and do not authorize production behavior changes
 - verify `verify` and `verification_evidence` are concrete
 - verify file scope is not obviously overbroad
 - verify HIGH-risk beads include meaningful `learning_refs` when prior recall clearly applies
+
+Legacy compatibility is explicit and conservative:
+- a bead containing `testing_mode: standard` is ambiguous: decision `REJECT`, target `planning-repair`
+- a bead containing `testing_mode: tdd-required` is never accepted as-is; use decision `ROUTE`, target `change`, only when its old commands truthfully prove the intended failing/absent baseline and passing retest, and require planning to rewrite the fields before execution
+- an unrelated or ceremonial legacy failure cannot determine a canonical mode: decision `REJECT`, target `planning-repair`
+
+Use schema outcomes consistently:
+- `ACCEPT` only for a complete canonical bead that may execute as written
+- `ROUTE` only for a truthful legacy contract whose final canonical mode is already proven, while still requiring planning to rewrite it
+- `REJECT` for every incomplete, ambiguous, or contradictory contract
+- `change` without failure/absence evidence: `REJECT` -> `planning-repair`
+- `preserve` whose retest intentionally changes observable behavior: `REJECT` -> `change` through planning repair
+- `investigate` containing a speculative production behavior change: `REJECT` -> `planning-repair`
 
 If schema fails, repair bead schema defects when local/clear; route to planning when the fix requires reshaping planning-owned artifacts.
 

@@ -5,7 +5,7 @@ description: >-
   mode-gated plan with an approved work shape and current-work prep for
   validation.
 metadata:
-  version: '2.4'
+  version: '2.5'
   ecosystem: pulse
   dependencies:
     - id: beads-cli
@@ -112,7 +112,7 @@ Load `references/planning-reference.md` for mode quality rules and artifact temp
 - Read `CONTEXT.md` + `discovery.md`.
 - Write `history/<feature>/approach.md` using `references/planning-reference.md`.
 - Include gap analysis, recommended approach, alternatives, risk map, proposed structure, learnings applied.
-- For every HIGH risk define: component, reason, validating owner, YES/NO spike question, affected beads, decision gate options, and `testing_mode` expectation.
+- For every HIGH risk define: component, reason, validating owner, YES/NO spike question, affected beads, decision gate options, and the expected `behavior_mode` plus mode-specific proof.
 
 ### Phase 3: Mode Gate + Work Shape (Gate 2 setup)
 
@@ -153,7 +153,9 @@ Approval sync checklist before moving forward:
 - For `standard_feature` and `high_risk_feature`, do not create execution beads before feasibility passes.
 - For epic/phase work, keep one whole-feature epic open until final reviewing closeout.
 - Normalize every bead immediately with required schema fields:
-  - `dependencies`, `files`, `verify`, `verification_evidence`, `testing_mode`, `decision_refs`, `learning_refs`
+  - always: `dependencies`, `files`, `verify`, `verification_evidence`, `behavior_mode`, `behavior_scenarios`, `decision_refs`, `learning_refs`
+  - `change | preserve`: `behavior_steps`
+  - `investigate`: `investigation_steps`
 - Use `references/bead-template.md` for bead schema details.
 - Fill story/work-to-bead mapping after bead creation.
 

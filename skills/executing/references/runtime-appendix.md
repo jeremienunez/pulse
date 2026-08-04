@@ -12,7 +12,7 @@ Shape artifact requirements:
 - phase-plan path: `history/<feature>/phase-plan.md`, `history/<feature>/phase-<n>-contract.md`, and `history/<feature>/phase-<n>-story-map.md`
 
 Trigger conditions:
-- `testing_mode` is `tdd-required`
+- `behavior_mode` is `change` or `investigate`
 - the bead touches multiple files across different modules or ownership boundaries
 - the bead has multiple upstream dependencies or explicitly references story coordination, parallelism, shared file/context risk, or boundary preservation
 - the `verify` path is multi-step, integration-heavy, or hard to explain in one line from the bead alone
@@ -31,19 +31,22 @@ history/<feature>/verification/<bead-id>.md
 Evidence must include:
 
 - bead ID and feature name
-- `testing_mode`
+- `behavior_mode`
 - verification timestamp
 - every `verify` command actually run
 - exit code for each command
 - concise observed result for each command
 - links/paths to generated proof artifacts, screenshots, logs, or findings
 
-For `tdd-required`, also include:
+For `change` or `preserve`, also include:
 
-- `tdd_steps.red`
-- expected failure signal observed
-- `tdd_steps.green`
-- passing signal observed
+- `behavior_steps.baseline` and the observed result
+- `behavior_steps.retest` and the observed result
+- every declared regression check and its result
+
+For `change`, record the expected pre-change failure or absence. If candidate code already existed, record the controlled comparison used to preserve it while obtaining honest evidence.
+
+For `investigate`, include `investigation_steps.reproduce`, `investigation_steps.trace`, boundary observations, and the resulting reclassification status.
 
 ## Worker command quick reference
 
@@ -86,7 +89,7 @@ If you detect context compaction, stop and re-read before further implementation
 - writing outside reserved scope
 - skipping verification or redefining success after failures
 - closing without substantive `verification_evidence`
-- claiming `tdd-required` without a real red failure and green pass
+- claiming behavior evidence without the mode-specific baseline/retest or reproduce/trace results
 - continuing after compaction without re-reading required context
 - implementing stubs/TODOs/empty handlers
 - ignoring locked decisions from `CONTEXT.md`

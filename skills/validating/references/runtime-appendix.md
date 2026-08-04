@@ -80,12 +80,23 @@ Every bead must include:
 - `files`
 - `verify`
 - `verification_evidence`
-- `testing_mode`
+- `behavior_mode`
+- `behavior_scenarios`
 - `decision_refs`
 - `learning_refs`
 
 Additional checks:
-- if `testing_mode: tdd-required`, bead must include explicit red/green `tdd_steps`
+- `behavior_mode` is exactly `change`, `preserve`, or `investigate`; no catch-all is accepted
+- `change` has non-empty scenarios and concrete `behavior_steps.baseline`, `behavior_steps.retest`, and explicit `behavior_steps.regression`; baseline proves pre-change failure or absence
+- `preserve` has non-empty scenarios and the same `behavior_steps` fields; baseline is green and retest replays the same observable proof
+- `investigate` has concrete `investigation_steps.reproduce` and `investigation_steps.trace`, an evidence-only scope, and no production behavior change
+- `testing_mode: standard` -> decision `REJECT`, target `planning-repair`
+- truthful `testing_mode: tdd-required` -> decision `ROUTE`, target `change`; planning must rewrite it before execution
+- unrelated or ceremonial legacy failure -> decision `REJECT`, target `planning-repair`
+- `ACCEPT` is reserved for a complete canonical bead; `ROUTE` is reserved for the one truthful legacy migration above; every incomplete, ambiguous, or contradictory contract is `REJECT`
+- `change` missing failure/absence evidence -> `REJECT`, target `planning-repair`
+- `preserve` whose retest changes observable behavior -> `REJECT`, target `change` through planning repair
+- `investigate` containing a speculative production behavior change -> `REJECT`, target `planning-repair`
 - `verify` must be executable proof criteria, not vague prose
 - `verification_evidence` must point to explicit artifact path or concrete record
 - `files` scope must be tight and justifiable
@@ -142,7 +153,7 @@ Routing:
 ## G. Bead Fresh-Eyes Reviewer Contract
 
 Review goals:
-- detect CRITICAL execution blockers (assumed context, vague done criteria, broken verify, missing schema, missing TDD contract, scope overload, ambiguous path)
+- detect CRITICAL execution blockers (assumed context, vague done criteria, broken verify, missing schema, mismatched behavior contract, scope overload, ambiguous path)
 - detect MINOR ambiguity/judgment-call risks
 - revise only when fix is local, clear, and keeps intended scope
 

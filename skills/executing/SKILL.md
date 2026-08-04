@@ -4,7 +4,7 @@ description: >-
   Use when implementing approved Pulse beads, either as a swarm worker or as a single
   worker when swarming is unavailable.
 metadata:
-  version: '1.4'
+  version: '1.5'
   ecosystem: pulse
   dependencies:
     - id: beads-cli
@@ -170,13 +170,14 @@ Minimum fields to confirm:
 | `files` | Files/modules in scope for this bead |
 | `verify` | Concrete verification commands to run |
 | `verification_evidence` | Path to the canonical evidence artifact (typically `history/<feature>/verification/<bead-id>.md`) |
-| `testing_mode` | `standard` / `tdd-required` |
+| `behavior_mode` | `change` / `preserve` / `investigate` |
+| `behavior_scenarios` | Observable scenarios or stable scenario IDs |
 | `decision_refs` | Locked decisions from CONTEXT.md relevant to this bead |
 | `learning_refs` | Learning file paths to read before implementing |
 
 If any required field is missing, stop and bounce the bead back to validating or planning. Do not guess from free-form prose.
 
-If `testing_mode` is `tdd-required`, confirm `tdd_steps` is present before implementation starts.
+For `change` or `preserve`, confirm `behavior_steps` contains baseline, retest, and an explicit regression list. For `investigate`, confirm `investigation_steps` contains reproduce and trace before work starts.
 
 ### Current-work artifact read rule for non-trivial beads
 
@@ -190,7 +191,7 @@ Shape artifact requirements:
 - phase-plan path: read `history/<feature>/phase-plan.md`, `history/<feature>/phase-<n>-contract.md`, and `history/<feature>/phase-<n>-story-map.md`
 
 Trigger conditions:
-- `testing_mode` is `tdd-required`
+- `behavior_mode` is `change` or `investigate`
 - the bead touches multiple files across different modules or ownership boundaries
 - the bead has multiple upstream dependencies or explicitly references story coordination, parallelism, shared file/context risk, or boundary preservation
 - the `verify` path is multi-step, integration-heavy, or hard to explain in one line from the bead alone
@@ -281,21 +282,32 @@ Every artifact you create must be:
 - **Substantive**: real logic, not stubs or TODOs
 - **Wired**: imported, exported, and integrated — not floating code
 
-### Selective TDD
+### Conservative Behavior Evidence
 
-Respect the bead's `testing_mode`:
+Respect the bead's `behavior_mode` and use the lowest sufficient verification layer. Keep the repository's existing test stack; do not introduce a behavior framework merely to express this workflow.
 
-- `standard` -> implement normally, then verify with fresh evidence
-- `tdd-required` -> run a real red-green loop before production code closes
+For `change`:
 
-For `tdd-required` beads:
+1. run `behavior_steps.baseline` and prove the intended behavior fails or is absent before the change
+2. make the smallest credible intervention, or evaluate an already-present candidate against that baseline
+3. run `behavior_steps.retest` and prove the intended outcome
+4. run every declared `behavior_steps.regression` check
 
-1. write or update the smallest failing test that proves the intended behavior
-2. run `tdd_steps.red` and confirm it fails for the expected reason
-3. only then write the minimal production change
-4. rerun `tdd_steps.green` and confirm it passes
+Candidate code that predates the scenario is not invalid. Preserve it when a clean pre-change checkout, temporary reverse application, or another controlled comparison can establish honest before/after evidence. Never discard or rewrite scoped candidate code solely to manufacture ordering.
 
-If production code was written before the red check, discard or rewrite that portion within the bead scope and restart the loop. Do not claim TDD from memory or intent alone.
+For `preserve`:
+
+1. run the green `behavior_steps.baseline`
+2. make the smallest internal change without altering the observable contract
+3. replay the same proof through `behavior_steps.retest`
+4. run every declared regression check
+
+For `investigate`:
+
+1. run `investigation_steps.reproduce` and `investigation_steps.trace`
+2. gather evidence and stabilize the causal boundary without speculative production behavior changes
+3. update the declared evidence record
+4. once behavior is stable, stop and route the bead to planning for reclassification as `change` or `preserve` before production implementation
 
 ---
 
@@ -318,19 +330,22 @@ history/<feature>/verification/<bead-id>.md
 The evidence record must include:
 
 - bead ID and feature name
-- `testing_mode`
+- `behavior_mode`
 - verification timestamp
 - every `verify` command actually run
 - exit code for each command
 - concise observed result for each command
 - paths to any generated proof artifacts, screenshots, logs, or findings files
 
-If `testing_mode=tdd-required`, also record:
+For `change` or `preserve`, also record:
 
-- the `tdd_steps.red` command
-- the expected failure signal that was observed
-- the `tdd_steps.green` command
-- the passing result that was observed
+- the `behavior_steps.baseline` check and observed result
+- the `behavior_steps.retest` check and observed result
+- every declared regression check and observed result
+
+For `change`, state the expected pre-change failure or absence. When candidate code predates the scenario, record the controlled comparison used instead of destroying the candidate.
+
+For `investigate`, record both investigation checks, observations at each boundary, and whether the result is ready for planning reclassification.
 
 If verification fails:
 
@@ -359,7 +374,7 @@ Before `br close`, confirm all are true:
 - locked decisions in `decision_refs` were re-checked against the final implementation
 - all `verify` steps passed in a fresh run
 - every declared `verification_evidence` entry is present and substantive
-- any `tdd-required` red-green evidence is recorded
+- all evidence required by the bead's `behavior_mode` is recorded
 - no unresolved blocker, review finding, or failed follow-up is being silently deferred
 
 ### 6b. Close the bead
@@ -466,7 +481,7 @@ Stop and reassess if you notice any of these:
 - **Skipping verification** — `it looks right` is not verification; run the actual criteria
 - **Claiming success from stale or partial verification output**
 - **Closing a bead without a substantive `verification_evidence` record**
-- **Claiming `tdd-required` was satisfied without a real red failure and green pass**
+- **Claiming behavior evidence without the mode-specific baseline/retest or reproduce/trace results**
 - **Continuing after compaction without re-reading** — you have amnesia; fix it before proceeding
 - **Implementing stubs, TODOs, or empty handlers** — these are not implementations; they are deferred failures
 - **Ignoring a locked decision from CONTEXT.md**
