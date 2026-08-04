@@ -117,6 +117,48 @@ test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
   }
 });
 
+test("applyRepo rejects dependency inventory symlink escapes before onboarding writes", async (t) => {
+  await t.test("symlinked inventory leaf", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-outside-"));
+    const sentinelPath = path.join(outside, "sentinel.json");
+
+    try {
+      fs.mkdirSync(path.join(root, ".pulse"), { recursive: true });
+      fs.writeFileSync(sentinelPath, "outside sentinel\n", "utf8");
+      fs.symlinkSync(sentinelPath, path.join(root, ".pulse", "dependency-inventory.json"));
+
+      assert.throws(
+        () => applyRepo(root, false),
+        /Refusing to replace a symlinked Pulse dependency inventory/,
+      );
+      assert.equal(fs.readFileSync(sentinelPath, "utf8"), "outside sentinel\n");
+      assert.equal(fs.existsSync(path.join(root, "AGENTS.md")), false);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+      fs.rmSync(outside, { recursive: true, force: true });
+    }
+  });
+
+  await t.test("symlinked .pulse parent", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-outside-"));
+
+    try {
+      fs.symlinkSync(outside, path.join(root, ".pulse"));
+      assert.throws(
+        () => applyRepo(root, false),
+        /Refusing to write Pulse dependency inventory outside the target repository/,
+      );
+      assert.equal(fs.existsSync(path.join(root, "AGENTS.md")), false);
+      assert.deepEqual(fs.readdirSync(outside), []);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+      fs.rmSync(outside, { recursive: true, force: true });
+    }
+  });
+});
+
 test("packaged Codex hook assets are present and point at packaged hook scripts", () => {
   const pluginManifest = JSON.parse(
     fs.readFileSync(path.join(LOCAL_REPO_ROOT, ".codex-plugin", "plugin.json"), "utf8"),

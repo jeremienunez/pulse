@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 import {
@@ -64,6 +65,38 @@ function buildPackagedDependencyInventory(pluginVersion) {
     pluginMcpPath: path.join(REPO_ROOT, ".mcp.json"),
     pluginVersion,
   });
+}
+
+function assertSafeDependencyInventoryTarget(repoRoot, inventoryPath) {
+  const realRepoRoot = fs.realpathSync(repoRoot);
+  const inventoryParent = path.dirname(inventoryPath);
+  fs.mkdirSync(inventoryParent, { recursive: true });
+  const realInventoryParent = fs.realpathSync(inventoryParent);
+  const relativeParent = path.relative(realRepoRoot, realInventoryParent);
+  if (
+    relativeParent === ".."
+    || relativeParent.startsWith(`..${path.sep}`)
+    || path.isAbsolute(relativeParent)
+  ) {
+    throw new Error("Refusing to write Pulse dependency inventory outside the target repository");
+  }
+  if (fs.lstatSync(inventoryPath, { throwIfNoEntry: false })?.isSymbolicLink()) {
+    throw new Error("Refusing to replace a symlinked Pulse dependency inventory");
+  }
+}
+
+function writeDependencyInventoryAtomically(inventoryPath, inventory) {
+  const temporaryPath = `${inventoryPath}.${process.pid}.${randomUUID()}.tmp`;
+  try {
+    fs.writeFileSync(
+      temporaryPath,
+      `${JSON.stringify(inventory, null, 2)}\n`,
+      { encoding: "utf8", flag: "wx", mode: 0o600 },
+    );
+    fs.renameSync(temporaryPath, inventoryPath);
+  } finally {
+    fs.rmSync(temporaryPath, { force: true });
+  }
 }
 
 function dependencyInventoryNeedsUpdate(repoRoot, pluginVersion) {
@@ -676,6 +709,7 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
   ensureParent(configPath);
   ensureParent(onboardingPath);
   ensureParent(statePath);
+  assertSafeDependencyInventoryTarget(repoRoot, dependencyInventoryPath);
   fs.mkdirSync(checkpointsRootPath, { recursive: true });
   fs.mkdirSync(memoryLearningsPath, { recursive: true });
   fs.mkdirSync(memoryCorrectionsPath, { recursive: true });
@@ -707,10 +741,9 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
   const legacyHookScripts = cleanupLegacyHookScripts(repoRoot);
   const legacySupportScripts = cleanupLegacySupportScripts(repoRoot);
   const supportScripts = writeSupportScripts(repoRoot);
-  fs.writeFileSync(
+  writeDependencyInventoryAtomically(
     dependencyInventoryPath,
-    `${JSON.stringify(buildPackagedDependencyInventory(pluginVersion), null, 2)}\n`,
-    "utf8",
+    buildPackagedDependencyInventory(pluginVersion),
   );
 
   const onboardingNotes = [];
