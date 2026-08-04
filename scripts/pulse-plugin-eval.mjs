@@ -596,11 +596,32 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
     results,
     "benchmark",
     "evidence-selected-ids",
-    coverage.missing.length === 0 ? "PASS" : "WARN",
-    coverage.missing.length === 0 ? "all selected scenarios have evidence entries" : `missing entries for: ${coverage.missing.join(",")}`,
+    coverage.missing.length === 0 && summary.incomplete === 0 ? "PASS" : "FAIL",
+    coverage.missing.length === 0 && summary.incomplete === 0
+      ? "all selected scenarios have complete evidence entries"
+      : `missing entries: ${coverage.missing.join(",") || "none"}; incomplete scenarios: ${summary.incomplete}`,
   );
   if (coverage.extra.length > 0) {
     addResult(results, "benchmark", "evidence-extra-ids", "WARN", `extra evidence entries: ${coverage.extra.join(",")}`);
+  }
+
+  if (coverage.missing.length > 0 || summary.incomplete > 0) {
+    addResult(
+      results,
+      "benchmark",
+      "benchmark-summary",
+      "FAIL",
+      `completed=${summary.completed}, passed=${summary.passed}, failed=${summary.failed}, incomplete=${summary.incomplete}`,
+    );
+    return {
+      mode: "rejected",
+      iterationName,
+      iterationPath,
+      scenarioSourcePath: sourcePath,
+      evidencePath,
+      packetPath: exists(packetPath) ? packetPath : null,
+      benchmarkJsonPath: null,
+    };
   }
 
   const benchmark = {
@@ -645,7 +666,7 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
     results,
     "benchmark",
     "benchmark-summary",
-    summary.failed > 0 || summary.incomplete > 0 ? "WARN" : "PASS",
+    summary.failed > 0 ? "FAIL" : "PASS",
     `completed=${summary.completed}, passed=${summary.passed}, failed=${summary.failed}, incomplete=${summary.incomplete}`,
   );
 
@@ -1156,7 +1177,7 @@ function runScenarioChecks(results, workspacePath, iterationArg, evalIdsArg, sce
       results,
       "scenarios",
       "benchmark-summary",
-      "PASS",
+      (runSummary.failed ?? 0) > 0 || (runSummary.incomplete ?? 0) > 0 ? "FAIL" : "PASS",
       `pass_rate=${runSummary.pass_rate ?? "n/a"}, passed=${runSummary.passed ?? 0}, failed=${runSummary.failed ?? 0}, incomplete=${runSummary.incomplete ?? 0}`,
     );
   } else if (runSummary.combined) {
