@@ -28,6 +28,7 @@ If preflight readiness is missing, stale, or blocked (check `.pulse/tooling-stat
 
 Do not start execution unless current work is feasibility-ready in real repo conditions. This skill verifies that:
 - mode and shape still fit current reality
+- governance fitness was explicitly classified before shape creation
 - assumptions are proven with concrete evidence
 - current-work artifacts are executable
 - beads are schema-valid and implementation-ready when needed
@@ -36,6 +37,7 @@ Do not start execution unless current work is feasibility-ready in real repo con
 ## Non-Negotiable Gates
 
 - **Gate A — Approved shape is required** in `work-shape.md`, `phase-plan.md`, or `epic-map.md`.
+- **Gate A1 — Governance fitness is required** in `approach.md`; absence is never interpreted as `light` or `none`.
 - **Gate B — Reality + feasibility must pass** before structural polish.
 - **Gate C — If beads exist, bead schema must pass** before structural checker.
 - **Gate D (Gate 3) — Explicit user approval is mandatory before execution.**
@@ -66,12 +68,14 @@ Read both:
 
 Confirm and present:
 - mode
+- governance fitness and its persisted rationale
 - shape artifact and approval status
 - current work and practical goal
 - mirror status (in sync / out of sync / missing)
 
 If shape approval is not `APPROVED`, stop.
 If shape artifact and mirror disagree, stop and return to planning for sync.
+If `approach.md` does not record exactly one of `strong`, `light`, or `none` plus a rationale and `pulse:governed-feature` classifier, stop and return to planning even when planning was entered directly.
 
 Use orientation template from `references/runtime-appendix.md`.
 
@@ -86,7 +90,7 @@ Run mode-fit and repo-fit checks before structural validation:
 
 If reality gate fails, route back to planning.
 
-When `history/<feature>/governance.md` exists or planning classified governance fitness `strong`, run the validator bundled with `pulse:governed-feature`. A missing required overlay or nonzero structural result routes to planning; an exit 0 remains structural evidence only and grants neither semantic acceptance nor Gate 3 approval.
+When the persisted governance fitness is `strong`, require `history/<feature>/governance.md` and run the validator bundled with `pulse:governed-feature`. A missing overlay or nonzero structural result routes to planning; an exit 0 remains structural evidence only and grants neither semantic acceptance nor Gate 3 approval. For `light` or `none`, require the recorded rationale but no placeholder overlay; if an overlay and the current classification disagree, route to planning for reconciliation rather than inferring fitness from file presence.
 
 ### 2) Feasibility matrix + spikes/probes
 
@@ -229,6 +233,7 @@ If context exceeds 65%, write a validating-owned handoff using the shared envelo
 - skipping orientation on resume
 - validating while shape approval is not `APPROVED`
 - validating when shape artifact and `.pulse/STATE.md` disagree
+- accepting missing governance fitness as an implicit lightweight classification
 - running structural checker before reality/feasibility/schema pass
 - attempting a 4th structural iteration
 - missing or non-decisive HIGH-risk spike outcomes

@@ -275,6 +275,20 @@
         "Agent says planning or execution must not continue while status is needs_onboarding unless the user declines or approves the remediation path",
         "Agent does NOT apply repo changes without explicit user approval"
       ]
+    },
+    {
+      "id": 22,
+      "skill": "planning",
+      "skill_path": "skills/planning",
+      "prompt": "Exploring is complete for a durable regulated payments API and `history/payments-api/CONTEXT.md` is approved. No governance classification or governance.md exists because I invoked pulse:planning directly. Continue planning through Gate 2 setup.",
+      "expected_output": "Before creating a shape or requesting Gate 2, the agent invokes pulse:governed-feature, records an explicit strong|light|none Governance Fitness decision and rationale in approach.md, and for this strong-fit API/compliance change creates and structurally validates the single governance.md overlay.",
+      "files": [],
+      "expectations": [
+        "Agent does not treat a missing governance overlay as an implicit light or none classification",
+        "Agent invokes pulse:governed-feature and records Governance Fitness: strong with a rationale in approach.md",
+        "Agent requires history/payments-api/governance.md and the passing bundled validator result before shape creation",
+        "Agent does not request or approve Gate 2 until the strong governance route is complete"
+      ]
     }
   ]
 }

@@ -8,6 +8,8 @@ This is the single runtime appendix for `pulse:validating`. It contains reusable
 
 ```text
 Validating mode: <direct_task | spike | small_change | standard_feature | high_risk_feature>
+Governance fitness: strong | light | none
+Governance source: history/<feature>/approach.md
 Approved shape artifact: <work-shape.md | phase-plan.md | epic-map.md>
 Current work: <direct work item | spike question | current story | current phase>
 Approval status: APPROVED | PENDING | REVISE_REQUIRED
@@ -18,6 +20,8 @@ Goal of current work:
 ```
 
 Stop conditions:
+- governance fitness or rationale is absent, invalid, or not attributed to `pulse:governed-feature`
+- fitness is `strong` but `history/<feature>/governance.md` is missing or its bundled validator does not pass
 - approved shape artifact is not `APPROVED`
 - approval fields are missing where required
 - shape artifact and `.pulse/STATE.md` disagree on approval/current work
@@ -35,6 +39,7 @@ REPO FIT: PASS|FAIL
 ASSUMPTIONS: PASS|FAIL
 SMALLER PATH: PASS|FAIL
 PROOF SURFACE: PASS|FAIL
+GOVERNANCE ROUTE: PASS|FAIL
 Decision: proceed | revise planning | run spike first | collapse mode
 Evidence: <file/command/runtime evidence>
 ```

@@ -15,7 +15,7 @@ Use when `pulse:planning` needs quality rules or artifact schemas.
 Trace:
 
 ```text
-mode -> shape -> epic? -> current work -> bead?
+mode -> governance fitness -> shape -> epic? -> current work -> bead?
 ```
 
 ## Mode Gate
@@ -44,6 +44,20 @@ Above `small_change`, record why smaller modes are insufficient.
 - risk map: component, LOW/MEDIUM/HIGH, reason, proof needed
 - likely file/order boundaries
 - relevant learnings and validating questions
+
+Every `approach.md` must also contain this exact decision record before a shape is created:
+
+```markdown
+## Governance Fitness
+
+- Fitness: `strong` | `light` | `none`
+- Rationale: <why this classification protects the work without unnecessary ceremony>
+- Classifier: `pulse:governed-feature`
+- Overlay: `history/<feature>/governance.md` | `not created (light|none)`
+- Structural validation: `<command and PASS result>` | `not applicable (light|none)`
+```
+
+`strong` requires the single overlay and a passing bundled validator before shape creation. `light` and `none` never create a placeholder overlay.
 
 ## Shape Artifacts
 
@@ -119,4 +133,5 @@ Story-to-bead mapping: <br-id or pending validation>
 - Small fix stays `direct_task` or `small_change`; no epic/phase ceremony.
 - Tough feature uses an epic map when capability/risk areas are clearer than 2-4 phases.
 - MEDIUM/HIGH unknown appears as proof needed before execution beads; standard/high-risk work defers bead creation until validating confirms feasibility and routes back.
+- Direct planning entry for durable domain/API, compliance/security, or cross-cutting work still invokes `pulse:governed-feature`, records `strong`, and validates its overlay before shape creation.
 - Current story is small enough for feasibility validation and one bounded execution pass.

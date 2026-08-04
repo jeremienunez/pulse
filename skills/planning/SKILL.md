@@ -40,13 +40,15 @@ If this skill cannot explain the work with practical outcomes and realistic exam
 
 ```text
 Mode
-  -> Shape
-    -> Epic?
-      -> Current Work
-        -> Beads?
+  -> Governance fitness
+    -> Shape
+      -> Epic?
+        -> Current Work
+          -> Beads?
 ```
 
 - **Mode**: `direct_task` | `spike` | `small_change` | `standard_feature` | `high_risk_feature`
+- **Governance fitness**: `strong` | `light` | `none`, classified and persisted for every planned feature before shape creation
 - **Shape**: work-shape, phase-plan, or epic-map
 - **Current Work**: direct item, spike question, current story, or current phase
 - **Bead**: worker-sized executable unit for validated current work
@@ -71,6 +73,7 @@ CONTEXT.md
   -> Phase 0 Learnings Retrieval
   -> Phase 1 Discovery                 (history/<feature>/discovery.md)
   -> Phase 2 Synthesis                 (history/<feature>/approach.md)
+  -> Phase 2a Governance Fitness       (strong | light | none)
   -> Phase 3 Mode Gate + Work Shape    (work-shape.md | phase-plan.md | epic-map.md)
   -> HARD-GATE (Gate 2): human approval required
   -> approved outcome: continue inside planning to current-work prep
@@ -113,10 +116,13 @@ Load `references/planning-reference.md` for mode quality rules and artifact temp
 - Write `history/<feature>/approach.md` using `references/planning-reference.md`.
 - Include gap analysis, recommended approach, alternatives, risk map, proposed structure, learnings applied.
 - For every HIGH risk define: component, reason, validating owner, YES/NO spike question, affected beads, decision gate options, and the expected `behavior_mode` plus mode-specific proof.
-- When `pulse:governed-feature` classifies the work `strong`, include its single overlay and passing bundled structural-validator result in the Gate 2 input. A `light` or `none` result adds no overlay.
+- Invoke `pulse:governed-feature` to classify every planned feature as exactly `strong`, `light`, or `none`, then persist its classification and rationale in the `Governance Fitness` section of `approach.md`. Classification is mandatory even when planning was invoked directly; Phase 3 cannot begin while it is absent.
+- For `strong`, create its single `history/<feature>/governance.md` overlay and record the passing bundled structural-validator command/result before writing the shape artifact. The overlay and passing result are required Gate 2 inputs.
+- For `light` or `none`, record why the lighter route is sufficient and do not create a placeholder governance overlay.
 
 ### Phase 3: Mode Gate + Work Shape (Gate 2 setup)
 
+- Confirm `approach.md` records an exact governance fitness value and rationale. For `strong`, confirm the overlay exists and its bundled structural validator passed; otherwise stop and return to Phase 2.
 - Choose mode first: `direct_task | spike | small_change | standard_feature | high_risk_feature`.
 - Write one approved shape artifact:
   - `work-shape.md` for direct/spike/small work
@@ -187,6 +193,8 @@ Then hand off with: **Recommend `pulse:validating` for current work as the next 
 
 - Skipping learnings retrieval or ignoring `CONTEXT.md`
 - Skipping mode gate
+- Missing governance fitness classification, or treating absence of an overlay as `light`/`none`
+- Creating a shape before a `strong` overlay passes structural validation
 - Proceeding past shape approval without explicit approval
 - Defaulting to phases when a work-shape or epic-map is clearer
 - Creating future-work beads

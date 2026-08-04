@@ -914,6 +914,8 @@ function runStaticChecks(results) {
   const mcpPath = path.join(repoRoot, ".mcp.json");
   const skillsRoot = path.join(repoRoot, "skills");
   const executingSkillPath = path.join(skillsRoot, "executing", "SKILL.md");
+  const planningSkillPath = path.join(skillsRoot, "planning", "SKILL.md");
+  const validatingSkillPath = path.join(skillsRoot, "validating", "SKILL.md");
 
   const required = [
     pluginManifestPath,
@@ -1051,6 +1053,21 @@ function runStaticChecks(results) {
       ? "PASS"
       : "FAIL",
     "investigate mode must route reproduction and tracing through pulse:systematic-debug-fix",
+  );
+  const planningSkill = exists(planningSkillPath) ? fs.readFileSync(planningSkillPath, "utf8") : "";
+  const validatingSkill = exists(validatingSkillPath) ? fs.readFileSync(validatingSkillPath, "utf8") : "";
+  const governanceRoutingPasses = [
+    /classify every planned feature as exactly `strong`, `light`, or `none`/u.test(planningSkill),
+    /Phase 3 cannot begin while it is absent/u.test(planningSkill),
+    /absence is never interpreted as `light` or `none`/u.test(validatingSkill),
+    /persisted governance fitness is `strong`/u.test(validatingSkill),
+  ].every(Boolean);
+  addResult(
+    results,
+    "static",
+    "mandatory-governance-fitness-contract",
+    governanceRoutingPasses ? "PASS" : "FAIL",
+    "planning must persist strong|light|none before shape creation and validating must enforce that decision",
   );
   addResult(
     results,
