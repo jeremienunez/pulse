@@ -4,7 +4,7 @@ description: >-
   Use when implementing approved Pulse beads, either as a swarm worker or as a single
   worker when swarming is unavailable.
 metadata:
-  version: '1.5'
+  version: '1.6'
   ecosystem: pulse
   dependencies:
     - id: beads-cli
@@ -198,6 +198,8 @@ Trigger conditions:
 - after reading the bead, more than one plausible implementation path still seems possible
 
 Use the active-shape artifact set as the canonical current-work contract for this bead.
+
+If `history/<feature>/governance.md` exists, read it after `CONTEXT.md` and the bead. Resolve the bead's decision/scenario refs through active `OP-n` traceability and use the mapped invariants, safeguards, and verification target without expanding bead scope. Stop and report any stale or contradictory mapping to its Pulse owner.
 
 For beads that touch module interfaces, ownership boundaries, or HIGH-risk constraints, also read the relevant parts of `history/<feature>/approach.md`.
 

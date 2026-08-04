@@ -4,7 +4,7 @@ description: >-
   Use after planning and before execution to verify approved current work is
   reality-fit, feasibility-ready, and explicitly approved at Gate 3.
 metadata:
-  version: '1.6'
+  version: '1.7'
   position: 3
   chain: exploring → planning → validating → (swarming | executing)
   dependencies:
@@ -85,6 +85,8 @@ Run mode-fit and repo-fit checks before structural validation:
 - proof surface exists (files/APIs/commands/runtime checks)
 
 If reality gate fails, route back to planning.
+
+When `history/<feature>/governance.md` exists or planning classified governance fitness `strong`, run the validator bundled with `pulse:governed-feature`. A missing required overlay or nonzero structural result routes to planning; an exit 0 remains structural evidence only and grants neither semantic acceptance nor Gate 3 approval.
 
 ### 2) Feasibility matrix + spikes/probes
 

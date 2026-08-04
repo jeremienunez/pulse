@@ -2,7 +2,7 @@
 name: reviewing
 description: Use after execution completes when the user needs final quality verification and release-readiness review before closeout.
 metadata:
-  version: '1.3'
+  version: '1.4'
   ecosystem: pulse
   upstream: swarming
   downstream: compounding
@@ -40,6 +40,7 @@ Read before starting:
 - `.pulse/project-docs.json` when present, plus minimal relevant listed docs
 - `history/<feature>/CONTEXT.md`
 - `history/<feature>/approach.md`
+- `history/<feature>/governance.md` when present, plus its bundled structural-validator result
 - `history/<feature>/lifecycle-summary.md` when present
 - `.pulse/STATE.md`
 - reviewing-owned changeset evidence for the active Pulse closeout path
@@ -59,14 +60,15 @@ All execution-time rules live in `references/runtime-appendix.md`. Treat that fi
 
 ## Minimum Flow
 
-1. Run specialist review (4+1 model).
-2. Run artifact verification for all promised deliverables.
-3. Turn every accepted finding into a review bead by severity and deduplicate overlaps before presenting results.
-4. Enforce hard gate: if any P1 review bead exists, stop and present the blocking bead IDs; do not continue closeout.
-5. Run human UAT unless explicitly skipped under allowed mode.
-6. If UAT or finishing checks reveal new accepted findings, create or update the corresponding review/fix beads before proceeding.
-7. Execute finishing and update Pulse state artifacts.
-8. Recommend `pulse:compounding` as the next skill and default to `next_action: manual_invoke`.
+1. When governance exists, rerun its bundled structural validator and include the overlay in specialist semantic/evidence review; keep structural, semantic, evidence, and human approval results separate.
+2. Run specialist review (4+1 model).
+3. Run artifact verification for all promised deliverables.
+4. Turn every accepted finding into a review bead by severity and deduplicate overlaps before presenting results.
+5. Enforce hard gate: if any P1 review bead exists, stop and present the blocking bead IDs; do not continue closeout.
+6. Run human UAT unless explicitly skipped under allowed mode.
+7. If UAT or finishing checks reveal new accepted findings, create or update the corresponding review/fix beads before proceeding.
+8. Execute finishing and update Pulse state artifacts.
+9. Recommend `pulse:compounding` as the next skill and default to `next_action: manual_invoke`.
 
 ## Handoff
 

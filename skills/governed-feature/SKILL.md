@@ -2,8 +2,13 @@
 name: governed-feature
 description: Use when a Pulse feature may need explicit governance because it changes durable domain behavior, an API or invariant, compliance or security rules, or cross-cutting architecture. Do NOT use for trivial changes, short spikes, purely visual exploration, disposable scripts, or routine implementation inside an already approved governance overlay.
 metadata:
-  version: '1.0'
-  dependencies: []
+  version: '1.1'
+  dependencies:
+    - id: node-runtime
+      kind: command
+      command: node
+      missing_effect: unavailable
+      reason: Governed-feature validates governance overlays with a dependency-free Node CLI.
 ---
 
 # Governed Feature
@@ -59,6 +64,16 @@ Apply these ownership rules:
 - Keep structural status, semantic review, and human gate approval as separate fields.
 
 When updating an existing overlay, change only sections affected by approved intent or proven implementation reality. If the overlay conflicts with `CONTEXT.md`, `CONTEXT.md` wins and the conflict is a blocker until the overlay is corrected.
+
+## Validate Structure
+
+Run the bundled read-only validator after creating or updating a strong-fit overlay:
+
+```bash
+node skills/governed-feature/scripts/validate-governance.mjs --json history/<feature>/governance.md
+```
+
+Require exit 0 before returning the artifact to its Pulse gate owner. The result always reports `semantic_validation: not_performed` and `grants_approval: false`; use review and the human Pulse gate for those decisions.
 
 ## Review the Result
 

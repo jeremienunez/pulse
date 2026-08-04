@@ -5,7 +5,7 @@ description: >-
   mode-gated plan with an approved work shape and current-work prep for
   validation.
 metadata:
-  version: '2.5'
+  version: '2.6'
   ecosystem: pulse
   dependencies:
     - id: beads-cli
@@ -113,6 +113,7 @@ Load `references/planning-reference.md` for mode quality rules and artifact temp
 - Write `history/<feature>/approach.md` using `references/planning-reference.md`.
 - Include gap analysis, recommended approach, alternatives, risk map, proposed structure, learnings applied.
 - For every HIGH risk define: component, reason, validating owner, YES/NO spike question, affected beads, decision gate options, and the expected `behavior_mode` plus mode-specific proof.
+- When `pulse:governed-feature` classifies the work `strong`, include its single overlay and passing bundled structural-validator result in the Gate 2 input. A `light` or `none` result adds no overlay.
 
 ### Phase 3: Mode Gate + Work Shape (Gate 2 setup)
 
