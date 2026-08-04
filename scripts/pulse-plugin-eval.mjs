@@ -913,6 +913,7 @@ function runStaticChecks(results) {
   const scenarioLibraryPath = path.join(repoRoot, "pulse-eval-workspace/evals.json");
   const mcpPath = path.join(repoRoot, ".mcp.json");
   const skillsRoot = path.join(repoRoot, "skills");
+  const executingSkillPath = path.join(skillsRoot, "executing", "SKILL.md");
 
   const required = [
     pluginManifestPath,
@@ -1039,6 +1040,17 @@ function runStaticChecks(results) {
       ? "PASS"
       : "WARN",
     `command=${claudeSessionStartHook?.command ?? "n/a"}, async=${claudeSessionStartHook?.async ?? "n/a"}`,
+  );
+  const executingSkill = exists(executingSkillPath) ? fs.readFileSync(executingSkillPath, "utf8") : "";
+  const investigateSection = executingSkill.match(/For `investigate`:[\s\S]*?\n---/u)?.[0] || "";
+  addResult(
+    results,
+    "static",
+    "investigate-debug-owner-contract",
+    /`pulse:systematic-debug-fix` is the authoritative workflow owner/u.test(investigateSection)
+      ? "PASS"
+      : "FAIL",
+    "investigate mode must route reproduction and tracing through pulse:systematic-debug-fix",
   );
   addResult(
     results,

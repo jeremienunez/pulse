@@ -306,6 +306,8 @@ For `preserve`:
 
 For `investigate`:
 
+`pulse:systematic-debug-fix` is the authoritative workflow owner for this mode. Invoke it before gathering evidence and constrain it to reproduction, boundary tracing, and causal stabilization; the bead's `investigation_steps` remain the exact authorized checks.
+
 1. run `investigation_steps.reproduce` and `investigation_steps.trace`
 2. gather evidence and stabilize the causal boundary without speculative production behavior changes
 3. update the declared evidence record
