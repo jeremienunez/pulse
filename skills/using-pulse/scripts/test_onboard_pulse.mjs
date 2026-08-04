@@ -946,7 +946,11 @@ test("pulse status scout surfaces current-feature, runtime snapshot, canonical h
     );
     fs.writeFileSync(path.join(root, "history", "operator-surface-foundation", "CONTEXT.md"), "# Context\n", "utf8");
     fs.writeFileSync(path.join(root, "history", "operator-surface-foundation", "approach.md"), "# Approach\n", "utf8");
-    fs.writeFileSync(path.join(root, "history", "operator-surface-foundation", "phase-plan.md"), "# Phase Plan\n", "utf8");
+    fs.writeFileSync(
+      path.join(root, "history", "operator-surface-foundation", "phase-plan.md"),
+      "# Phase Plan\n\nApproval status: APPROVED\n",
+      "utf8",
+    );
     fs.writeFileSync(path.join(root, "history", "operator-surface-foundation", "phase-4-contract.md"), "# Contract\n", "utf8");
     fs.writeFileSync(path.join(root, "history", "operator-surface-foundation", "phase-4-story-map.md"), "# Story Map\n", "utf8");
     fs.mkdirSync(path.join(root, "history", "operator-surface-foundation", "verification"), { recursive: true });
@@ -1194,6 +1198,64 @@ test("pulse status distinguishes present history artifacts from explicit lifecyc
         "## Approved artifacts",
         `- Context: history/${feature}/CONTEXT.md`,
         `- Approach: history/${feature}/approach.md`,
+        `- Pending/not approved: history/${feature}/work-shape.md`,
+        `- Work shape: history/${feature}/work-shape.md.backup`,
+        `- Work shape: history/${feature}/work-shape.md`,
+        "",
+        "## Gate outcomes",
+        "- GATE 2: approved",
+      ].join("\n"),
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(root, ".pulse", "state.json"),
+      `${JSON.stringify({ active_feature: feature, phase: "planning" }, null, 2)}\n`,
+      "utf8",
+    );
+
+    const payload = JSON.parse(
+      execFileSync("node", [path.join(root, ".pulse", "scripts", "pulse_status.mjs"), "--json"], {
+        cwd: root,
+        encoding: "utf8",
+      }),
+    );
+
+    assert.deepEqual(payload.history_lifecycle.approved_artifacts, [
+      `history/${feature}/CONTEXT.md`,
+      `history/${feature}/approach.md`,
+    ]);
+    assert.ok(payload.history_lifecycle.next_reads.includes(`history/${feature}/work-shape.md`));
+    assert.equal(payload.history_lifecycle.self_sufficient, false);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("pulse status requires an approved Gate 2 outcome for an approved shape", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
+
+  try {
+    applyRepo(root, false);
+    const feature = "pending-gate";
+    const featureDir = path.join(root, "history", feature);
+    fs.mkdirSync(path.join(featureDir, "verification"), { recursive: true });
+    fs.writeFileSync(path.join(featureDir, "CONTEXT.md"), "# Context\n", "utf8");
+    fs.writeFileSync(path.join(featureDir, "approach.md"), "# Approach\n", "utf8");
+    fs.writeFileSync(
+      path.join(featureDir, "work-shape.md"),
+      "# Work Shape\n\nApproval status: APPROVED\n",
+      "utf8",
+    );
+    fs.writeFileSync(path.join(featureDir, "verification", "check.md"), "# Check\n", "utf8");
+    fs.writeFileSync(
+      path.join(featureDir, "lifecycle-summary.md"),
+      [
+        "# Lifecycle Summary",
+        "",
+        "## Approved artifacts",
+        `- Context: history/${feature}/CONTEXT.md`,
+        `- Approach: history/${feature}/approach.md`,
+        `- Work shape: history/${feature}/work-shape.md`,
         "",
         "## Gate outcomes",
         "- GATE 2: pending",
@@ -1217,7 +1279,6 @@ test("pulse status distinguishes present history artifacts from explicit lifecyc
       `history/${feature}/CONTEXT.md`,
       `history/${feature}/approach.md`,
     ]);
-    assert.ok(payload.history_lifecycle.next_reads.includes(`history/${feature}/work-shape.md`));
     assert.equal(payload.history_lifecycle.self_sufficient, false);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });

@@ -1648,12 +1648,63 @@ function listHistoryFeatureFiles(repoRoot, feature) {
   return files.sort((left, right) => left.localeCompare(right));
 }
 
+const APPROVED_ARTIFACT_LABELS = new Map([
+  ["context", "CONTEXT.md"],
+  ["approach", "approach.md"],
+  ["phase plan", "phase-plan.md"],
+  ["epic map", "epic-map.md"],
+  ["work shape", "work-shape.md"],
+  ["current story pack", "current-story-pack.md"],
+]);
+
+function normalizeLifecyclePath(rawValue) {
+  const trimmed = String(rawValue || "").trim();
+  const unwrapped = trimmed.startsWith("`") && trimmed.endsWith("`")
+    ? trimmed.slice(1, -1).trim()
+    : trimmed;
+  return unwrapped.split(path.sep).join("/");
+}
+
+function readApprovedGateOutcomes(raw) {
+  const approvedGates = new Set();
+  let inGateSection = false;
+
+  for (const line of raw.split(/\r?\n/u)) {
+    const heading = line.match(/^##\s+(.+?)\s*$/u);
+    if (heading) {
+      inGateSection = heading[1].trim().toLowerCase() === "gate outcomes";
+      continue;
+    }
+    if (!inGateSection) continue;
+
+    const entry = line.match(/^\s*-\s+(GATE\s+[1-4])\s*:\s*(.+?)\s*$/iu);
+    if (!entry) continue;
+    const outcome = entry[2].trim().toLowerCase();
+    const explicitlyNegative = /\b(?:pending|unapproved|rejected|blocked|failed)\b/u.test(outcome)
+      || /\bnot\s+approved\b/u.test(outcome)
+      || /\brevise(?:_required|\s+required)?\b/u.test(outcome);
+    if (/\bapproved\b/u.test(outcome) && !explicitlyNegative) {
+      approvedGates.add(entry[1].toUpperCase().replace(/\s+/gu, " "));
+    }
+  }
+
+  return approvedGates;
+}
+
+function artifactCarriesApproval(repoRoot, artifact) {
+  if (!/(?:phase-plan|epic-map|work-shape)\.md$/u.test(artifact)) return true;
+  const raw = fileTextIfExists(path.join(repoRoot, artifact));
+  return /^Approval status:\s*APPROVED\s*$/imu.test(raw);
+}
+
 function readExplicitlyApprovedArtifacts(repoRoot, lifecycleSummaryPath, availableArtifacts) {
   if (!lifecycleSummaryPath) return [];
 
   const raw = fileTextIfExists(path.join(repoRoot, lifecycleSummaryPath));
   if (!raw) return [];
 
+  const approvedGates = readApprovedGateOutcomes(raw);
+  const available = new Set(availableArtifacts);
   const approved = [];
   let inApprovedSection = false;
   for (const line of raw.split(/\r?\n/u)) {
@@ -1664,9 +1715,20 @@ function readExplicitlyApprovedArtifacts(repoRoot, lifecycleSummaryPath, availab
     }
     if (!inApprovedSection) continue;
 
-    for (const artifact of availableArtifacts) {
-      if (line.includes(artifact) && !approved.includes(artifact)) approved.push(artifact);
-    }
+    const entry = line.match(/^\s*-\s+([^:]+?)\s*:\s*(.+?)\s*$/u);
+    if (!entry) continue;
+    const label = entry[1].trim().toLowerCase();
+    const expectedBasename = APPROVED_ARTIFACT_LABELS.get(label);
+    if (!expectedBasename) continue;
+
+    const artifact = normalizeLifecyclePath(entry[2]);
+    if (!available.has(artifact) || path.posix.basename(artifact) !== expectedBasename) continue;
+
+    const isShape = /(?:phase-plan|epic-map|work-shape)\.md$/u.test(artifact);
+    const isCurrentStory = artifact.endsWith("/current-story-pack.md");
+    if (isShape && (!approvedGates.has("GATE 2") || !artifactCarriesApproval(repoRoot, artifact))) continue;
+    if (isCurrentStory && !approvedGates.has("GATE 3")) continue;
+    if (!approved.includes(artifact)) approved.push(artifact);
   }
 
   return approved;
