@@ -37,8 +37,9 @@ This generates:
 - `iteration-8/benchmark.md`
 - `pulse-eval-review.html`
 
-## Historical iterations
+## Generated runs
 
-- `iteration-*` directories are generated snapshots, not hand-maintained source files.
+- Every child directory is generated output and ignored by git; `README.md` and `evals.json` at the workspace root are the tracked inputs.
+- Numeric iterations use `iteration-*` automatically. Explicit descriptive labels such as `baseline`, `intervention`, and `retest` are also supported and remain generated snapshots.
 - `pulse-eval-review.html` is the latest rendered review for the most recent finalized run.
 - Treat these as archival references unless a task explicitly asks you to refresh a specific iteration.

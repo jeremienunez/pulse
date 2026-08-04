@@ -4,7 +4,7 @@
   "generatedFiles": [
     "skill-catalog.json"
   ],
-  "skillCount": 20,
+  "skillCount": 22,
   "skills": [
     {
       "directory": "architecture-rescue",
@@ -102,7 +102,7 @@
       "name": "executing",
       "description": "Use when implementing approved Pulse beads, either as a swarm worker or as a single worker when swarming is unavailable.",
       "metadata": {
-        "version": "1.4",
+        "version": "1.6",
         "position": null
       },
       "hasReferencesDir": true,
@@ -137,11 +137,24 @@
       "skillPath": "skills/gitnexus/SKILL.md"
     },
     {
+      "directory": "governed-feature",
+      "name": "governed-feature",
+      "description": "Use when a Pulse feature may need explicit governance because it changes durable domain behavior, an API or invariant, compliance or security rules, or cross-cutting architecture. Do NOT use for trivial changes, short spikes, purely visual exploration, disposable scripts, or routine implementation inside an already approved governance overlay.",
+      "metadata": {
+        "version": "1.1",
+        "position": null
+      },
+      "hasReferencesDir": true,
+      "hasScriptsDir": true,
+      "hasAgentsDir": true,
+      "skillPath": "skills/governed-feature/SKILL.md"
+    },
+    {
       "directory": "planning",
       "name": "planning",
-      "description": "Use after pulse:exploring when locked decisions are ready and the user needs an approved phase plan plus current-phase preparation for validation.",
+      "description": "Use after pulse:exploring when locked decisions are ready and the user needs a mode-gated plan with an approved work shape and current-work prep for validation.",
       "metadata": {
-        "version": "2.3",
+        "version": "2.6",
         "position": null
       },
       "hasReferencesDir": true,
@@ -193,7 +206,7 @@
       "name": "reviewing",
       "description": "Use after execution completes when the user needs final quality verification and release-readiness review before closeout.",
       "metadata": {
-        "version": "1.3",
+        "version": "1.4",
         "position": null
       },
       "hasReferencesDir": true,
@@ -204,7 +217,7 @@
     {
       "directory": "swarming",
       "name": "swarming",
-      "description": "Use after pulse:validating approves execution and swarm mode is recommended, when the current phase should be run by coordinated parallel workers.",
+      "description": "Use after pulse:validating approves execution and swarm mode is recommended, when the current work slice should be run by coordinated parallel workers.",
       "metadata": {
         "version": "1.3",
         "position": null
@@ -230,7 +243,7 @@
     {
       "directory": "using-pulse",
       "name": "using-pulse",
-      "description": "Use when bootstrapping or resuming work in a Pulse project after pulse:preflight, or when a request needs Pulse phase selection and mode-aware routing.",
+      "description": "Use when bootstrapping or resuming work in a Pulse project after pulse:preflight, or when a request needs Pulse work-shape/current-work routing and mode-aware skill selection.",
       "metadata": {
         "version": "2.2",
         "position": null
@@ -243,9 +256,9 @@
     {
       "directory": "validating",
       "name": "validating",
-      "description": "Use after planning and before execution to verify phase and bead readiness and enforce explicit Gate 3 approval before any implementation starts.",
+      "description": "Use after planning and before execution to verify approved current work is reality-fit, feasibility-ready, and explicitly approved at Gate 3.",
       "metadata": {
-        "version": "1.4",
+        "version": "1.7",
         "position": "3"
       },
       "hasReferencesDir": true,
@@ -254,11 +267,24 @@
       "skillPath": "skills/validating/SKILL.md"
     },
     {
+      "directory": "worktree-isolation",
+      "name": "worktree-isolation",
+      "description": "Use before multi-file or high-risk implementation when the current Git checkout is dirty, shared, or not demonstrably isolated. Detect and reuse harness-managed isolation first, otherwise establish a guarded worktree without disturbing user state.",
+      "metadata": {
+        "version": "1.0",
+        "position": null
+      },
+      "hasReferencesDir": false,
+      "hasScriptsDir": false,
+      "hasAgentsDir": true,
+      "skillPath": "skills/worktree-isolation/SKILL.md"
+    },
+    {
       "directory": "writing-pulse-skills",
       "name": "writing-pulse-skills",
-      "description": "Use when creating a new pulse skill, editing an existing pulse skill, or verifying a skill works under pressure before deploying. Use when you need an agent skill to be bulletproof against rationalization. Do NOT use for project-specific AGENTS.md conventions or one-off solutions.",
+      "description": "Use when creating a new Pulse skill, editing an existing Pulse skill, or verifying that skill guidance changes agent behavior under pressure. Do NOT use for project-specific AGENTS.md conventions or one-off solutions.",
       "metadata": {
-        "version": "1.1",
+        "version": "1.2",
         "position": null
       },
       "hasReferencesDir": true,

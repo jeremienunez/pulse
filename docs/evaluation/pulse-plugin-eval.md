@@ -58,9 +58,10 @@ The benchmark config selects which scenario IDs to run. The scenario library rem
 
 `analyze` and `run` both check:
 
-- `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.agents/plugins/marketplace.json`, and `.mcp.json` parse cleanly
+- `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/marketplace.json`, and `.mcp.json` parse cleanly
 - plugin and marketplace versions stay aligned
 - every `skills/*/SKILL.md` contract exists
+- every scenario has a unique ID and a shipped `skills/*/SKILL.md` path, and every pilot ID exists
 - skill-catalog generation still matches the repo state
 - packaged memory-oriented skills keep their boundary markers intact
 
@@ -108,6 +109,8 @@ This writes:
 
 - `pulse-eval-workspace/iteration-8/benchmark-packet.md`
 - `pulse-eval-workspace/iteration-8/benchmark-evidence.json`
+
+Numeric iterations are auto-numbered. Explicit descriptive names such as `baseline`, `intervention`, or `retest` are also valid. Every child run directory is generated and ignored by git, while the workspace-root `README.md` and `evals.json` remain tracked inputs.
 
 `benchmark-packet.md` is the scenario packet to use in chat. `benchmark-evidence.json` is the template you fill with:
 
@@ -160,7 +163,7 @@ Finalize step:
 - `pulse-eval-workspace/iteration-*/benchmark.md`
 - `pulse-eval-workspace/pulse-eval-review.html`
 
-Treat all of these as generated artifacts, not hand-maintained source files.
+Treat all child run directories and review HTML as generated artifacts, not hand-maintained source files. The workspace-root `README.md` and `evals.json` remain tracked source files.
 
 ## Fix-first triage order
 

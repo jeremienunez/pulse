@@ -21,8 +21,8 @@ references/**
 !references/lineage/
 !references/lineage/**
 
-# Eval workspace (generated artifacts)
-pulse-eval-workspace/iteration-*/
+# Eval workspace (tracked root inputs, generated child runs)
+pulse-eval-workspace/*/
 pulse-eval-workspace/*.html
 pulse-eval-workspace/benchmark*.json
 .gitnexus

@@ -104,13 +104,14 @@
       "id": 8,
       "skill": "validating",
       "skill_path": "skills/validating",
-      "prompt": "Planning is done, `phase-plan.md` is APPROVED for Phase 1, and the bead set contains a mix of valid and malformed beads. Run pulse:validating to determine whether the phase is execution-ready.",
-      "expected_output": "Agent performs Phase 0 orientation from `phase-plan.md` and `.pulse/STATE.md`, scans the bead files for the required schema fields, identifies malformed beads, fails fast before any execution-ready verdict when schema violations exist, and does not start implementation.",
+      "prompt": "Planning is done, the selected shape artifact is APPROVED, the current-work artifact exists, and the bead set contains a mix of valid and malformed behavior contracts. Run pulse:validating to determine whether the current work is execution-ready.",
+      "expected_output": "Agent orients from the selected shape, current-work artifact, and `.pulse/STATE.md`; scans beads for the canonical schema and mode-specific behavior evidence; identifies malformed beads; fails fast before any execution-ready verdict; and does not start implementation.",
       "files": [],
       "expectations": [
         "Agent performs an actual bead schema scan and identifies missing required fields in malformed beads",
         "Agent fails fast on schema violations instead of proceeding to execution-ready",
-        "Agent reads approval status from phase-plan.md as part of Phase 0 orientation",
+        "Agent reads approval status from the selected work-shape, phase-plan, or epic-map artifact and verifies the current-work slice",
+        "Agent validates behavior_mode and its behavior_steps or investigation_steps evidence",
         "Agent does NOT start implementing beads itself"
       ]
     },
@@ -119,12 +120,13 @@
       "skill": "swarming",
       "skill_path": "skills/swarming",
       "prompt": "Validating passed and execution is approved. Run pulse:swarming to coordinate the worker agents for this phase.",
-      "expected_output": "Agent confirms swarm readiness, initializes coordination runtime, spawns worker subagents running pulse:executing, enters a poll-act monitor loop, and never directly implements beads itself.",
+      "expected_output": "Agent confirms swarm readiness, uses the active runtime's native subagent primitives, spawns bounded workers running pulse:executing, monitors the bead graph and active coordination surface, enforces shared file reservations, and never directly implements beads itself.",
       "files": [],
       "expectations": [
-        "Agent initializes or describes initializing the coordination runtime (project/agent registration)",
+        "Agent uses the active runtime's native subagent primitives without inventing a second coordination runtime",
         "Agent spawns worker subagents running pulse:executing (not implementing beads directly)",
-        "Agent enters a monitoring loop checking worker inbox and topic",
+        "Agent monitors worker state, the bead graph, and the active coordination surface",
+        "Agent checks or enforces shared file reservations before overlapping edits",
         "Agent updates or describes updating .pulse/STATE.md with worker tracking"
       ]
     },
@@ -133,12 +135,14 @@
       "skill": "executing",
       "skill_path": "skills/executing",
       "prompt": "I'm a worker agent. Run pulse:executing in single-worker mode to implement the next available bead.",
-      "expected_output": "Agent determines it's in single-worker mode, reads bead graph via `bv --robot-priority`, claims the top bead, reads it fully including locked decisions, implements it respecting TDD, runs verification commands, commits per-bead, and loops.",
+      "expected_output": "Agent determines it is in single-worker mode, reads the bead graph via `bv --robot-priority`, claims the top bead, reads the full behavior contract and locked decisions, checks reservations, captures the declared baseline, implements the smallest credible intervention, runs retest/regression verification, records evidence, commits per bead, and loops.",
       "files": [],
       "expectations": [
         "Agent determines execution mode (single-worker vs swarm worker)",
         "Agent uses bv --robot-priority (or describes using it) to claim the next bead",
         "Agent reads the full bead including learning_refs before implementing",
+        "Agent follows behavior_mode with baseline, retest, and regression evidence without requiring a specific development ceremony",
+        "Agent checks file reservations before editing",
         "Agent commits after each bead and writes verification evidence"
       ]
     },
@@ -199,31 +203,18 @@
       ]
     },
     {
-      "id": 15,
-      "skill": "simplify-code",
-      "skill_path": "skills/simplify-code",
-      "prompt": "Review and simplify my recent code changes. Run pulse:simplify-code in review-only mode.",
-      "expected_output": "Agent determines scope (git diff or specified files), spawns 4 parallel review sub-agents (reuse, quality, efficiency, clarity), aggregates structured findings with file/line/category/fix, and reports a summary without making any changes.",
-      "files": [],
-      "expectations": [
-        "Agent determines the review scope from git diff or explicit files",
-        "Agent launches multiple specialist review sub-agents or lenses (at least 2 of: reuse, quality, efficiency, clarity)",
-        "Agent aggregates findings with file, line, category, and suggested fix",
-        "Agent does NOT modify any files in review-only mode"
-      ]
-    },
-    {
       "id": 16,
       "skill": "writing-pulse-skills",
       "skill_path": "skills/writing-pulse-skills",
-      "prompt": "I want to create a new Pulse skill called 'pulse:dependency-audit' that automatically audits npm dependencies for security issues. Use pulse:writing-pulse-skills to develop it with TDD.",
-      "expected_output": "Agent runs RED phase (define purpose, craft pressure scenarios, run without skill to capture rationalizations), then GREEN phase (write minimal SKILL.md addressing those rationalizations), then validates. Documents in CREATION-LOG.md.",
+      "prompt": "I want to create a new Pulse skill called 'pulse:dependency-audit' that automatically audits npm dependencies for security issues. Use pulse:writing-pulse-skills and evaluate whether local skill guidance improves behavior.",
+      "expected_output": "Agent freezes pressure scenarios and scoring, records the exact model/profile, runs BASELINE without the candidate skill, applies an INTERVENTION only for guidance-attributable gaps, then runs RETEST on the same cases and records results. A passing baseline causes no intervention. The process is documented in CREATION-LOG.md.",
       "files": [],
       "expectations": [
-        "Agent runs a RED phase: defines the skill purpose and creates pressure scenarios to expose failure modes",
-        "Agent runs a GREEN phase: writes a SKILL.md that addresses the documented rationalizations",
-        "Agent verifies the skill by rerunning pressure scenarios after writing",
-        "Agent documents the TDD process in a CREATION-LOG.md"
+        "Agent freezes pressure scenarios and scoring before observing outcomes",
+        "Agent records the exact model and reasoning profile for BASELINE and RETEST",
+        "Agent applies an INTERVENTION only when BASELINE exposes a guidance-attributable gap",
+        "Agent reruns the same cases in RETEST and records improvements and regressions",
+        "Agent makes no intervention when BASELINE already passes and documents the evaluation in CREATION-LOG.md"
       ]
     },
     {

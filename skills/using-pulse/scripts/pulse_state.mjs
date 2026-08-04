@@ -1648,6 +1648,30 @@ function listHistoryFeatureFiles(repoRoot, feature) {
   return files.sort((left, right) => left.localeCompare(right));
 }
 
+function readExplicitlyApprovedArtifacts(repoRoot, lifecycleSummaryPath, availableArtifacts) {
+  if (!lifecycleSummaryPath) return [];
+
+  const raw = fileTextIfExists(path.join(repoRoot, lifecycleSummaryPath));
+  if (!raw) return [];
+
+  const approved = [];
+  let inApprovedSection = false;
+  for (const line of raw.split(/\r?\n/u)) {
+    const heading = line.match(/^##\s+(.+?)\s*$/u);
+    if (heading) {
+      inApprovedSection = heading[1].trim().toLowerCase() === "approved artifacts";
+      continue;
+    }
+    if (!inApprovedSection) continue;
+
+    for (const artifact of availableArtifacts) {
+      if (line.includes(artifact) && !approved.includes(artifact)) approved.push(artifact);
+    }
+  }
+
+  return approved;
+}
+
 function summarizeHistoryLifecycle(repoRoot, feature) {
   const summary = {
     feature,
@@ -1686,7 +1710,12 @@ function summarizeHistoryLifecycle(repoRoot, feature) {
     `history/${feature}/work-shape.md`,
     `history/${feature}/current-story-pack.md`,
   ].filter((item) => historyFiles.includes(item));
-  const approvedArtifacts = [...requiredArtifacts, ...shapeArtifacts];
+  const availableArtifacts = [...requiredArtifacts, ...shapeArtifacts];
+  const approvedArtifacts = readExplicitlyApprovedArtifacts(
+    repoRoot,
+    summary.lifecycle_summary,
+    availableArtifacts,
+  );
   summary.approved_artifacts = approvedArtifacts;
 
   const lifecycleSignals = historyFiles.filter((item) => (
@@ -1704,14 +1733,15 @@ function summarizeHistoryLifecycle(repoRoot, feature) {
   summary.self_sufficient = Boolean(
     summary.lifecycle_summary
     && requiredArtifacts.length >= 2
-    && shapeArtifacts.length > 0
+    && requiredArtifacts.every((item) => approvedArtifacts.includes(item))
+    && shapeArtifacts.some((item) => approvedArtifacts.includes(item))
     && lifecycleSignals.length > 0
     && summary.verification.length > 0,
   );
 
   summary.next_reads = [...new Set([
     summary.lifecycle_summary,
-    ...approvedArtifacts,
+    ...availableArtifacts,
     ...lifecycleSignals.slice(0, 4),
     ...summary.verification.slice(0, 4),
   ].filter(Boolean))];

@@ -4,7 +4,7 @@
   "version": 2,
   "mode": "chat",
   "scenarioSource": "pulse-eval-workspace/evals.json",
-  "pilotScenarioIds": [21, 2, 7, 8, 15],
+  "pilotScenarioIds": [21, 2, 7, 8, 16],
   "shared": {
     "verifiers": [
       "node .pulse/scripts/pulse_status.mjs --json",

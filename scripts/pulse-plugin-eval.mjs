@@ -745,6 +745,8 @@ function runStaticChecks(results) {
   const codexHooksPath = path.join(repoRoot, "hooks", "codex-hooks.json");
   const claudeSessionStartHookPath = path.join(repoRoot, "hooks", "session-start.mjs");
   const marketplacePath = path.join(repoRoot, ".agents/plugins/marketplace.json");
+  const benchmarkConfigPath = path.join(repoRoot, ".plugin-eval/benchmark.json");
+  const scenarioLibraryPath = path.join(repoRoot, "pulse-eval-workspace/evals.json");
   const mcpPath = path.join(repoRoot, ".mcp.json");
   const skillsRoot = path.join(repoRoot, "skills");
 
@@ -934,6 +936,43 @@ function runStaticChecks(results) {
     missingSkillFiles.length === 0 ? "all skill dirs include SKILL.md" : missingSkillFiles.map(relativeToRepo).join(", "),
   );
   runMemorySkillBoundaryChecks(results, skillsRoot);
+
+  const scenarioIssues = [];
+  if (!exists(scenarioLibraryPath)) {
+    scenarioIssues.push(`${relativeToRepo(scenarioLibraryPath)} is missing`);
+  } else if (!exists(benchmarkConfigPath)) {
+    scenarioIssues.push(`${relativeToRepo(benchmarkConfigPath)} is missing`);
+  } else {
+    const scenarioLibrary = readJson(scenarioLibraryPath);
+    const benchmarkConfig = readJson(benchmarkConfigPath);
+    const scenarios = Array.isArray(scenarioLibrary?.evals) ? scenarioLibrary.evals : [];
+    const ids = new Set();
+
+    for (const scenario of scenarios) {
+      if (!Number.isInteger(scenario?.id) || ids.has(scenario.id)) {
+        scenarioIssues.push(`invalid or duplicate scenario id: ${scenario?.id ?? "n/a"}`);
+      } else {
+        ids.add(scenario.id);
+      }
+
+      const skillPath = typeof scenario?.skill_path === "string" ? scenario.skill_path : "";
+      if (!skillPath || !exists(path.join(repoRoot, skillPath, "SKILL.md"))) {
+        scenarioIssues.push(`scenario ${scenario?.id ?? "n/a"} has missing skill path: ${skillPath || "n/a"}`);
+      }
+    }
+
+    for (const pilotId of benchmarkConfig?.pilotScenarioIds || []) {
+      if (!ids.has(pilotId)) scenarioIssues.push(`pilot scenario id is missing: ${pilotId}`);
+    }
+  }
+
+  addResult(
+    results,
+    "static",
+    "scenario-library-contract",
+    scenarioIssues.length === 0 ? "PASS" : "FAIL",
+    scenarioIssues.length === 0 ? "all scenario skill paths and pilot ids are valid" : scenarioIssues.join("; "),
+  );
 
   const catalogCheck = runCommand(process.execPath, [path.join(repoRoot, "scripts/build-skill-catalog.mjs"), "--check"]);
   addResult(

@@ -1142,6 +1142,55 @@ test("pulse status scout surfaces current-feature, runtime snapshot, canonical h
   }
 });
 
+test("pulse status distinguishes present history artifacts from explicit lifecycle approval", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
+
+  try {
+    applyRepo(root, false);
+    const feature = "pending-shape";
+    const featureDir = path.join(root, "history", feature);
+    fs.mkdirSync(featureDir, { recursive: true });
+    fs.writeFileSync(path.join(featureDir, "CONTEXT.md"), "# Context\n", "utf8");
+    fs.writeFileSync(path.join(featureDir, "approach.md"), "# Approach\n", "utf8");
+    fs.writeFileSync(path.join(featureDir, "work-shape.md"), "# Work Shape\n\nApproval status: PENDING\n", "utf8");
+    fs.writeFileSync(
+      path.join(featureDir, "lifecycle-summary.md"),
+      [
+        "# Lifecycle Summary",
+        "",
+        "## Approved artifacts",
+        `- Context: history/${feature}/CONTEXT.md`,
+        `- Approach: history/${feature}/approach.md`,
+        "",
+        "## Gate outcomes",
+        "- GATE 2: pending",
+      ].join("\n"),
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(root, ".pulse", "state.json"),
+      `${JSON.stringify({ active_feature: feature, phase: "planning" }, null, 2)}\n`,
+      "utf8",
+    );
+
+    const payload = JSON.parse(
+      execFileSync("node", [path.join(root, ".pulse", "scripts", "pulse_status.mjs"), "--json"], {
+        cwd: root,
+        encoding: "utf8",
+      }),
+    );
+
+    assert.deepEqual(payload.history_lifecycle.approved_artifacts, [
+      `history/${feature}/CONTEXT.md`,
+      `history/${feature}/approach.md`,
+    ]);
+    assert.ok(payload.history_lifecycle.next_reads.includes(`history/${feature}/work-shape.md`));
+    assert.equal(payload.history_lifecycle.self_sufficient, false);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("checkpoint commands save, list, show, diff, and resume-brief through installed pulse_status", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
 
