@@ -1,0 +1,4 @@
+interface:
+  display_name: "Worktree Isolation"
+  short_description: "Protect dirty workspaces with safe isolation"
+  default_prompt: "Use $worktree-isolation to establish a safe isolated workspace before this multi-file implementation."
