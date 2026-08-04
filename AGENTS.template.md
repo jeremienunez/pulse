@@ -11,8 +11,8 @@ Pulse is not a license to skip `CONTEXT.md`, validating, review gates, or human 
 ## One-Line Glossary
 
 - `CONTEXT.md` — locked decisions downstream work must honor.
-- `phase-plan.md` — the whole-feature slice plan.
-- phase contract — the current phase's proof and exit conditions.
+- `work-shape.md` / `phase-plan.md` / `epic-map.md` — approved planning shape artifact.
+- current-work artifact — execution-ready slice (`work-shape.md` section, `current-story-pack.md`, or `phase-<n>-contract.md` + `phase-<n>-story-map.md`).
 - story map — the reason beads are sequenced the way they are.
 - bead — one worker-sized unit of work with exact files and checks.
 - handoff — the pause/resume contract for the next actor.
@@ -21,7 +21,7 @@ Pulse is not a license to skip `CONTEXT.md`, validating, review gates, or human 
 ## Startup
 
 1. Read this file at session start and again after any context compaction.
-2. If `.pulse/onboarding.json` is missing or outdated, stop and run `pulse:using-pulse` before continuing.
+2. If preflight readiness is missing/stale/blocked in `.pulse/tooling-status.json`, stop and run `pulse:using-pulse` before continuing.
 3. If `.pulse/scripts/pulse_status.mjs` exists, use `node .pulse/scripts/pulse_status.mjs --json` for a fast read-only status snapshot.
 4. If `.pulse/handoffs/manifest.json` exists, do not auto-resume. Surface the saved state and wait for user confirmation.
 5. If `.pulse/memory/critical-patterns.md` exists, read it before planning or execution work.
@@ -61,7 +61,7 @@ pulse:preflight
 .pulse/
   onboarding.json     ← onboarding state for the Pulse plugin
   state.json          ← machine-readable routing/status mirror
-  STATE.md            ← current phase and focus
+  STATE.md            ← approved current-work focus
   handoffs/
     manifest.json     ← pause/resume artifact
   memory/             ← shared reusable memory root
@@ -83,7 +83,7 @@ history/<feature>/
 
 ### Startup scout
 
-1. Run `pulse:using-pulse` if onboarding is missing or stale.
+1. Run `pulse:using-pulse` if preflight readiness is missing, stale, or blocked.
 2. Run `node .pulse/scripts/pulse_status.mjs --json` when available.
 3. Use the scout to choose the next artifact instead of opening everything at once.
 
@@ -95,8 +95,8 @@ history/<feature>/
 
 ### Swarm vs single-worker
 
-- Use swarm when the current phase has enough parallelizable beads to justify coordination overhead.
-- Use single-worker when Pulse discipline is still needed but parallelism is not.
+- Use swarm when approved current work has enough parallelizable beads to justify coordination overhead.
+- Use single-worker when approved current work still needs Pulse discipline but parallelism is not.
 - Gate 3 still blocks both modes until validating approves execution.
 
 ## Codex Guardrails

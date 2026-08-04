@@ -291,6 +291,41 @@ test("applyRepo appends managed block to existing agents instructions", () => {
   }
 });
 
+test("applyRepo upgrades a stale managed block without altering external instructions and remains idempotent", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
+
+  try {
+    const externalInstructions = "# Project instructions\n\nKeep this repository-specific rule.\n";
+    const staleManagedBlock = [
+      "<!-- PULSE:START -->",
+      "# Stale Pulse Workflow",
+      "Run the old onboarding-only startup check.",
+      "<!-- PULSE:END -->",
+    ].join("\n");
+    fs.writeFileSync(
+      path.join(root, "AGENTS.md"),
+      `${externalInstructions}\n${staleManagedBlock}\n`,
+      "utf8",
+    );
+
+    applyRepo(root, false);
+    const firstPass = fs.readFileSync(path.join(root, "AGENTS.md"), "utf8");
+    applyRepo(root, false);
+    const secondPass = fs.readFileSync(path.join(root, "AGENTS.md"), "utf8");
+
+    assert.equal(secondPass, firstPass);
+    assert.match(firstPass, /# Project instructions/);
+    assert.match(firstPass, /Keep this repository-specific rule\./);
+    assert.doesNotMatch(firstPass, /Stale Pulse Workflow|old onboarding-only startup check/);
+    assert.match(firstPass, /`work-shape\.md` \/ `phase-plan\.md` \/ `epic-map\.md`/);
+    assert.match(firstPass, /preflight readiness is missing\/stale\/blocked/);
+    assert.equal((firstPass.match(/<!-- PULSE:START -->/g) || []).length, 1);
+    assert.equal((firstPass.match(/<!-- PULSE:END -->/g) || []).length, 1);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("applyRepo preserves an existing compact_prompt without explicit replace", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
 

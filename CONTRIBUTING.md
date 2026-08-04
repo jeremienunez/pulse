@@ -187,11 +187,17 @@ Planning and validating assume a canonical bead schema. These fields must exist:
 - `files`
 - `verify`
 - `verification_evidence`
-- `testing_mode`
+- `behavior_mode`
+- `behavior_scenarios`
 - `decision_refs`
 - `learning_refs`
 
-If `testing_mode: tdd-required`, the bead must also include `tdd_steps` with distinct red and green commands.
+Use `behavior_mode: change` for a behavior change or reproducible defect, `preserve` for behavior-preserving work, and `investigate` when reproduction is not yet stable.
+
+- `change` and `preserve` beads include `behavior_steps` with honest `baseline`, `retest`, and relevant `regression` evidence.
+- `investigate` beads include `investigation_steps` for reproduction and root-cause tracing before any production intervention is authorized.
+- Use the lowest sufficient verification layer and preserve the repository's existing test stack. Gherkin, Cucumber, browser automation, and test-first ceremony are not required.
+- If implementation predates a scenario, compare it against the pre-change baseline, a controlled reverse application, or equivalent evidence; do not discard valid code for ordering ceremony.
 
 ### Reviewing and Debugging
 
@@ -238,10 +244,11 @@ Minimum check:
 
 For Pulse ecosystem skills, use [`pulse:writing-pulse-skills`](skills/writing-pulse-skills/SKILL.md). That skill is the repo-standard process for pressure testing:
 
-- write pressure scenarios first
-- observe baseline rationalization without the skill
-- change the skill to close those gaps
-- rerun the scenarios to confirm behavior improved
+- freeze pressure scenarios and scoring before observing outcomes
+- run `BASELINE` without the candidate skill and record exact choices and rationalizations
+- apply an `INTERVENTION` only when the baseline exposes a guidance-attributable gap
+- run `RETEST` on the same frozen cases and record regressions as well as improvements
+- when the baseline already passes, record that result and make no intervention
 
 When editing chain skills, also test the surrounding contract:
 

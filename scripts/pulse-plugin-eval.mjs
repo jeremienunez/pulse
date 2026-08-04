@@ -776,6 +776,7 @@ function runStaticChecks(results) {
   const manifestVersion = manifest?.plugins?.[0]?.version ?? manifest?.version;
   const pluginVersion = claudePlugin?.version;
   const marketplaceVersion = marketplace?.plugins?.find((entry) => entry.name === "pulse")?.version;
+  const claudeMarketplaceVersion = claudeMarketplace?.plugins?.find((entry) => entry.name === "pulse")?.version;
   const claudeMarketplaceSource = claudeMarketplace?.plugins?.find((entry) => entry.name === "pulse")?.source;
   const marketplaceSourceRaw = marketplace?.plugins?.find((entry) => entry.name === "pulse")?.source;
   const marketplaceSource =
@@ -789,8 +790,16 @@ function runStaticChecks(results) {
     results,
     "static",
     "version-sync",
-    manifestVersion && pluginVersion && marketplaceVersion && manifestVersion === pluginVersion && pluginVersion === marketplaceVersion ? "PASS" : "WARN",
-    `manifest=${manifestVersion ?? "n/a"}, plugin=${pluginVersion ?? "n/a"}, marketplace=${marketplaceVersion ?? "n/a"}`,
+    manifestVersion &&
+      pluginVersion &&
+      marketplaceVersion &&
+      claudeMarketplaceVersion &&
+      manifestVersion === pluginVersion &&
+      pluginVersion === marketplaceVersion &&
+      marketplaceVersion === claudeMarketplaceVersion
+      ? "PASS"
+      : "WARN",
+    `codex_plugin=${manifestVersion ?? "n/a"}, claude_plugin=${pluginVersion ?? "n/a"}, codex_marketplace=${marketplaceVersion ?? "n/a"}, claude_marketplace=${claudeMarketplaceVersion ?? "n/a"}`,
   );
   addResult(
     results,

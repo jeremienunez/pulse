@@ -8,11 +8,11 @@
 
 <p>
   <a href=".codex-plugin/plugin.json">
-    <img alt="Version" src="https://img.shields.io/badge/version-3.5.3-0F766E?style=flat-square" />
+    <img alt="Version" src="https://img.shields.io/badge/version-3.6.0-0F766E?style=flat-square" />
   </a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
   <a href="skills">
-    <img alt="Skills" src="https://img.shields.io/badge/skills-20-8B5CF6?style=flat-square" />
+    <img alt="Skills" src="https://img.shields.io/badge/skills-22-8B5CF6?style=flat-square" />
   </a>
 </p>
 
@@ -65,13 +65,16 @@ Pulse turns a vague request into a reviewed delivery trail:
 
 ## Lineage
 
-Pulse is downstream of everal strong agentic-development systems and distills the parts that fit this repo owner's actual workflow:
+Pulse is downstream of several strong agentic-development systems and distills the parts that fit this repo owner's actual workflow:
 
 - **[Khuym](https://github.com/hoangnb24/skills/tree/main)**, which provides most of the validate-first chain and Flywheel-style bead workflow
-- **[Superpowers](https://github.com/obra/superpowers)**, which contributes the strongest behavioral discipline around brainstorming, verification, debugging, and skill design
+- **[Superpowers](https://github.com/obra/superpowers)** 5.1.3 contributes selected, adapted practices for worktree isolation, debugging references, and controlled skill evaluation—not a wholesale copy of its lifecycle.
+- **SPDD Codex Skills** 1.0.0 contributes selected fitness/change routing, REASONS, `OP-n`, safeguard, and traceability concepts through Pulse's single `governed-feature` overlay—not a competing lifecycle.
 - **[Flywheel](https://agent-flywheel.com/complete-guide)** contributes the operational backbone: beads, `bv`, swarm execution, and the habit of turning plans into live work graphs instead of loose TODO lists.
 - **[Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin)** contributes parallel review, severity-based findings, and the compound-learning loop that feeds future work.
 - **[GSD](https://github.com/gsd-build/get-shit-done)** contributes the philosophy: discuss first, research second, plan third, and do not execute until the plan has been verified.
+
+See the [lineage record](references/lineage/README.md) for the exact adaptation boundaries and source licenses.
 
 ## Installation
 

@@ -5,14 +5,22 @@
 set -euo pipefail
 
 BUMP="${1:-patch}"
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="${PULSE_VERSION_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 FILES=(
   "$ROOT/.claude-plugin/plugin.json"
   "$ROOT/.codex-plugin/plugin.json"
   "$ROOT/.agents/plugins/marketplace.json"
+  "$ROOT/.claude-plugin/marketplace.json"
 )
 README_FILE="$ROOT/README.md"
+
+for FILE in "${FILES[@]}" "$README_FILE"; do
+  if [[ ! -f "$FILE" ]]; then
+    echo "Error: required version surface not found: $FILE" >&2
+    exit 1
+  fi
+done
 
 # Read current version from first file
 CURRENT=$(grep '"version"' "${FILES[0]}" | head -1 | sed 's/.*"\([0-9]*\.[0-9]*\.[0-9]*\)".*/\1/')
@@ -37,20 +45,26 @@ esac
 NEW="$MAJOR.$MINOR.$PATCH"
 
 for FILE in "${FILES[@]}"; do
-  if [[ ! -f "$FILE" ]]; then
-    echo "Warning: $FILE not found, skipping" >&2
-    continue
+  TMP_FILE="${FILE}.pulse-version.$$"
+  if [[ -e "$TMP_FILE" ]]; then
+    echo "Error: temporary path already exists: $TMP_FILE" >&2
+    exit 1
   fi
-  sed -i '' "s/\"version\": \"$CURRENT\"/\"version\": \"$NEW\"/" "$FILE"
+  cp -p "$FILE" "$TMP_FILE"
+  sed -E "s/\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"/\"version\": \"$NEW\"/g" "$FILE" > "$TMP_FILE"
+  mv "$TMP_FILE" "$FILE"
   echo "  updated: $FILE"
 done
 
-if [[ -f "$README_FILE" ]]; then
-  sed -i '' "s/version-$CURRENT-/version-$NEW-/" "$README_FILE"
-  echo "  updated: $README_FILE"
-else
-  echo "Warning: $README_FILE not found, skipping" >&2
+TMP_FILE="${README_FILE}.pulse-version.$$"
+if [[ -e "$TMP_FILE" ]]; then
+  echo "Error: temporary path already exists: $TMP_FILE" >&2
+  exit 1
 fi
+cp -p "$README_FILE" "$TMP_FILE"
+sed -E "s/version-[0-9]+\.[0-9]+\.[0-9]+-/version-$NEW-/g" "$README_FILE" > "$TMP_FILE"
+mv "$TMP_FILE" "$README_FILE"
+echo "  updated: $README_FILE"
 
 echo ""
 echo "$CURRENT → $NEW"

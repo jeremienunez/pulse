@@ -43,13 +43,15 @@ Pulse is not:
 | `pulse:executing` | Per-agent worker loop (report online → implement → close) | Loaded by workers spawned by swarming |
 | `pulse:reviewing` | Specialist reviewers + 3-level verification + UAT + finishing | After swarming completes all beads |
 | `pulse:compounding` | Capture learnings → .pulse/memory/learnings/ | After reviewing, always |
-| `pulse:writing-pulse-skills` | TDD-for-skills meta-skill | Creating/improving pulse skills |
+| `pulse:writing-pulse-skills` | Controlled BASELINE → INTERVENTION → RETEST skill evaluation | Creating/improving Pulse skills |
 
 ### Support Skills
 
 | Skill | Purpose |
 |-------|---------|
 | `pulse:systematic-debug-fix` | Root-cause-first bug fixing when workers hit blockers |
+| `pulse:worktree-isolation` | Safe isolated workspaces that preserve dirty user state and establish a clean baseline |
+| `pulse:governed-feature` | Optional SPDD-derived governance overlay for behavior-rich or cross-cutting changes |
 | `pulse:gitnexus` | Codebase intelligence via GitNexus graph tools or local fallback |
 | `pulse:architecture-rescue` | Repo-wide or subsystem-wide architecture rescue report on shallow modules, leaky seams, ownership drift, and deepening opportunities |
 | `pulse:bootstrap-project-context` | Repo bootstrap and project-doc discovery/mapping before implementation in an unfamiliar repo |

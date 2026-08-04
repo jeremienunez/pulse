@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repo Is
 
-Pulse is a packaged skill plugin for Claude Code and Codex. Its workflow contract lives primarily in `SKILL.md` files, while repo-local Node scripts handle onboarding, state sync, dependency checks, and other control-plane behavior. The repo ships 20 skills that chain together to move from vague requirements to shipped, reviewed, compounded code.
+Pulse is a packaged skill plugin for Claude Code and Codex. Its workflow contract lives primarily in `SKILL.md` files, while repo-local Node scripts handle onboarding, state sync, dependency checks, and other control-plane behavior. The repo ships 22 skills that chain together to move from vague requirements to shipped, reviewed, compounded code.
 
 ## Repository Layout
 
@@ -73,7 +73,7 @@ Each skill lives at `skills/<name>/SKILL.md`. When adding or modifying a skill:
 
 1. The SKILL.md is the entire skill definition — there's no separate code to compile.
 2. Skills are auto-discovered — no per-skill registration needed in manifests.
-3. Use `pulse:writing-pulse-skills` for TDD-style skill development.
+3. Use `pulse:writing-pulse-skills` for controlled `BASELINE → INTERVENTION → RETEST` skill evaluation.
 
 ## Testing
 
