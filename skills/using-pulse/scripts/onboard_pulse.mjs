@@ -11,6 +11,7 @@ import {
   syncPulseRuntimeArtifacts,
 } from "./pulse_state.mjs";
 import {
+  buildPulseDependencyInventory,
   readDependencyHealthSafe,
   buildDependencyWarningSummary,
 } from "./pulse_dependencies.mjs";
@@ -21,6 +22,7 @@ const REPO_ROOT = path.resolve(USING_PULSE_DIR, "..", "..");
 const PLUGIN_MANIFEST_PATH = path.join(REPO_ROOT, ".codex-plugin", "plugin.json");
 const AGENTS_TEMPLATE_PATH = path.join(REPO_ROOT, "AGENTS.template.md");
 const ONBOARDING_SCHEMA_VERSION = "1.0";
+const DEPENDENCY_INVENTORY_RELATIVE_PATH = path.join(".pulse", "dependency-inventory.json");
 const COMPACT_PROMPT_MARKER_START = "# PULSE: compact_prompt start";
 const COMPACT_PROMPT_MARKER_END = "# PULSE: compact_prompt end";
 const MIN_NODE_MAJOR = 18;
@@ -53,6 +55,29 @@ function utcNow() {
 
 function loadPluginVersion() {
   return JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, "utf8")).version;
+}
+
+function buildPackagedDependencyInventory(pluginVersion) {
+  return buildPulseDependencyInventory({
+    repoRoot: REPO_ROOT,
+    skillsRoot: path.join(REPO_ROOT, "skills"),
+    pluginMcpPath: path.join(REPO_ROOT, ".mcp.json"),
+    pluginVersion,
+  });
+}
+
+function dependencyInventoryNeedsUpdate(repoRoot, pluginVersion) {
+  const inventoryPath = path.join(repoRoot, DEPENDENCY_INVENTORY_RELATIVE_PATH);
+  if (!fs.existsSync(inventoryPath)) {
+    return true;
+  }
+
+  try {
+    const current = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
+    return JSON.stringify(current) !== JSON.stringify(buildPackagedDependencyInventory(pluginVersion));
+  } catch {
+    return true;
+  }
 }
 
 export function resolveRepoRoot(explicitRoot) {
@@ -585,6 +610,10 @@ export function checkRepo(repoRoot) {
     actions.push("sync_pulse_support_scripts");
   }
 
+  if (dependencyInventoryNeedsUpdate(repoRoot, pluginVersion)) {
+    actions.push("sync_pulse_dependency_inventory");
+  }
+
   const state = readJsonIfExists(statePath);
   const normalizedState = normalizePulseState(state);
   const stateNeedsWrite =
@@ -635,6 +664,7 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
   const configPath = path.join(repoRoot, ".codex", "config.toml");
   const hooksPath = path.join(repoRoot, ".codex", "hooks.json");
   const onboardingPath = path.join(repoRoot, ".pulse", "onboarding.json");
+  const dependencyInventoryPath = path.join(repoRoot, DEPENDENCY_INVENTORY_RELATIVE_PATH);
   const statePath = path.join(repoRoot, ".pulse", "state.json");
   const checkpointsRootPath = path.join(repoRoot, ".pulse", "checkpoints");
   const memoryRootPath = path.join(repoRoot, ".pulse", "memory");
@@ -677,6 +707,11 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
   const legacyHookScripts = cleanupLegacyHookScripts(repoRoot);
   const legacySupportScripts = cleanupLegacySupportScripts(repoRoot);
   const supportScripts = writeSupportScripts(repoRoot);
+  fs.writeFileSync(
+    dependencyInventoryPath,
+    `${JSON.stringify(buildPackagedDependencyInventory(pluginVersion), null, 2)}\n`,
+    "utf8",
+  );
 
   const onboardingNotes = [];
   let status = "complete";
@@ -700,6 +735,7 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
       legacy_hook_scripts_removed: legacyHookScripts,
       legacy_support_scripts_removed: legacySupportScripts,
       support_scripts: supportScripts,
+      dependency_inventory: path.relative(repoRoot, dependencyInventoryPath),
       state_file: path.relative(repoRoot, statePath),
       checkpoints_root: path.relative(repoRoot, checkpointsRootPath),
       memory_root: path.relative(repoRoot, memoryRootPath),

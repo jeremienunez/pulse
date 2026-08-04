@@ -37,6 +37,7 @@ test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
     assert.ok(fs.existsSync(path.join(root, ".pulse", "memory", "corrections")));
     assert.ok(fs.existsSync(path.join(root, ".pulse", "memory", "ratchet")));
     assert.ok(fs.existsSync(path.join(root, ".pulse", "reservations.json")));
+    assert.ok(fs.existsSync(path.join(root, ".pulse", "dependency-inventory.json")));
     assert.ok(fs.existsSync(path.join(root, ".pulse", "scripts", "pulse_session_context.mjs")));
     assert.ok(fs.existsSync(path.join(root, ".pulse", "scripts", "pulse_state.mjs")));
     assert.ok(fs.existsSync(path.join(root, ".pulse", "scripts", "pulse_status.mjs")));
@@ -47,6 +48,34 @@ test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
     assert.equal(fs.existsSync(path.join(root, ".codex", "pulse_status.mjs")), false);
     assert.equal(fs.existsSync(path.join(root, ".codex", "pulse_dependencies.mjs")), false);
     assert.equal(fs.existsSync(path.join(root, ".codex", "pulse_reservations.mjs")), false);
+
+    const packagedReport = buildPulseDependencyReport({ repoRoot: LOCAL_REPO_ROOT });
+    const installedStatus = JSON.parse(
+      execFileSync(
+        "node",
+        [path.join(root, ".pulse", "scripts", "pulse_status.mjs"), "--json"],
+        { cwd: root, encoding: "utf8" },
+      ),
+    );
+    assert.equal(fs.existsSync(path.join(root, "skills")), false);
+    assert.equal(
+      installedStatus.dependency_health.summary.skills_total,
+      packagedReport.summary.skills_total,
+    );
+    assert.equal(
+      installedStatus.dependency_health.summary.skills_covered,
+      packagedReport.summary.skills_covered,
+    );
+    assert.equal(installedStatus.dependency_health.summary.skills_uncovered, 0);
+    assert.ok(
+      installedStatus.dependency_health.mcp_sources
+        .find((source) => source.key === "plugin_mcp_manifest")
+        ?.server_names.includes("gitnexus"),
+    );
+
+    fs.rmSync(path.join(root, ".pulse", "dependency-inventory.json"));
+    assert.ok(checkRepo(root).actions.includes("sync_pulse_dependency_inventory"));
+    assert.equal(applyRepo(root, false).status, "up_to_date");
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

@@ -3,6 +3,8 @@ import os from "node:os";
 import path from "node:path";
 
 const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+const DEPENDENCY_INVENTORY_SCHEMA_VERSION = "1.0";
+const DEPENDENCY_INVENTORY_RELATIVE_PATH = path.join(".pulse", "dependency-inventory.json");
 
 function parseScalar(value) {
   const trimmed = value.trim();
@@ -219,11 +221,17 @@ function parseMcpServerNamesFromJson(filePath) {
   }
 }
 
-function collectMcpSources({ repoRoot, skillsRoot, globalCodexConfigPath }) {
+function collectMcpSources({
+  repoRoot,
+  skillsRoot,
+  globalCodexConfigPath,
+  pluginMcpServerNames,
+  pluginMcpSourcePath,
+}) {
   const sources = [];
   const repoCodexConfigPath = path.join(repoRoot, ".codex", "config.toml");
   const globalConfigPath = globalCodexConfigPath || path.join(os.homedir(), ".codex", "config.toml");
-  const pluginManifestPath = path.join(repoRoot, ".mcp.json");
+  const pluginManifestPath = pluginMcpSourcePath || path.join(repoRoot, ".mcp.json");
 
   sources.push({
     key: "repo_codex_config",
@@ -243,7 +251,9 @@ function collectMcpSources({ repoRoot, skillsRoot, globalCodexConfigPath }) {
     key: "plugin_mcp_manifest",
     type: "json",
     path: pluginManifestPath,
-    server_names: parseMcpServerNamesFromJson(pluginManifestPath),
+    server_names: Array.isArray(pluginMcpServerNames)
+      ? pluginMcpServerNames
+      : parseMcpServerNamesFromJson(pluginManifestPath),
   });
 
   if (!fs.existsSync(skillsRoot)) {
@@ -400,6 +410,49 @@ export function collectPulseSkillDependencies(options = {}) {
   return declarations.sort((left, right) => left.skill_name.localeCompare(right.skill_name));
 }
 
+export function buildPulseDependencyInventory(options = {}) {
+  const repoRoot = path.resolve(options.repoRoot || process.cwd());
+  const skillsRoot = path.resolve(options.skillsRoot || path.join(repoRoot, "skills"));
+  const pluginMcpPath = path.resolve(options.pluginMcpPath || path.join(repoRoot, ".mcp.json"));
+  const skills = collectPulseSkillDependencies({ repoRoot, skillsRoot }).map((declaration) => ({
+    skill_name: declaration.skill_name,
+    skill_file: declaration.skill_file,
+    dependencies: declaration.dependencies,
+    dependencies_declared: declaration.dependencies_declared,
+  }));
+
+  return {
+    schema_version: DEPENDENCY_INVENTORY_SCHEMA_VERSION,
+    plugin: "pulse",
+    plugin_version: typeof options.pluginVersion === "string" ? options.pluginVersion : "",
+    skills,
+    plugin_mcp_server_names: parseMcpServerNamesFromJson(pluginMcpPath).sort((left, right) =>
+      left.localeCompare(right)),
+  };
+}
+
+function readPulseDependencyInventory(repoRoot) {
+  const inventoryPath = path.join(repoRoot, DEPENDENCY_INVENTORY_RELATIVE_PATH);
+  if (!fs.existsSync(inventoryPath)) {
+    return null;
+  }
+
+  try {
+    const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
+    if (
+      inventory?.schema_version !== DEPENDENCY_INVENTORY_SCHEMA_VERSION
+      || inventory?.plugin !== "pulse"
+      || !Array.isArray(inventory?.skills)
+      || !Array.isArray(inventory?.plugin_mcp_server_names)
+    ) {
+      return null;
+    }
+    return { inventory, inventoryPath };
+  } catch {
+    return null;
+  }
+}
+
 function getCoverageStatus(declaration) {
   if (declaration.dependencies_declared && declaration.dependencies.length === 0) {
     return "dependency_free";
@@ -415,7 +468,11 @@ export function buildPulseDependencyReport(options = {}) {
   const skillsRoot = path.resolve(
     options.skillsRoot || path.join(repoRoot, "skills"),
   );
-  const declarations = collectPulseSkillDependencies({ repoRoot, skillsRoot });
+  const inventoryState = !options.skillsRoot && !fs.existsSync(skillsRoot)
+    ? readPulseDependencyInventory(repoRoot)
+    : null;
+  const declarations = inventoryState?.inventory.skills
+    || collectPulseSkillDependencies({ repoRoot, skillsRoot });
   const rawCommandProbe = options.commandProbe || defaultCommandProbe;
   const commandProbeCache = new Map();
   const commandProbe = (command, envPath) => {
@@ -430,6 +487,8 @@ export function buildPulseDependencyReport(options = {}) {
     repoRoot,
     skillsRoot,
     globalCodexConfigPath: options.globalCodexConfigPath,
+    pluginMcpServerNames: inventoryState?.inventory.plugin_mcp_server_names,
+    pluginMcpSourcePath: inventoryState?.inventoryPath,
   });
 
   const skills = declarations.map((declaration) => {
