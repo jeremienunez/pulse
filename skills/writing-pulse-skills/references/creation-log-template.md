@@ -1,212 +1,217 @@
 # Creation Log: [Skill Name]
 
-<!-- Copy this template to your skill directory as CREATION-LOG.md -->
-<!-- Complete every section — this is the evidence that TDD was followed -->
+<!-- Copy this template to the skill directory as CREATION-LOG.md when preparing deployment evidence. -->
+<!-- Freeze scenarios and verdict rules before recording model responses. -->
 
 ## Table of Contents
+
 1. [Source Material](#source-material)
 2. [Extraction Decisions](#extraction-decisions)
-3. [Structure Decisions](#structure-decisions)
-4. [Bulletproofing Elements](#bulletproofing-elements)
-5. [RED Phase: Baseline Testing](#red-phase-baseline-testing)
-6. [GREEN Phase: Initial Skill](#green-phase-initial-skill)
-7. [REFACTOR Phase: Iterations](#refactor-phase-iterations)
+3. [Evaluation Contract](#evaluation-contract)
+4. [BASELINE](#baseline)
+5. [INTERVENTION](#intervention)
+6. [RETEST](#retest)
+7. [Evidence-Backed Iterations](#evidence-backed-iterations)
 8. [Final Outcome](#final-outcome)
-
----
 
 ## Source Material
 
-**Origin:** [Where the technique/process came from — Flywheel, GSD, Superpowers, internal, etc.]
+**Origin:** [framework, repository, internal technique, or other source]
 
-**What the source does:** [Core behavior of the source framework, 1-3 sentences]
+**Source version/commit:** [exact version, tag, or commit]
 
-**Pulse context:** [Which pulse skill(s) this supports or enables]
+**What the source does:** [core behavior in 1–3 sentences]
 
----
+**Pulse context:** [which Pulse skill or workflow position this supports]
+
+**Claim boundary:** [what provenance supports and what local Pulse evidence must establish separately]
 
 ## Extraction Decisions
 
-**What to include:**
-- [Item 1] — because [reason: addresses observed failure / enforces critical constraint / etc.]
-- [Item 2] — because [reason]
-- [Item 3] — because [reason]
+**Included:**
 
-**What to leave out:**
-- [Item A] — [reason: project-specific, repetitive, Claude already knows this, etc.]
-- [Item B] — [reason]
+- [item] — because [observed failure, critical invariant, or required integration]
+- [item] — because [reason]
 
----
+**Excluded:**
 
-## Structure Decisions
+- [item] — because [already passes, duplicates an owner, is project-specific, or lacks evidence]
+- [item] — because [reason]
 
-1. [Structural decision + rationale] — e.g., "HARD-GATE before Phase 2 because baseline testing is the most commonly skipped step"
-2. [Structural decision + rationale]
-3. [Structural decision + rationale]
+## Evaluation Contract
 
----
+**Behavior being evaluated:** [observable decision/action]
 
-## Bulletproofing Elements
+**Frozen scenario set/version:** [path, ID, or commit]
 
-### Language Choices
-- "[Specific phrase used]" — instead of "[softer alternative]" — because [prevents rationalization X]
-- "MUST" / "NEVER" / "No exceptions" where applicable
-- Implementation intention format: "When X, IMMEDIATELY do Y"
+**Oracle frozen before responses:** YES / NO
 
-### Structural Defenses
-- [Defense mechanism + what it prevents] — e.g., "Rationalization table with pre-refuted excuses prevents 'I'm being pragmatic' escape hatch"
-- [Defense mechanism + what it prevents]
+**Profiles declared for this deployment:**
 
----
+| Model | Version | Reasoning profile | Harness/runtime |
+|---|---|---|---|
+| [model] | [version] | [setting] | [identifier] |
+| [model] | [version] | [setting] | [identifier] |
 
-## RED Phase: Baseline Testing
+**Candidate state before BASELINE:** none / already exists
 
-<!-- Run these scenarios WITHOUT the skill loaded. Document results verbatim. -->
+**Controlled comparison when candidate already exists:** [clean tag/worktree, control copy, temporary reverse application, or equivalent]
 
-### Scenario 1: [Name]
+**User/unrelated state preservation:** [how existing work was protected]
 
-**Setup:**
-```
-[Full scenario text — include concrete options A/B/C]
-```
+**Evidence completeness rule:** Every completed case includes exact profile, prompt, full response, choice/action, rationalization, verdict, and pre-frozen verdict rule.
 
-**Combined pressures:** [List: Time + Authority + Sunk Cost, etc.]
+## BASELINE
 
-**Agent choice:** [Option A / B / C]
+<!-- Run without the proposed local intervention, or use the documented controlled pre-change view. -->
 
-**Exact rationalization (verbatim):**
-> "[Agent's exact words — quote it precisely]"
+### Scenario 1: [Frozen ID and name]
 
-**Verdict:** FAIL / PASS
+**Full prompt:**
 
----
-
-### Scenario 2: [Name]
-
-**Setup:**
-```
-[Full scenario text]
+```text
+[Exact frozen scenario text]
 ```
 
-**Combined pressures:** [List]
+**Expected behavior and verdict rule (frozen before response):** [rule]
 
-**Agent choice:** [Option]
+#### Profile: [exact model/version/reasoning]
 
-**Exact rationalization (verbatim):**
-> "[Agent's exact words]"
+**Agent choice:** [A/B/C or explicit action]
 
-**Verdict:** FAIL / PASS
+**Concrete action:** [what it said it would do]
 
----
+**Exact rationalization:**
 
-### Scenario 3: [Name]
+> [verbatim text]
 
-**Setup:**
-```
-[Full scenario text]
-```
+**Full response:** [verbatim response or evidence path]
 
-**Combined pressures:** [List]
+**Verdict:** PASS / FAIL / INVALID
 
-**Agent choice:** [Option]
+#### Profile: [exact model/version/reasoning]
 
-**Exact rationalization (verbatim):**
-> "[Agent's exact words]"
+**Agent choice:** [choice]
 
-**Verdict:** FAIL / PASS
+**Concrete action:** [action]
 
----
+**Exact rationalization:**
 
-### RED Phase Summary
+> [verbatim text]
 
-**Patterns identified:**
-- [Pattern 1: e.g., "Agent consistently invoked time pressure to justify skipping"]
-- [Pattern 2]
+**Full response:** [verbatim response or evidence path]
 
-**Target rationalizations for GREEN phase:**
-1. "[Exact quote 1]"
-2. "[Exact quote 2]"
-3. "[Exact quote 3]"
+**Verdict:** PASS / FAIL / INVALID
 
----
+### Scenario 2: [Frozen ID and name]
 
-## GREEN Phase: Initial Skill
+[Repeat the same per-profile fields.]
 
-**First SKILL.md addressed:**
-- [Which specific rationalization it targeted]
-- [Which specific rationalization it targeted]
+### BASELINE Summary
 
-**Re-ran same scenarios WITH skill:**
+| Scenario | Profile | Verdict | Observed rationalization | Decision |
+|---|---|---|---|---|
+| [ID] | [exact tuple] | PASS | [short exact excerpt] | no intervention; retain regression case |
+| [ID] | [exact tuple] | FAIL | [short exact excerpt] | eligible for minimal intervention |
 
-| Scenario | Result | Notes |
-|---|---|---|
-| Scenario 1 | PASS / FAIL | [Notes if still failing] |
-| Scenario 2 | PASS / FAIL | [Notes] |
-| Scenario 3 | PASS / FAIL | [Notes] |
+**Passing behaviors that receive no new guidance:**
 
-**Overall GREEN result:** All pass / Required iteration [N]
+- [behavior] — [profiles/cases that already pass]
 
----
+**Failures eligible for intervention:**
 
-## REFACTOR Phase: Iterations
+1. [case/profile] — [exact violation and rationalization]
 
-### Iteration 1 (if needed)
+## INTERVENTION
 
-**New rationalization discovered:**
-> "[Agent's exact words during GREEN testing]"
+Map every content change to recorded evidence.
 
-**Fix applied:**
-- [What was added/changed in SKILL.md]
-- [Why this addresses the specific rationalization]
+| Changed file/section | Baseline case/profile | Exact rationalization addressed | Smallest change | Why no broader change |
+|---|---|---|---|---|
+| [path/section] | [ID + tuple] | [verbatim excerpt] | [change] | [scope defense] |
 
-**Re-test result:** PASS / required another iteration
+**Unsupported ideas deliberately not added:**
 
----
+- [idea] — [no observed failure, already passes, duplicates another owner, or claim exceeds evidence]
 
-### Iteration 2 (if needed)
+**Candidate disposition:** kept / revised / rejected based on controlled comparison
 
-**New rationalization discovered:**
-> "[Agent's exact words]"
+**Source claim check:** [confirm that effect sizes and model claims are scoped to direct evidence]
 
-**Fix applied:**
-- [Change description]
+## RETEST
 
-**Re-test result:** PASS / required another iteration
+<!-- Replay the identical frozen prompts and unchanged oracle on every declared profile. -->
 
----
+### Results
 
-### Rationalization Table (Final — accumulated across all iterations)
+| Scenario | Exact profile | BASELINE | RETEST | Regression? | Evidence path |
+|---|---|---|---|---|---|
+| [ID] | [model/version/reasoning] | PASS/FAIL | PASS/FAIL | YES/NO | [path] |
 
-| Excuse | Reality |
-|---|---|
-| "[Exact rationalization from testing]" | [Counter-framing] |
-| "[Exact rationalization from testing]" | [Counter-framing] |
-| "[Exact rationalization from testing]" | [Counter-framing] |
+### Targeted Failures
 
----
+- [case/profile] — now PASS / still FAIL — [observed rationale]
+
+### Already-Passing Regression Cases
+
+- [case/profile] — remains PASS / REGRESSED — [observed rationale]
+
+### Deployment Decision
+
+- [ ] every targeted failure passes
+- [ ] every previously passing required case remains passing
+- [ ] every declared exact profile completed the full frozen corpus
+- [ ] scenario text and oracle remained unchanged
+- [ ] responses and verdicts are recorded
+
+**Decision:** DEPLOY / ITERATE / DO NOT DEPLOY
+
+Any declared-profile regression requires `ITERATE` or `DO NOT DEPLOY`, regardless of aggregate score.
+
+## Evidence-Backed Iterations
+
+### Iteration 1 (if required)
+
+**New failing case/profile:** [ID + exact tuple]
+
+**New rationalization:**
+
+> [verbatim text]
+
+**Meta-test response:**
+
+> [verbatim text]
+
+**Smallest clarification:** [change and location]
+
+**Full corpus replay:** PASS / FAIL — [evidence path]
+
+[Repeat only for observed failures.]
 
 ## Final Outcome
 
-- ✅ Agent follows core rule under [pressure type] pressure
-- ✅ Agent cites skill sections when justifying choices
-- ✅ [Other passing criteria]
-- ✅ `quick_validate.py` passes
-- ✅ Markdown links and skill sync checks pass
-- ✅ SKILL.md is lean enough for repeated use
+- [ ] exact model/version/reasoning metadata is complete
+- [ ] candidate and unrelated user state were preserved
+- [ ] passing baselines did not create unsupported guidance
+- [ ] targeted failures pass on every declared profile
+- [ ] no declared-profile regression remains
+- [ ] `quick_validate.py` passes
+- [ ] Markdown link result is recorded
+- [ ] skill sync dry run passes
+- [ ] skill remains lean enough for repeated use
 
-**Total iterations required:** [N]
+**Total evidence-backed iterations:** [N]
 
-**Meta-test result:**
-> "[Agent's response to 'how could this skill be clearer?']"
-
----
+**Final deployment status:** [status and reason]
 
 ## Key Insight
 
-[The most important lesson from this skill's creation — the one thing future skill authors must know]
+[Most important observed lesson for future skill authors. Distinguish evidence from inference.]
 
 ---
 
 *Created: [DATE]*
-*Skill version: 1.0*
-*Purpose: [Why this skill exists / what pulse phase it supports]*
+
+*Skill version: [VERSION]*
+
+*Purpose: [Pulse workflow position and observable behavior]*
