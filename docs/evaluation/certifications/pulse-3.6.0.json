@@ -10,7 +10,8 @@
   "commit_chain": {
     "behavior_candidate": "df5767e",
     "certification_publication": "f208730",
-    "post_certification_install_smoke_candidate": "2699137"
+    "post_certification_install_smoke_candidate": "2699137",
+    "post_review_reinstall_candidate": "fbc2e21"
   },
   "certified_on": "2026-08-04",
   "scope": {
@@ -126,15 +127,17 @@
     "superpowers_enabled_during_certification": true,
     "superiority_precondition_met": true,
     "install_smoke": {
-      "candidate_commit": "2699137",
+      "initial_candidate_commit": "2699137",
+      "candidate_commit": "fbc2e21",
+      "candidate_scope": "final reviewed snapshot after all Gate 4 findings were repaired",
       "codex_cli_version": "0.146.0",
       "plugin_id": "pulse@pulse-tuned-local",
       "installed_version": "3.6.0",
       "installed_path": "~/.codex/plugins/cache/pulse-tuned-local/pulse/3.6.0",
       "snapshot_matches_installed": true,
       "installed_onboarding": {
-        "passed": 31,
-        "total": 31,
+        "passed": 35,
+        "total": 35,
         "failed": 0
       },
       "isolated_target_scout": {
@@ -148,7 +151,8 @@
         "pulse_skill_visible": true,
         "pulse_plugin_enabled": true,
         "pulse_version": "3.6.0",
-        "hook_failures": 0
+        "hook_failures": 0,
+        "evidence": "/media/jerem/ubuntu2/pulse-install-smoke/evidence/fresh-runtime-final-reviewed.json"
       }
     },
     "final_state": {

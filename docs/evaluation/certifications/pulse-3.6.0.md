@@ -1,6 +1,6 @@
 # Pulse 3.6.0 Exact-Profile Certification
 
-Certified on 2026-08-04 against candidate behavior/distribution commit `df5767e`. The certification was published at `f208730`, then the post-certification install smoke used `2699137`.
+Certified on 2026-08-04 against candidate behavior/distribution commit `df5767e`. The certification was published at `f208730`, the first repaired install smoke used `2699137`, and the final reviewed snapshot was reinstalled from `fbc2e21`.
 
 ## Decision
 
@@ -72,10 +72,10 @@ Every newly declared model, version, reasoning effort, or materially changed run
 
 ## Installation and reversible cutover
 
-The exact tuned snapshot at commit `2699137` passed the installation smoke with Codex CLI `0.146.0`:
+The exact final reviewed snapshot at commit `fbc2e21` passed the installation smoke with Codex CLI `0.146.0` (the earlier hook-path repair smoke at `2699137` remains part of the defect history):
 
 - the installed Pulse `3.6.0` snapshot matched the marketplace source exactly;
-- its installed onboarding suite passed 31/31 checks;
+- its installed onboarding suite passed 35/35 checks;
 - an isolated onboarded target reported all 22 skills covered, with none uncovered;
 - a fresh `gpt-5.6-terra` / low session discovered Pulse `3.6.0`, and the `SessionStart`, `PreToolUse`, and `Stop` hooks all completed without a Pulse hook failure.
 
