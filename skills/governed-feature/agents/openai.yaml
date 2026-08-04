@@ -1,0 +1,4 @@
+interface:
+  display_name: "Governed Feature"
+  short_description: "Route and govern behavior-rich Pulse work"
+  default_prompt: "Use $governed-feature to classify this change and create or update the Pulse governance overlay."
