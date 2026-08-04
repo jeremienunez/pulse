@@ -94,15 +94,15 @@ test("packaged Codex hook assets are present and point at packaged hook scripts"
   assert.equal(hooksConfig.hooks.SessionStart[0]?.matcher, "startup|resume");
   assert.equal(
     hooksConfig.hooks.SessionStart[0]?.hooks?.[0]?.command,
-    'node "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/session-start.mjs"',
+    'node "${PLUGIN_ROOT}/hooks/session-start.mjs"',
   );
   assert.equal(
     hooksConfig.hooks.PreToolUse[0]?.hooks?.[0]?.command,
-    'node "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/pre-tool-use.mjs"',
+    'node "${PLUGIN_ROOT}/hooks/pre-tool-use.mjs"',
   );
   assert.equal(
     hooksConfig.hooks.Stop[0]?.hooks?.[0]?.command,
-    'node "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/stop.mjs"',
+    'node "${PLUGIN_ROOT}/hooks/stop.mjs"',
   );
 });
 
@@ -114,18 +114,20 @@ test("packaged Codex hook commands execute packaged hook scripts", () => {
 
   try {
     applyRepo(root, false);
-    fs.cpSync(path.join(LOCAL_REPO_ROOT, "hooks"), path.join(root, "hooks"), { recursive: true });
-    fs.mkdirSync(path.join(root, "skills", "using-pulse", "scripts"), { recursive: true });
-    fs.copyFileSync(
-      path.join(LOCAL_REPO_ROOT, "skills", "using-pulse", "scripts", "pulse_session_context.mjs"),
-      path.join(root, "skills", "using-pulse", "scripts", "pulse_session_context.mjs"),
-    );
+    assert.equal(fs.existsSync(path.join(root, "hooks")), false);
+
+    const hookEnv = {
+      ...process.env,
+      PLUGIN_ROOT: LOCAL_REPO_ROOT,
+      CLAUDE_PLUGIN_ROOT: LOCAL_REPO_ROOT,
+    };
 
     const sessionStart = JSON.parse(
       execFileSync("sh", ["-lc", hooksConfig.hooks.SessionStart[0].hooks[0].command], {
         cwd: root,
         input: JSON.stringify({ cwd: root }),
         encoding: "utf8",
+        env: hookEnv,
       }),
     );
     const preToolUse = JSON.parse(
@@ -133,6 +135,7 @@ test("packaged Codex hook commands execute packaged hook scripts", () => {
         cwd: root,
         input: JSON.stringify({ tool_input: { command: "bv" } }),
         encoding: "utf8",
+        env: hookEnv,
       }),
     );
     const stop = JSON.parse(
@@ -140,6 +143,7 @@ test("packaged Codex hook commands execute packaged hook scripts", () => {
         cwd: root,
         input: JSON.stringify({}),
         encoding: "utf8",
+        env: hookEnv,
       }),
     );
 

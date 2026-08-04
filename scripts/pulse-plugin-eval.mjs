@@ -895,11 +895,11 @@ function runStaticChecks(results) {
     "static",
     "codex-hook-command-contract",
     codexSessionStartHook?.command
-        === 'node "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/session-start.mjs"'
+        === 'node "${PLUGIN_ROOT}/hooks/session-start.mjs"'
       && codexPreToolUseHook?.command
-        === 'node "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/pre-tool-use.mjs"'
+        === 'node "${PLUGIN_ROOT}/hooks/pre-tool-use.mjs"'
       && codexStopHook?.command
-        === 'node "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/stop.mjs"'
+        === 'node "${PLUGIN_ROOT}/hooks/stop.mjs"'
       ? "PASS"
       : "WARN",
     `SessionStart=${codexSessionStartHook?.command ?? "n/a"}, PreToolUse=${codexPreToolUseHook?.command ?? "n/a"}, Stop=${codexStopHook?.command ?? "n/a"}`,

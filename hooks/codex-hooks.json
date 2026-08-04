@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/session-start.mjs\"",
+            "command": "node \"${PLUGIN_ROOT}/hooks/session-start.mjs\"",
             "statusMessage": "Pulse: session bootstrap"
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/pre-tool-use.mjs\"",
+            "command": "node \"${PLUGIN_ROOT}/hooks/pre-tool-use.mjs\"",
             "statusMessage": "Pulse: shell guardrails"
           }
         ]
@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)/hooks/stop.mjs\"",
+            "command": "node \"${PLUGIN_ROOT}/hooks/stop.mjs\"",
             "statusMessage": "Pulse: end-of-turn check"
           }
         ]
