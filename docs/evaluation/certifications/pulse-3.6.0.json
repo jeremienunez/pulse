@@ -1,0 +1,112 @@
+{
+  "kind": "pulse-version-certification",
+  "schemaVersion": 1,
+  "plugin": {
+    "name": "pulse",
+    "version": "3.6.0",
+    "candidate_commit": "df5767e",
+    "candidate_commit_note": "Behavior and distribution candidate complete through D2; this certificate and profile enforcement are published by C1."
+  },
+  "certified_on": "2026-08-04",
+  "scope": {
+    "claim": "superior on the frozen Pulse tuning corpus for the two exact declared profiles",
+    "not_claimed": "universal superiority across models, versions, reasoning settings, runtimes, or unseen tasks",
+    "replay_policy": "Replay the frozen corpus for every newly declared model, model version, reasoning effort, or materially changed runtime."
+  },
+  "profiles": [
+    {
+      "profile_id": "gpt-5.6-sol-medium-codex-native",
+      "runner": {
+        "model_id": "gpt-5.6-sol",
+        "model_version": "5.6",
+        "reasoning_effort": "medium",
+        "runtime": "Codex native subagent"
+      },
+      "final_replay": {
+        "passed": 45,
+        "total": 45,
+        "failed": 0,
+        "material_uncertainty": false
+      }
+    },
+    {
+      "profile_id": "gpt-5.6-terra-low-codex-native",
+      "runner": {
+        "model_id": "gpt-5.6-terra",
+        "model_version": "5.6",
+        "reasoning_effort": "low",
+        "runtime": "Codex native subagent"
+      },
+      "final_replay": {
+        "passed": 45,
+        "total": 45,
+        "failed": 0,
+        "material_uncertainty": false
+      }
+    }
+  ],
+  "frozen_corpus": {
+    "case_families": [
+      { "id": "S", "range": "S1-S10", "cases_per_profile": 10 },
+      { "id": "P", "range": "P1-P3", "cases_per_profile": 3 },
+      { "id": "E", "range": "E1-E6", "cases_per_profile": 6 },
+      { "id": "I", "range": "I1-I6", "cases_per_profile": 6 },
+      { "id": "G", "range": "G1-G8", "cases_per_profile": 8 },
+      { "id": "H", "range": "H1-H8", "cases_per_profile": 8 },
+      { "id": "A", "range": "A1-A3", "cases_per_profile": 3 },
+      { "id": "R", "range": "R1", "cases_per_profile": 1 }
+    ],
+    "cases_per_profile": 45,
+    "profile_case_pairs": 90,
+    "oracle_policy": "Frozen before final replay and withheld from replay agents."
+  },
+  "paired_comparison": {
+    "definition": "P1-P3, E1-E6, original S6, G1-G8, and H1-H8 across both profiles; each target/profile pair counted once.",
+    "segments": [
+      { "cases": "P1-P3", "baseline_passed": 4, "final_passed": 6, "total": 6, "delta": 2 },
+      { "cases": "E1-E6", "baseline_passed": 10, "final_passed": 12, "total": 12, "delta": 2 },
+      { "cases": "S6", "baseline_passed": 1, "final_passed": 2, "total": 2, "delta": 1 },
+      { "cases": "G1-G8", "baseline_passed": 16, "final_passed": 16, "total": 16, "delta": 0 },
+      { "cases": "H1-H8", "baseline_passed": 16, "final_passed": 16, "total": 16, "delta": 0 }
+    ],
+    "aggregate": {
+      "baseline_passed": 47,
+      "final_passed": 52,
+      "total": 52,
+      "delta": 5,
+      "previously_passing_regressions": 0
+    }
+  },
+  "final_non_regression_sweep": {
+    "gpt-5.6-sol-medium-codex-native": { "passed": 45, "total": 45 },
+    "gpt-5.6-terra-low-codex-native": { "passed": 45, "total": 45 },
+    "aggregate": { "passed": 90, "total": 90, "failed": 0 }
+  },
+  "no_import_regression": {
+    "cases": "A1-A3 and R1 across both profiles",
+    "baseline_passed": 8,
+    "final_passed": 8,
+    "total": 8,
+    "decision": "No standalone testing-anti-patterns or review-reception/completion skill import is justified by this corpus."
+  },
+  "structural_checks": {
+    "plugin_evaluator": { "passed": 29, "total": 29, "warnings": 0, "failed": 0 },
+    "onboarding_and_scout": { "passed": 31, "total": 31, "warnings": 0, "failed": 0 }
+  },
+  "capability_gains": [
+    "Governed-feature routing and artifacts are shipped even though G-family baseline choices already passed.",
+    "Governance artifact validation and gate enforcement are deterministic additions reported separately from the behavioral score."
+  ],
+  "superiority_decision": {
+    "strictly_more_paired_passes": true,
+    "zero_previously_passing_regressions": true,
+    "perfect_final_sweep": true,
+    "structural_checks_green": true,
+    "superior": true
+  },
+  "cutover": {
+    "status": "eligible_for_install_smoke",
+    "superpowers_enabled_during_certification": true,
+    "next_gate": "Install the tuned plugin and pass C2 smoke checks before a reversible Superpowers disable action."
+  }
+}

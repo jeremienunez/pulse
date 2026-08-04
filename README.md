@@ -110,6 +110,7 @@ Installing the plugin makes the packaged skills, hooks, and MCP metadata availab
 | The architecture and runtime model | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | A concrete walkthrough | [docs/examples/golden-path.md](docs/examples/golden-path.md) |
 | The evaluation workflow | [docs/evaluation/pulse-plugin-eval.md](docs/evaluation/pulse-plugin-eval.md) |
+| The Pulse 3.6.0 exact-profile certification | [docs/evaluation/certifications/pulse-3.6.0.md](docs/evaluation/certifications/pulse-3.6.0.md) |
 
 ## Maintainer Notes
 

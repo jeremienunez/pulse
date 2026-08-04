@@ -22,6 +22,15 @@ This generates:
 
 Use the packet inside the current interactive chat. Paste the assistant responses and manual verdicts into the evidence template.
 
+Before running scenarios, fill the exact runner tuple in the evidence template:
+
+- `model_id`
+- `model_version`
+- `reasoning_effort`
+- `runtime`
+
+All four values are required. Finalization fails instead of publishing ambiguous evidence when any value is missing.
+
 ### 2. Finalize benchmark artifacts
 
 ```bash
@@ -36,6 +45,8 @@ This generates:
 - `iteration-8/benchmark.json`
 - `iteration-8/benchmark.md`
 - `pulse-eval-review.html`
+
+The JSON, Markdown, and HTML outputs preserve the runner tuple so a later model/profile replay cannot be confused with an earlier certification.
 
 ## Generated runs
 

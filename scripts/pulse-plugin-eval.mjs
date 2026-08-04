@@ -16,7 +16,8 @@ const PHASE_ORDER = ["static", "runtime", "scout", "benchmark", "scenarios"];
 const DEFAULT_EVIDENCE_FILE = "benchmark-evidence.json";
 const DEFAULT_PACKET_FILE = "benchmark-packet.md";
 const CHAT_RUN_NOTE = "chat-run benchmark: scenario execution and scoring were captured in the interactive session, not spawned headlessly by the evaluator.";
-const DISCRIMINATION_NOTE = "non-discriminating signal unavailable in chat-run v2: no normalized baseline is collected by the evaluator.";
+const DISCRIMINATION_NOTE = "non-discriminating signal unavailable in chat-run mode: no normalized baseline is collected by the evaluator.";
+const REQUIRED_RUNNER_PROFILE_FIELDS = ["model_id", "model_version", "reasoning_effort", "runtime"];
 
 function parseArgs(argv) {
   const subcommands = new Set(["run", "analyze", "scout", "benchmark"]);
@@ -223,9 +224,13 @@ function buildPacketMarkdown({ iterationName, evidencePath, selectedScenarios })
     "",
     "Run each scenario in the current interactive chat.",
     "",
+    "Before the first scenario:",
+    "1. fill `runner.model_id`, `runner.model_version`, `runner.reasoning_effort`, and `runner.runtime` in `benchmark-evidence.json`",
+    "2. use the exact declared profile values reported by the runtime; do not infer or inherit them from an earlier run",
+    "",
     "After each answer:",
-    "1. paste the assistant response into the matching entry in `benchmark-evidence.json`",
-    "2. fill the `judge` block in the same file from the current chat session",
+    "1. paste the assistant response into the matching scenario entry",
+    "2. fill the `judge` block from the same interactive session",
     "3. rerun `node scripts/pulse-plugin-eval.mjs benchmark --evidence <path>` to compile final artifacts",
     "",
     `Evidence template: ${relativeToRepo(evidencePath)}`,
@@ -249,7 +254,7 @@ function buildPacketMarkdown({ iterationName, evidencePath, selectedScenarios })
 function buildEvidenceTemplate({ configPath, sourcePath, iterationName, selectedScenarios }) {
   return {
     kind: "pulse-chat-benchmark-evidence",
-    schemaVersion: 1,
+    schemaVersion: 2,
     created_at: new Date().toISOString(),
     iteration: iterationName,
     config_path: relativeToRepo(configPath),
@@ -258,6 +263,10 @@ function buildEvidenceTemplate({ configPath, sourcePath, iterationName, selected
     runner: {
       mode: "chat",
       label: "current interactive chat",
+      model_id: "",
+      model_version: "",
+      reasoning_effort: "",
+      runtime: "",
     },
     notes: [],
     scenarios: selectedScenarios.map((scenario) => ({
@@ -284,6 +293,22 @@ function buildEvidenceTemplate({ configPath, sourcePath, iterationName, selected
 function sanitizeStringList(value) {
   if (!Array.isArray(value)) return [];
   return value.map((entry) => String(entry)).filter(Boolean);
+}
+
+function sanitizeRunnerProfile(rawRunner) {
+  const raw = rawRunner && typeof rawRunner === "object" ? rawRunner : {};
+  return {
+    mode: "chat",
+    label: typeof raw.label === "string" && raw.label.trim() ? raw.label.trim() : "current interactive chat",
+    model_id: typeof raw.model_id === "string" ? raw.model_id.trim() : "",
+    model_version: typeof raw.model_version === "string" ? raw.model_version.trim() : "",
+    reasoning_effort: typeof raw.reasoning_effort === "string" ? raw.reasoning_effort.trim() : "",
+    runtime: typeof raw.runtime === "string" ? raw.runtime.trim() : "",
+  };
+}
+
+function missingRunnerProfileFields(runner) {
+  return REQUIRED_RUNNER_PROFILE_FIELDS.filter((field) => !runner[field]);
 }
 
 function sanitizeJudge(rawJudge) {
@@ -369,6 +394,10 @@ function buildBenchmarkMarkdown(benchmark) {
     `Scenario source: ${benchmark.scenario_source}`,
     `Evidence: ${benchmark.evidence_path || "(none)"}`,
     `Runner mode: ${benchmark.runner?.mode || "unknown"}`,
+    `Model ID: ${benchmark.runner?.model_id || "unknown"}`,
+    `Model version: ${benchmark.runner?.model_version || "unknown"}`,
+    `Reasoning effort: ${benchmark.runner?.reasoning_effort || "unknown"}`,
+    `Runtime: ${benchmark.runner?.runtime || "unknown"}`,
     `Selected scenario IDs: ${benchmark.selected_scenario_ids.join(", ") || "(all)"}`,
     "",
     "## Summary",
@@ -439,6 +468,10 @@ function buildBenchmarkHtml(benchmark) {
   <p><strong>Scenario source:</strong> <code>${escapeHtml(benchmark.scenario_source)}</code></p>
   <p><strong>Evidence:</strong> <code>${escapeHtml(benchmark.evidence_path || "(none)")}</code></p>
   <p><strong>Runner mode:</strong> ${escapeHtml(benchmark.runner?.mode || "unknown")}</p>
+  <p><strong>Model ID:</strong> <code>${escapeHtml(benchmark.runner?.model_id || "unknown")}</code></p>
+  <p><strong>Model version:</strong> ${escapeHtml(benchmark.runner?.model_version || "unknown")}</p>
+  <p><strong>Reasoning effort:</strong> ${escapeHtml(benchmark.runner?.reasoning_effort || "unknown")}</p>
+  <p><strong>Runtime:</strong> ${escapeHtml(benchmark.runner?.runtime || "unknown")}</p>
   <h2>Summary</h2>
   <table>
     <thead>
@@ -513,6 +546,7 @@ function prepareBenchmark(results, args, config, sourcePath, selectedScenarios, 
     mode: "prepared",
     iterationName,
     iterationPath,
+    scenarioSourcePath: sourcePath,
     packetPath,
     evidencePath,
     benchmarkJsonPath: null,
@@ -525,6 +559,33 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
   }
 
   const evidence = readJson(evidencePath);
+  const runner = sanitizeRunnerProfile(evidence.runner);
+  const missingProfileFields = missingRunnerProfileFields(runner);
+
+  addResult(
+    results,
+    "benchmark",
+    "evidence-profile",
+    missingProfileFields.length === 0 ? "PASS" : "FAIL",
+    missingProfileFields.length === 0
+      ? `${runner.model_id} ${runner.model_version} / ${runner.reasoning_effort} / ${runner.runtime}`
+      : `missing required runner fields: ${missingProfileFields.join(", ")}`,
+  );
+
+  if (missingProfileFields.length > 0) {
+    return {
+      mode: "rejected",
+      iterationName,
+      iterationPath,
+      scenarioSourcePath: sourcePath,
+      evidencePath,
+      packetPath: exists(path.join(iterationPath, DEFAULT_PACKET_FILE))
+        ? path.join(iterationPath, DEFAULT_PACKET_FILE)
+        : null,
+      benchmarkJsonPath: null,
+    };
+  }
+
   const coverage = buildCoverage(selectedScenarios, evidence);
   const scenarioEntries = buildScenarioEntries(selectedScenarios, evidence);
   const summary = buildScenarioSummary(scenarioEntries);
@@ -544,19 +605,14 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
 
   const benchmark = {
     kind: "pulse-benchmark-result",
-    schemaVersion: 2,
+    schemaVersion: 3,
     created_at: new Date().toISOString(),
     iteration: iterationName,
     config_path: relativeToRepo(args.config),
     scenario_source: relativeToRepo(sourcePath),
     evidence_path: relativeToRepo(evidencePath),
     selected_scenario_ids: selectedScenarios.map((scenario) => scenario.id),
-    runner: {
-      mode: "chat",
-      label: typeof evidence?.runner?.label === "string" && evidence.runner.label.trim()
-        ? evidence.runner.label.trim()
-        : "current interactive chat",
-    },
+    runner,
     scenarios: scenarioEntries,
     verifiers: runVerifierCommands(config.shared?.verifiers || [], repoRoot),
     run_summary: summary,
@@ -597,6 +653,7 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
     mode: "finalized",
     iterationName,
     iterationPath,
+    scenarioSourcePath: sourcePath,
     evidencePath,
     packetPath: exists(packetPath) ? packetPath : null,
     benchmarkJsonPath,
@@ -948,6 +1005,10 @@ function runStaticChecks(results) {
     const scenarios = Array.isArray(scenarioLibrary?.evals) ? scenarioLibrary.evals : [];
     const ids = new Set();
 
+    if (JSON.stringify(benchmarkConfig?.requiredRunnerProfileFields) !== JSON.stringify(REQUIRED_RUNNER_PROFILE_FIELDS)) {
+      scenarioIssues.push(`required runner profile fields must be: ${REQUIRED_RUNNER_PROFILE_FIELDS.join(", ")}`);
+    }
+
     for (const scenario of scenarios) {
       if (!Number.isInteger(scenario?.id) || ids.has(scenario.id)) {
         scenarioIssues.push(`invalid or duplicate scenario id: ${scenario?.id ?? "n/a"}`);
@@ -1026,8 +1087,8 @@ async function runScoutChecks(results) {
   return status;
 }
 
-function runScenarioChecks(results, workspacePath, iterationArg, evalIdsArg) {
-  const evalsPath = path.join(workspacePath, "evals.json");
+function runScenarioChecks(results, workspacePath, iterationArg, evalIdsArg, scenarioSourcePath = null) {
+  const evalsPath = scenarioSourcePath || path.join(workspacePath, "evals.json");
   const reviewPath = path.join(workspacePath, "pulse-eval-review.html");
 
   addResult(results, "scenarios", "evals-json", exists(evalsPath) ? "PASS" : "FAIL", relativeToRepo(evalsPath));
@@ -1074,6 +1135,17 @@ function runScenarioChecks(results, workspacePath, iterationArg, evalIdsArg) {
   if (benchmark.runner?.mode) {
     addResult(results, "scenarios", "benchmark-runner-mode", benchmark.runner.mode === "chat" ? "PASS" : "WARN", benchmark.runner.mode);
   }
+  const runner = sanitizeRunnerProfile(benchmark.runner);
+  const missingProfileFields = missingRunnerProfileFields(runner);
+  addResult(
+    results,
+    "scenarios",
+    "benchmark-runner-profile",
+    missingProfileFields.length === 0 ? "PASS" : "FAIL",
+    missingProfileFields.length === 0
+      ? `${runner.model_id} ${runner.model_version} / ${runner.reasoning_effort} / ${runner.runtime}`
+      : `missing required runner fields: ${missingProfileFields.join(", ")}`,
+  );
   if (benchmark.evidence_path) {
     addResult(results, "scenarios", "benchmark-evidence-path", "PASS", benchmark.evidence_path);
   }
@@ -1173,7 +1245,7 @@ async function main() {
     } else if (args.command === "benchmark") {
       benchmarkInfo = runBenchmark(results, args);
       if (benchmarkInfo?.benchmarkJsonPath) {
-        runScenarioChecks(results, args.workspace, benchmarkInfo.iterationName, args.evalIds);
+        runScenarioChecks(results, args.workspace, benchmarkInfo.iterationName, args.evalIds, benchmarkInfo.scenarioSourcePath);
       }
     } else {
       if (!args.skipStatic) runStaticChecks(results);
@@ -1184,7 +1256,7 @@ async function main() {
       if (!args.skipScenarios) {
         benchmarkInfo = runBenchmark(results, args);
         if (benchmarkInfo?.benchmarkJsonPath) {
-          runScenarioChecks(results, args.workspace, benchmarkInfo.iterationName, args.evalIds);
+          runScenarioChecks(results, args.workspace, benchmarkInfo.iterationName, args.evalIds, benchmarkInfo.scenarioSourcePath);
         }
       }
     }

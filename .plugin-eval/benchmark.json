@@ -1,10 +1,16 @@
 {
   "kind": "pulse-plugin-benchmark",
-  "schemaVersion": 2,
-  "version": 2,
+  "schemaVersion": 3,
+  "version": 3,
   "mode": "chat",
   "scenarioSource": "pulse-eval-workspace/evals.json",
   "pilotScenarioIds": [21, 2, 7, 8, 16],
+  "requiredRunnerProfileFields": [
+    "model_id",
+    "model_version",
+    "reasoning_effort",
+    "runtime"
+  ],
   "shared": {
     "verifiers": [
       "node .pulse/scripts/pulse_status.mjs --json",
@@ -14,6 +20,7 @@
   "notes": [
     "This is the focused Pulse pilot suite, not full-chain coverage.",
     "Run selected scenarios in the current interactive chat instead of spawning headless Claude or Codex sessions.",
+    "Record the exact model ID, model version, reasoning effort, and runtime for every finalized run; missing profile metadata is a certification failure.",
     "Use the generated benchmark-packet.md and benchmark-evidence.json artifacts, then rerun the evaluator with --evidence to compile benchmark.json and benchmark.md."
   ]
 }

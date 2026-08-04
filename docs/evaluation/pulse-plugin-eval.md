@@ -114,8 +114,11 @@ Numeric iterations are auto-numbered. Explicit descriptive names such as `baseli
 
 `benchmark-packet.md` is the scenario packet to use in chat. `benchmark-evidence.json` is the template you fill with:
 
+- `runner.model_id`, `runner.model_version`, `runner.reasoning_effort`, and `runner.runtime` from the exact active profile
 - the assistant response for each scenario
 - the manual verdict from the same interactive session
+
+All four runner fields are mandatory. Finalization records an `evidence-profile` failure and exits non-zero when any value is missing. Do not infer a model version or reasoning effort from a previous run: a new profile requires a new replay.
 
 The evaluator intentionally stops here with a warning-level reminder telling you to run the selected scenarios in chat and rerun with `--evidence`.
 
@@ -138,6 +141,8 @@ This reads the filled evidence file, runs shared verifier commands, and writes:
 - `pulse-eval-workspace/pulse-eval-review.html`
 
 After finalization, the evaluator also runs the `scenarios` checks against the generated benchmark artifacts.
+
+The compiled JSON, Markdown, and HTML preserve the exact runner tuple. The scenario stage independently rejects a compiled result whose tuple is incomplete.
 
 ## Scenario validation stage
 
@@ -181,9 +186,16 @@ Use this order when reading failures:
 
 Every published evaluation summary should include:
 
+- exact model ID, model version, reasoning effort, and runtime
 - scenario IDs tested
 - whether the run was prepared only or fully finalized
 - completed / passed / failed / incomplete counts
 - readiness or dependency caveats from scout/runtime checks
 - links to `benchmark-packet.md`, `benchmark-evidence.json`, `benchmark.json`, and `benchmark.md`
 - whether the discrimination note is still only a placeholder for this run
+
+## Version certification
+
+A version certificate aggregates frozen, independently judged runs without changing their oracles. “Superior” is always scoped to the named corpus and exact profile tuples: it requires more paired passes, zero regressions among previously passing pairs, a perfect final sweep, and green structural checks.
+
+The current published certificate is [Pulse 3.6.0](certifications/pulse-3.6.0.md), with a machine-readable companion at [`certifications/pulse-3.6.0.json`](certifications/pulse-3.6.0.json). Re-run the frozen corpus for every newly declared model or reasoning profile; never inherit this result.
