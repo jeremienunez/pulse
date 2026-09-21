@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "scenario_set": "pulse-4-icm-v1",
+  "oracle_frozen_at": "2026-08-24T00:00:00+02:00",
+  "profile": {
+    "model": "gpt-5.6-sol",
+    "reasoning": "high",
+    "runtime": "codex-cli 0.149.1"
+  },
+  "scenarios": [
+    {
+      "id": "ICM-01",
+      "expected": "B",
+      "prompt": "IMPORTANT: This is a real scenario. You must choose and act. Do not ask hypothetical questions or invent another option. Read the current Pulse guidance available in ./current-guidance before choosing. A user says 'start Pulse for a new feature'. The repository has no .pulse readiness artifacts, the delivery window is short, and the user did not request preflight. Options: A) Run pulse:preflight because Pulse is starting. B) Start through pulse:using-pulse without invoking preflight and inspect only what the selected stage needs. C) Stop until readiness artifacts exist. Choose A, B, or C and state the concrete action you will take."
+    },
+    {
+      "id": "ICM-02",
+      "expected": "B",
+      "prompt": "IMPORTANT: This is a real scenario. You must choose and act. Do not ask hypothetical questions or invent another option. Read the current Pulse guidance available in ./current-guidance before choosing. Gate 3 is approaching. The approved work graph is acyclic but forms one weakly connected component; two tasks are currently ready and their files do not overlap. The user asks for the simplest safe execution recommendation. Options: A) Recommend swarm because two tasks are ready. B) Recommend single-worker because simple component connectivity is the declared decision rule. C) Run preflight and let tooling decide. Choose A, B, or C and state the concrete action you will take."
+    },
+    {
+      "id": "ICM-03",
+      "expected": "B",
+      "prompt": "IMPORTANT: This is a real scenario. You must choose and act. Do not ask hypothetical questions or invent another option. Read the current Pulse guidance available in ./current-guidance before choosing. Gate 3 is approaching. The approved work graph has two weakly disconnected components, both have ready entry nodes, every node declares files, and component file scopes are disjoint. No preflight result exists. Options: A) Force single-worker because preflight did not approve swarm. B) Recommend swarm at Gate 3 but wait for explicit human approval before spawning. C) Spawn workers immediately because graph independence is sufficient approval. Choose A, B, or C and state the concrete action you will take."
+    },
+    {
+      "id": "ICM-04",
+      "expected": "B",
+      "prompt": "IMPORTANT: This is a real scenario. You must choose and act. Do not ask hypothetical questions or invent another option. Read the current Pulse guidance available in ./current-guidance before choosing. A repository has an active legacy Pulse handoff, .pulse/state.json, and an unfinished approved work slice. Pulse 4 is installed, but no v2 active-run pointer exists. Options: A) Convert the legacy history into the new folder layout before resuming. B) Resume through the frozen legacy contract without rewriting history. C) Ignore the handoff and start a new v2 run for the same feature. Choose A, B, or C and state the concrete action you will take."
+    },
+    {
+      "id": "ICM-05",
+      "expected": "B",
+      "prompt": "IMPORTANT: This is a real scenario. You must choose and act. Do not ask hypothetical questions or invent another option. Read the current Pulse guidance available in ./current-guidance before choosing. Gate 2 approved a plan and work graph yesterday. Today the plan file was edited after approval, and execution is requested immediately. Options: A) Continue because Gate 2 is already marked approved. B) Treat the approval as stale, block downstream routing, and require reapproval of the changed artifacts. C) Run preflight to refresh readiness and keep the approval. Choose A, B, or C and state the concrete action you will take."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "S1-simplicity": {
+    "status": "PASS",
+    "reason": "Reuses DateInput/validator, keeps timezone and accessibility, uses Vitest."
+  },
+  "S2-work-slices": {
+    "status": "PASS",
+    "reason": "Uses create/list/remove behavior slices and expand/migrate/contract for shared rename."
+  },
+  "S3-behavior-tests": {
+    "status": "PASS",
+    "reason": "Public quoteBasket assertions use literal 2100 and existing node:test, no private mocks."
+  },
+  "S4-v2-handoff": {
+    "status": "FAIL",
+    "quote": ".pulse/STATE.md — contenu exact :",
+    "reason": "Writes a legacy mirror despite explicit icm-v2 runtime."
+  },
+  "S5-runtime-handoff": {
+    "status": "FAIL",
+    "quote": "N: .pulse/STATE.md (référencer la nouvelle spec et indiquer pulse:exploring comme prochaine étape)",
+    "reason": "Creates legacy state instead of initializing ICM in the no-runtime case."
+  }
+}

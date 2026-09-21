@@ -1,0 +1,467 @@
+L'utilisateur demande explicitement le flightcheck/preflight de son prototype HTML local pour poursuivre dans Pulse en single-worker. Un run ICM v2 existe et son état est ready/01_explore. Node 22 et git fonctionnent ; le dépôt Git est initialisé ; le script ICM du plugin est callable ; le navigateur peut ouvrir le prototype. Aucun package ni API n'est nécessaire. br et bv sont absents, aucun runtime swarm n'est disponible, et les helpers legacy .pulse/scripts ne sont pas installés. Donne le verdict concret du diagnostic, ses vrais bloqueurs éventuels, les fichiers de résultat à écrire et l'action suivante. Les capacités énumérées ont été réellement vérifiées ; ne prétends pas en avoir testé d'autres. Ne modifie aucun fichier.
+
+Available local guidance:
+
+--- skills/preflight/SKILL.md ---
+---
+name: preflight
+description: Use only when the user explicitly asks to run Pulse preflight or requests a Pulse readiness/onboarding check.
+metadata:
+  version: '1.3'
+  ecosystem: pulse
+  position: 'operator-invoked diagnostic outside the default delivery chain'
+  type: diagnostic
+  dependencies: []
+---
+
+# Preflight
+
+Run an explicit operator-requested runtime readiness check.
+This skill is the sole authority for writing Pulse onboarding, tool-health, and readiness decisions.
+`pulse:using-pulse` may consume a current result, but it never invokes or refreshes this skill automatically.
+Never infer a preflight request from starting, resuming, planning, validating, or executing Pulse work.
+
+## When to Use
+
+- User explicitly says: "run Pulse preflight" or "run preflight"
+- User explicitly requests a Pulse readiness, onboarding, or full tool-health check
+- User explicitly asks to refresh an existing `.pulse/tooling-status.json`
+
+Do not use this skill merely because Pulse work starts or resumes, an environment changed, a readiness artifact is missing or stale, or another skill encounters a missing dependency. Surface that local fact and continue or stop according to the active skill's own contract unless the user asks for preflight.
+
+## What This Skill Produces
+
+- `.pulse/tooling-status.json`
+- `.pulse/state.json`
+- `.pulse/STATE.md` update with the latest preflight result
+- One of three outcomes: `PASS`, `DEGRADED`, or `FAIL`
+
+Load `references/tool-readiness-matrix.md` before Phase 3.
+
+## Hard Rules
+
+1. Do not run unless the user explicitly requested this diagnostic.
+2. Never assume a tool exists because a repo or prior session mentioned it.
+3. Never report `PASS` without running a real minimal check for each required tool.
+4. If a tool is optional, record it as unavailable but do not fail the run.
+5. If a tool is required for the requested mode, block that mode explicitly.
+6. If the result is `FAIL`, do not continue into planning or execution in the checked mode.
+7. If the result is `DEGRADED`, present the downgrade clearly before proceeding.
+
+## Phase 1: Establish Pulse State
+
+1. Resolve the project root.
+2. Ensure `.pulse/` exists. Create it if missing.
+3. Ensure `.pulse/handoffs/` exists. Create it if missing.
+4. Ensure `.pulse/STATE.md` exists. If missing, create:
+
+```markdown
+# STATE
+focus: (none)
+phase: preflight
+last_updated: <timestamp>
+```
+
+5. Ensure `.pulse/handoffs/manifest.json` exists. If missing, create:
+
+```json
+{
+  "schema_version": "1.0",
+  "updated_at": "<ISO-8601>",
+  "active": []
+}
+```
+
+6. Detect whether `.pulse/handoffs/manifest.json` contains active resume entries. Record that resume data exists, but do not auto-resume.
+7. Infer the requested mode:
+   - `full-pipeline`
+   - `planning-only`
+   - `execution-only`
+   - `resume`
+
+## Phase 2: Check Onboarding
+
+Verify that the Pulse plugin is properly onboarded in the current repo.
+
+Run `node --version` first.
+
+- If `node` is missing or reports a version below 18: set `onboarding` to `NEEDS_SETUP` and include a blocker entry: "Node.js 18+ required for onboarding — install or upgrade before continuing." Do not proceed to the onboarding script.
+
+If Node.js 18+ is available, run the onboarding status check from this skill's directory. `needs_onboarding` is a remediation path for stale installs, not the normal Pulse bootstrap result:
+
+```bash
+node skills/using-pulse/scripts/onboard_pulse.mjs --repo-root <project_root>
+```
+
+Interpret the result:
+
+- `status = "up_to_date"` — Pulse onboarding is current. Set `onboarding = PASS`.
+- `status = "needs_onboarding"` — the repo needs Pulse onboarding or remediation updates before normal bootstrap can continue. Use `actions` plus any relevant `details` to explain whether this is missing repo-local assets, stale `.codex/hooks.json` Pulse entries, legacy `.codex/hooks/*` or `.codex/pulse_*.mjs` cleanup, legacy Python hook files, legacy verification/memory layout, or a partial Pulse install.
+- `status = "missing_runtime"` — Node.js 18+ is not available, so onboarding cannot run. Set `onboarding = NEEDS_SETUP`.
+
+For `needs_onboarding`:
+
+1. Summarize what the script wants to create or update from `actions`.
+2. If `requires_confirmation = true`, explain that an existing `compact_prompt` was found and Pulse will preserve it unless the user explicitly approves replacement.
+3. Ask the user before making any repo changes.
+4. After approval, run: `node skills/using-pulse/scripts/onboard_pulse.mjs --repo-root <project_root> --apply`
+   - Only pass `--allow-compact-prompt-replace` when the user explicitly approved replacing the existing compaction prompt.
+5. If the apply run succeeds, update `onboarding` to `PASS` and continue.
+6. If the apply run fails, keep `onboarding` blocked and add a blocker entry.
+
+An unresolved onboarding issue or missing runtime sets preflight result to `FAIL`.
+
+## Phase 3: Validate Core Tooling
+
+Check the tools that Pulse depends on structurally:
+
+- `git`
+- `br`
+- `bv`
+
+Use the smallest real checks that prove the tool is callable. Recommended checks:
+
+```bash
+command -v git
+command -v br
+command -v bv
+git rev-parse --show-toplevel
+br --help
+bv --help
+```
+
+Rules:
+
+- If `git` is missing or the project is not a git repo, result is `FAIL`
+- If `br` is missing, result is `FAIL`
+- If `bv` is missing, result is `FAIL`
+- If a command exists but the minimal call errors, mark it unavailable
+- If `br` or `bv` is unavailable, include the install references from `references/tool-readiness-matrix.md` in the failure report
+
+## Phase 4: Validate Execution Runtime
+
+If the requested mode can lead to execution, validate the active runtime path.
+
+Primary concerns:
+
+- native swarm capability for the current CLI runtime
+- shared reservation helper readiness for swarm execution
+
+Run the smallest real health check available in the current environment.
+Examples vary by runtime:
+
+- Claude Code: confirm teammate primitives needed for swarming are available in this session
+- Codex: confirm native subagent flow is available in this session
+- reservation helper: confirm onboarding installed `.pulse/scripts/pulse_reservations.mjs`
+
+If no real health-check primitive exists, mark swarm capability as unavailable.
+Do not infer readiness from environment variables alone.
+
+Decision rules:
+
+- If requested mode is `full-pipeline` and swarm execution is expected:
+  - native swarm + reservations ready -> keep `swarm`
+  - unavailable -> set result to `DEGRADED` and recommend `single-worker`
+- If requested mode is `execution-only` and the user explicitly asked for swarm mode:
+  - unavailable -> stop and present the downgrade decision
+
+## Phase 5: Validate Optional Accelerators
+
+Check optional helpers if relevant:
+
+- `gitnexus`
+- PR tooling such as `gh`
+- docs or web research MCPs
+
+Optional tools never fail preflight on their own.
+Record impact instead:
+
+- `gitnexus` missing -> discovery falls back to grep/find/manual reads
+- `gh` missing -> no automated PR creation
+- docs or web MCP missing -> research becomes manual or local-only
+
+## Phase 6: Decide Outcome
+
+Choose exactly one result label:
+
+- `PASS`
+  - all required tools for the requested mode are ready
+- `DEGRADED`
+  - core tools are ready
+  - at least one optional capability is missing, or swarm must downgrade to single-worker
+- `FAIL`
+  - any required tool for the requested mode is unavailable
+  - onboarding is `NEEDS_SETUP` or `NEEDS_ONBOARDING` and could not be resolved in Phase 2
+
+Normalize status casing explicitly:
+- `.pulse/tooling-status.json` uses lowercase machine values: `pass | degraded | fail`
+- `.pulse/state.json`, `.pulse/STATE.md`, and user-facing summaries may use uppercase labels: `PASS | DEGRADED | FAIL`
+
+Also choose `recommended_mode`:
+
+- `swarm`
+- `single-worker`
+- `planning-only`
+- `blocked`
+
+## Phase 7: Write Artifacts
+
+Write `.pulse/tooling-status.json` with this shape:
+
+```json
+{
+  "timestamp": "<ISO-8601>",
+  "project_root": "<absolute path>",
+  "requested_mode": "full-pipeline",
+  "recommended_mode": "single-worker",
+  "status": "degraded",
+  "onboarding": "PASS",
+  "tools": {
+    "git": { "status": "ready", "check": "git rev-parse --show-toplevel" },
+    "br": { "status": "ready", "check": "br --help" },
+    "bv": { "status": "ready", "check": "bv --help" },
+    "swarm_runtime": { "status": "unavailable", "check": "<actual runtime capability probe or 'none available'>" },
+    "reservations": { "status": "ready", "check": "test -f .pulse/scripts/pulse_reservations.mjs" }
+  },
+  "blockers": [],
+  "degradations": [
+    "Native swarm path unavailable; execution downgraded to single-worker"
+  ],
+  "next_skill": "pulse:using-pulse"
+}
+```
+
+Also refresh `.pulse/state.json` as the lightweight routing mirror:
+
+```json
+{
+  "phase": "preflight",
+  "status": "PASS | DEGRADED | FAIL",
+  "requested_mode": "<mode>",
+  "recommended_mode": "<mode>",
+  "tooling_status": ".pulse/tooling-status.json"
+}
+```
+
+Update `.pulse/STATE.md` with:
+
+```markdown
+phase: preflight
+preflight_status: PASS | DEGRADED | FAIL
+requested_mode: <mode>
+recommended_mode: <mode>
+tooling_status: .pulse/tooling-status.json
+resume_manifest: .pulse/handoffs/manifest.json
+last_updated: <timestamp>
+```
+
+## Phase 8: Present Result
+
+Use this response shape:
+
+```text
+PREFLIGHT COMPLETE
+
+Status: PASS | DEGRADED | FAIL
+Requested mode: <mode>
+Recommended mode: <mode>
+Onboarding: PASS | NEEDS_SETUP | NEEDS_ONBOARDING
+
+Ready:
+- <tool>
+- <tool>
+
+Missing or degraded:
+- <tool> -> <impact>
+
+Next:
+- If PASS or DEGRADED: invoke pulse:using-pulse
+- If FAIL: fix blockers before continuing
+```
+
+## Handoff
+
+- `PASS` -> "Preflight complete. Pulse is ready. Invoke `pulse:using-pulse`."
+- `DEGRADED` -> "Preflight complete with downgrade. Confirm the downgraded mode, then invoke `pulse:using-pulse`."
+- `FAIL` -> "Preflight failed. Do not continue into Pulse flow until blockers are cleared."
+
+## Red Flags
+
+- Marking `PASS` without running actual checks
+- Treating swarm runtime as optional in swarm mode
+- Continuing after `FAIL`
+- Hiding degraded mode from the user
+- Reusing stale `.pulse/tooling-status.json` without refreshing it
+- Using environment hints instead of real tool invocations
+- Running because another Pulse phase started rather than because the user explicitly requested preflight
+
+## References
+
+- `references/tool-readiness-matrix.md`
+- `../using-pulse/references/handoff-contract.md`
+
+--- skills/preflight/references/tool-readiness-matrix.md ---
+# Pulse Tool Readiness Matrix
+
+Use this matrix during `pulse:preflight` to decide whether the run should `PASS`, `DEGRADED`, or `FAIL`.
+
+## Required vs Optional
+
+| Tool / Capability | Required For | Suggested Minimal Check | If Missing |
+|---|---|---|---|
+| `git` | Every Pulse run | `git rev-parse --show-toplevel` | `FAIL` |
+| `br` | Every Pulse run that uses bead-backed planning/execution | `br --help` | `FAIL` |
+| `bv` | Every Pulse run that prioritizes or validates bead graphs | `bv --help` | `FAIL` |
+| Native swarm capability for the active runtime | Swarm execution | smallest real runtime capability check available | `DEGRADED` to `single-worker`, or `FAIL` if the user explicitly requires swarm |
+| `.pulse/scripts/pulse_reservations.mjs` | Swarm execution | `test -f .pulse/scripts/pulse_reservations.mjs` | `DEGRADED` to `single-worker`, or `FAIL` if the user explicitly requires swarm |
+| `gitnexus` | Accelerated graph-backed discovery only | verify configured MCP server in the scout/dependency report | continue with fallback |
+| `gh` | PR automation only | `gh --version` | continue without PR automation |
+| docs / web MCP | External research acceleration | runtime-specific health check | continue with local/manual research |
+
+## Install References
+
+If a required Pulse tool is missing, include the relevant install reference in the preflight report:
+
+| Tool | Reference |
+|---|---|
+| `br` | [beads_rust](https://github.com/Dicklesworthstone/beads_rust) |
+| `bv` | [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer) |
+
+## Outcome Rules
+
+### PASS
+
+Use `PASS` when all are true:
+
+- `git` is ready
+- `br` is ready
+- `bv` is ready
+- all tools required for the requested mode are ready
+
+### DEGRADED
+
+Use `DEGRADED` when all are true:
+
+- core tools are ready
+- the requested mode can still proceed safely
+- one or more capabilities are missing and Pulse must adjust behavior
+
+Common degraded examples:
+
+- native swarm capability unavailable -> use `single-worker`
+- reservation helper unavailable -> use `single-worker`
+- `gitnexus` unavailable -> use grep/find/manual discovery
+- `gh` unavailable -> skip PR automation
+
+### FAIL
+
+Use `FAIL` when any are true:
+
+- `git`, `br`, or `bv` is unavailable
+- project root cannot be resolved as a git repo
+- the user explicitly requested a mode whose required runtime is unavailable and no downgrade is acceptable
+
+## Fallback Rules
+
+### No Native Swarm Capability
+
+If the runtime cannot safely support swarming:
+
+- do not launch swarm workers
+- recommend `single-worker`
+- surface the downgrade before continuing
+
+### No Reservation Helper
+
+If `.pulse/scripts/pulse_reservations.mjs` is unavailable:
+
+- do not launch swarm workers
+- recommend `single-worker`
+- repair onboarding before retrying swarm mode
+
+### No `gitnexus`
+
+Use local fallback:
+
+```bash
+find . -type f | head -100
+rg "<keyword>"
+```
+
+### No `gh`
+
+Continue normally and report:
+
+`PR automation unavailable; use manual branch or PR workflow later.`
+
+## Output Contract
+
+`.pulse/tooling-status.json` should record, at minimum:
+
+```json
+{
+  "timestamp": "<ISO-8601>",
+  "project_root": "<absolute path>",
+  "requested_mode": "<mode>",
+  "recommended_mode": "<mode>",
+  "status": "pass|degraded|fail",
+  "tools": {
+    "<tool-name>": {
+      "status": "ready|unavailable|unknown",
+      "check": "<command or health check used>"
+    }
+  },
+  "blockers": [],
+  "degradations": [],
+  "next_skill": "pulse:using-pulse"
+}
+```
+
+## Notes
+
+- Prefer `unknown` only when a real health check does not exist.
+- Never silently upgrade `unknown` to `ready`.
+- A degraded run is valid only when the degraded mode is explicitly surfaced.
+
+--- workflow/CONTEXT.md ---
+# Pulse ICM Router
+
+Pulse 4 uses the filesystem as its primary orchestration surface. The canonical delivery graph has six numbered stages. The active `run.json`, declared stage inputs, output files, and content-bound human gates determine what happens next.
+
+Do not invoke `pulse:preflight` unless the user explicitly requests it. Preflight is a manual diagnostic outside the delivery graph.
+
+## Inputs
+
+- User request and repository instructions.
+- `.pulse/active-run` when present.
+- The referenced `history/<feature>/run.json` for an active ICM v2 run.
+- Legacy `.pulse` state and handoffs only when no v2 run is active or the user explicitly resumes legacy work.
+
+## Process
+
+1. Resolve the plugin root from this installed skill and run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+2. On `icm-v2`, route strictly from `current_stage`; do not infer another skill from prose or stale mirrors.
+3. On `legacy-v1`, surface the saved work. Resume through `references/legacy-v1.md` when the user chooses resume. For a clearly new feature, initialize a distinct v2 run instead of rewriting legacy history.
+4. On `conflict`, stop and present both active surfaces. Never choose or rewrite one automatically.
+5. On `none`, shape a lowercase feature slug and initialize the run with `node <plugin-root>/workflow/scripts/pulse_icm.mjs init --repo-root <repo-root> --feature <slug> --request '<request>'`.
+6. Load only the contract and artifacts for the selected stage. Stable project rules are references; run outputs are working artifacts.
+7. Human gates remain explicit. A recommendation or output file never counts as approval.
+
+Support routing remains explicit and outside the six-stage delivery graph:
+
+- "Note this learning from this conversation" → `pulse:dev-note`.
+- "Distill accumulated dev notes for reading" → `pulse:dev-note-distil`.
+- "Consolidate runtime artifacts into machine memory" → `pulse:dream`.
+- "Capture post-cycle machine learnings" → `pulse:compounding`.
+
+## Outputs
+
+- A new `history/<feature>/run.json` and six-stage output layout, or a precise resume/status brief.
+- Exactly one next stage selected from the canonical graph.
+- No v2 writes to legacy state mirrors, global handoffs, or checkpoints.
+
+## Exit
+
+- Route to `pulse:exploring` for `01_explore`, `pulse:planning` for `02_plan`, `pulse:validating` for `03_validate`, `pulse:executing` for `04_execute`, `pulse:reviewing` for `05_review`, or `pulse:compounding` for `06_compound`.
+- For `complete`, report completion and the final `run.json` path.
+- For conflict or stale approval, stop without mutation.

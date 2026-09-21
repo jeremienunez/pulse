@@ -1,0 +1,68 @@
+Le périmètre de travail est approuvé. Une app de réservation possède déjà DateInput (label, clavier et messages d'erreur accessibles), Vitest et un petit validateur date-only. Ajouter une date de départ facultative, interdite dans le passé et exprimée dans le fuseau métier existant. Pas de fonctionnalités supplémentaires. Un collègue propose un nouveau moteur de formulaires, une interface DateProvider et un package calendrier ; il veut finir en une heure. Produis la décision d'implémentation concrète, les fichiers à toucher (chemins plausibles explicitement indicatifs), les vérifications et la raison. N'exécute rien.
+
+Available local guidance:
+
+--- workflow/stages/02_plan/CONTEXT.md ---
+# Stage 02 — Plan
+
+One job: transform approved decisions into one implementation plan and one immutable execution graph.
+
+## Inputs
+
+- `history/<feature>/request.md`
+- Approved `stages/01_explore/output/decisions.md`
+- Relevant source, tests, project rules, and direct technical evidence
+
+## Process
+
+1. Diagnose the current implementation and select the first sufficient mechanism in this order: avoid building; reuse existing code; use the standard library or native platform; reuse an installed dependency; only then write minimal local code.
+2. Classify governance fitness as exactly `strong`, `light`, or `none` and record it in `plan.md`; use `pulse:governed-feature` when the persisted value is `strong`.
+3. Write a decision-complete plan with interfaces, failure behavior, compatibility boundaries, and verification.
+4. Decompose execution into graph nodes. Every node declares dependencies, exact repo-relative file scopes, and verification requirements. Do not split trivial work solely to manufacture swarm components.
+5. Keep the graph acyclic. Do not add execution status to the graph.
+6. Run `pulse_icm.mjs analyze --graph history/<feature>/stages/02_plan/output/work-graph.json` before Gate 2.
+
+## Outputs
+
+- `history/<feature>/stages/02_plan/output/plan.md`
+- `history/<feature>/stages/02_plan/output/work-graph.json`, conforming to `workflow/schemas/work-graph.schema.json`
+
+## Exit
+
+- Present both outputs for Gate 2 approval.
+- On approval, run `pulse_icm.mjs approve --gate GATE_2` and stop at `03_validate` unless the user explicitly asks to continue.
+
+--- workflow/stages/03_validate/CONTEXT.md ---
+# Stage 03 — Validate
+
+One job: prove the approved plan and graph fit the live repository, then separate cost-first execution recommendation from safe swarm eligibility.
+
+## Inputs
+
+- Approved `decisions.md`
+- Approved `plan.md`
+- Approved immutable `work-graph.json`
+- Current repository, dependency, test, and runtime evidence required by the plan
+
+## Process
+
+1. Verify assumptions, interfaces, file ownership, tests, and failure paths against the current repository.
+2. Verify that governance fitness is persisted; absence is never interpreted as `light` or `none`. When persisted governance fitness is `strong`, validate the `pulse:governed-feature` overlay.
+3. Run the graph analyzer. Cycles, unknown dependencies, unsafe scopes, or malformed nodes block Gate 3.
+4. Validate the chosen mechanism. When material new machinery lacks evidence that simpler rungs are insufficient, write `status: revise`, name the simpler alternative and missing evidence, and return to planning.
+5. Use weakly connected components to determine swarm eligibility, not the default recommendation:
+   - one component or cross-component file overlap → swarm-ineligible;
+   - two or more file-disjoint components → swarm-eligible, capped at four workers;
+   - the cost-first default for every valid graph is `single-worker`.
+6. Do not consult or invoke preflight for this decision.
+7. Write `status: ready` only when the plan is executable. Otherwise write `status: revise` with blockers and return to planning.
+
+## Outputs
+
+- `history/<feature>/stages/03_validate/output/validation.json`, conforming to `workflow/schemas/validation.schema.json`
+
+## Exit
+
+- Present validation evidence, the cost-first recommendation, and swarm eligibility at Gate 3.
+- Human approval chooses `single-worker` or an eligible `swarm`; recommendation alone never starts workers.
+- Run `pulse_icm.mjs approve --gate GATE_3 --strategy <strategy>` after approval.

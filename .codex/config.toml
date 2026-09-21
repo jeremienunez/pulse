@@ -8,15 +8,11 @@ MANDATORY: Pulse context compaction recovery.
 STOP. Before doing anything else:
 1. Read AGENTS.md completely.
 2. If present, run `node .pulse/scripts/pulse_status.mjs --json` for a quick Pulse status snapshot.
-3. Read .pulse/tooling-status.json, .pulse/state.json, and .pulse/STATE.md if they exist.
-4. Read .pulse/handoffs/manifest.json and any active owner handoff you are resuming.
-5. Re-open the active feature CONTEXT.md before more planning or edits.
-6. Re-open the current bead or task before running more implementation commands.
-7. Check the current worktree state with git status before resuming.
+3. If status reports ICM v2, open only .pulse/active-run, its run.json, and the current numbered stage outputs.
+4. If status reports legacy v1, read .pulse/state.json, .pulse/STATE.md, and the selected active handoff.
+5. Re-open the current stage contract or frozen legacy skill contract before more work.
+6. Check the current worktree state with git status before resuming.
 
 After completing these steps, briefly confirm what context you restored and only then continue.
 """
 # PULSE: compact_prompt end
-
-[features]
-codex_hooks = true

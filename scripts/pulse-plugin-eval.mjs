@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-import { readPulseStatus } from "../.pulse/scripts/pulse_state.mjs";
+import { readPulseStatus } from "../skills/using-pulse/scripts/pulse_state.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -905,9 +905,6 @@ function runStaticChecks(results) {
   const pluginManifestPath = path.join(repoRoot, ".codex-plugin/plugin.json");
   const claudePluginPath = path.join(repoRoot, ".claude-plugin/plugin.json");
   const claudeMarketplacePath = path.join(repoRoot, ".claude-plugin/marketplace.json");
-  const claudeHooksPath = path.join(repoRoot, "hooks", "hooks.json");
-  const codexHooksPath = path.join(repoRoot, "hooks", "codex-hooks.json");
-  const claudeSessionStartHookPath = path.join(repoRoot, "hooks", "session-start.mjs");
   const marketplacePath = path.join(repoRoot, ".agents/plugins/marketplace.json");
   const benchmarkConfigPath = path.join(repoRoot, ".plugin-eval/benchmark.json");
   const scenarioLibraryPath = path.join(repoRoot, "pulse-eval-workspace/evals.json");
@@ -916,17 +913,20 @@ function runStaticChecks(results) {
   const executingSkillPath = path.join(skillsRoot, "executing", "SKILL.md");
   const planningSkillPath = path.join(skillsRoot, "planning", "SKILL.md");
   const validatingSkillPath = path.join(skillsRoot, "validating", "SKILL.md");
+  const workflowGraphPath = path.join(repoRoot, "workflow", "graph.json");
+  const workflowAdaptersPath = path.join(repoRoot, "workflow", "skill-adapters.json");
+  const workflowRuntimePath = path.join(skillsRoot, "using-pulse", "scripts", "pulse_icm.mjs");
 
   const required = [
     pluginManifestPath,
     claudePluginPath,
     claudeMarketplacePath,
-    claudeHooksPath,
-    codexHooksPath,
-    claudeSessionStartHookPath,
     marketplacePath,
     mcpPath,
     skillsRoot,
+    workflowGraphPath,
+    workflowAdaptersPath,
+    workflowRuntimePath,
   ];
   for (const targetPath of required) {
     addResult(results, "static", `exists:${relativeToRepo(targetPath)}`, exists(targetPath) ? "PASS" : "FAIL", "");
@@ -937,8 +937,6 @@ function runStaticChecks(results) {
   const manifest = readJson(pluginManifestPath);
   const claudePlugin = readJson(claudePluginPath);
   const claudeMarketplace = readJson(claudeMarketplacePath);
-  const claudeHooks = readJson(claudeHooksPath);
-  const codexHooks = readJson(codexHooksPath);
   const marketplace = readJson(marketplacePath);
   const mcp = readJson(mcpPath);
 
@@ -973,46 +971,13 @@ function runStaticChecks(results) {
   addResult(
     results,
     "static",
-    "codex-plugin-hook-declaration",
-    manifest?.hooks === "./hooks/codex-hooks.json" ? "PASS" : "WARN",
-    `hooks=${manifest?.hooks ?? "n/a"}`,
-  );
-  const codexSessionStartEntries = Array.isArray(codexHooks?.hooks?.SessionStart)
-    ? codexHooks.hooks.SessionStart
-    : [];
-  const codexPreToolUseEntries = Array.isArray(codexHooks?.hooks?.PreToolUse)
-    ? codexHooks.hooks.PreToolUse
-    : [];
-  const codexStopEntries = Array.isArray(codexHooks?.hooks?.Stop)
-    ? codexHooks.hooks.Stop
-    : [];
-  const codexSessionStartHook = codexSessionStartEntries[0]?.hooks?.[0] || null;
-  const codexPreToolUseHook = codexPreToolUseEntries[0]?.hooks?.[0] || null;
-  const codexStopHook = codexStopEntries[0]?.hooks?.[0] || null;
-  addResult(
-    results,
-    "static",
-    "codex-hook-registration",
-    codexSessionStartEntries[0]?.matcher === "startup|resume"
-      && codexPreToolUseEntries[0]?.matcher === "Bash"
-      && codexStopEntries.length > 0
+    "automatic-hook-absence",
+    !Object.hasOwn(manifest, "hooks")
+      && !Object.hasOwn(claudePlugin, "hooks")
+      && !exists(path.join(repoRoot, "hooks"))
       ? "PASS"
-      : "WARN",
-    `SessionStart=${codexSessionStartEntries[0]?.matcher ?? "n/a"}, PreToolUse=${codexPreToolUseEntries[0]?.matcher ?? "n/a"}, Stop=${codexStopEntries.length > 0 ? "present" : "missing"}`,
-  );
-  addResult(
-    results,
-    "static",
-    "codex-hook-command-contract",
-    codexSessionStartHook?.command
-        === 'node "${PLUGIN_ROOT}/hooks/session-start.mjs"'
-      && codexPreToolUseHook?.command
-        === 'node "${PLUGIN_ROOT}/hooks/pre-tool-use.mjs"'
-      && codexStopHook?.command
-        === 'node "${PLUGIN_ROOT}/hooks/stop.mjs"'
-      ? "PASS"
-      : "WARN",
-    `SessionStart=${codexSessionStartHook?.command ?? "n/a"}, PreToolUse=${codexPreToolUseHook?.command ?? "n/a"}, Stop=${codexStopHook?.command ?? "n/a"}`,
+      : "FAIL",
+    "Pulse 4 must not package lifecycle orchestration hooks",
   );
   addResult(
     results,
@@ -1021,35 +986,12 @@ function runStaticChecks(results) {
     claudePlugin?.skills === "./skills/" && claudePlugin?.mcpServers === "./.mcp.json" ? "PASS" : "WARN",
     `skills=${claudePlugin?.skills ?? "n/a"}, mcpServers=${claudePlugin?.mcpServers ?? "n/a"}`,
   );
-  const claudeSessionStartEntries = Array.isArray(claudeHooks?.hooks?.SessionStart)
-    ? claudeHooks.hooks.SessionStart
-    : [];
-  const claudeSessionStartHook = claudeSessionStartEntries[0]?.hooks?.[0] || null;
-  addResult(
-    results,
-    "static",
-    "claude-hook-registration",
-    claudeSessionStartEntries.length > 0 && claudeSessionStartEntries[0]?.matcher === "startup|clear|compact"
-      ? "PASS"
-      : "WARN",
-    `matcher=${claudeSessionStartEntries[0]?.matcher ?? "n/a"}`,
-  );
-  addResult(
-    results,
-    "static",
-    "claude-hook-command-contract",
-    claudeSessionStartHook?.command === 'node "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs"' && claudeSessionStartHook?.async === false
-      ? "PASS"
-      : "WARN",
-    `command=${claudeSessionStartHook?.command ?? "n/a"}, async=${claudeSessionStartHook?.async ?? "n/a"}`,
-  );
   const executingSkill = exists(executingSkillPath) ? fs.readFileSync(executingSkillPath, "utf8") : "";
-  const investigateSection = executingSkill.match(/For `investigate`:[\s\S]*?\n---/u)?.[0] || "";
   addResult(
     results,
     "static",
     "investigate-debug-owner-contract",
-    /`pulse:systematic-debug-fix` is the authoritative workflow owner/u.test(investigateSection)
+    /`pulse:systematic-debug-fix` is the authoritative owner/u.test(executingSkill)
       ? "PASS"
       : "FAIL",
     "investigate mode must route reproduction and tracing through pulse:systematic-debug-fix",
@@ -1057,8 +999,8 @@ function runStaticChecks(results) {
   const planningSkill = exists(planningSkillPath) ? fs.readFileSync(planningSkillPath, "utf8") : "";
   const validatingSkill = exists(validatingSkillPath) ? fs.readFileSync(validatingSkillPath, "utf8") : "";
   const governanceRoutingPasses = [
-    /classify every planned feature as exactly `strong`, `light`, or `none`/u.test(planningSkill),
-    /Phase 3 cannot begin while it is absent/u.test(planningSkill),
+    /Classify governance fitness as exactly `strong`, `light`, or `none`/u.test(planningSkill),
+    /use `pulse:governed-feature` when the persisted value is `strong`/u.test(planningSkill),
     /absence is never interpreted as `light` or `none`/u.test(validatingSkill),
     /persisted governance fitness is `strong`/u.test(validatingSkill),
   ].every(Boolean);
@@ -1180,8 +1122,26 @@ function runStaticChecks(results) {
     [catalogCheck.stdout, catalogCheck.stderr].filter(Boolean).join("\n").trim() || "(no output)",
   );
 
-  const mcpServers = Object.keys(mcp || {});
-  addResult(results, "static", "mcp-servers-parse", mcpServers.length > 0 ? "PASS" : "WARN", `servers=${mcpServers.join(", ") || "none"}`);
+  const workflowSkillsCheck = runCommand(
+    process.execPath,
+    [path.join(repoRoot, "scripts/build-workflow-skills.mjs"), "--check"],
+  );
+  addResult(
+    results,
+    "static",
+    "workflow-skills-generated",
+    workflowSkillsCheck.status === 0 ? "PASS" : "FAIL",
+    [workflowSkillsCheck.stdout, workflowSkillsCheck.stderr].filter(Boolean).join("\n").trim() || "(no output)",
+  );
+
+  const mcpServers = Object.keys(mcp?.mcpServers || {});
+  addResult(
+    results,
+    "static",
+    "mcp-servers-parse",
+    ["gitnexus", "MCP_DOCKER", "morph-mcp"].every((name) => mcpServers.includes(name)) ? "PASS" : "FAIL",
+    `servers=${mcpServers.join(", ") || "none"}`,
+  );
 }
 
 function runRuntimeChecks(results, runCmd) {

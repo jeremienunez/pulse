@@ -9,18 +9,24 @@ description: >-
   think through, what should we build, help me think, explore options, compare directions,
   unclear feature shape, vague product request.
 metadata:
-  version: '1.2'
+  version: '1.3'
   ecosystem: pulse
-  position: '1b of 9 — optional pre-step before pulse:exploring'
+  position: 'optional design support before 01_explore decisions'
   dependencies:
     - id: node-runtime
       kind: command
       command: node
-      missing_effect: degraded
-      reason: Optional visual brainstorming runtime uses a local Node server for advanced UI comparisons.
+      missing_effect: unavailable
+      reason: Pulse runtime detection and ICM initialization require Node.js 18+; the visual server is optional.
 ---
 
 # Brainstorming Skill
+
+## Runtime entry
+
+Before writing a spec, starting visual prototypes or creating task artifacts, invoke `pulse:using-pulse` to detect the runtime and initialize ICM if none exists. This applies to simple and disposable work too. Reuse the matching active run. Preserve an explicitly resumed legacy run; surface conflicts or an unrelated active feature rather than overwriting them. Brainstorming may precede exploration decisions, but it does not precede ICM bookkeeping.
+
+## Purpose
 
 Turns vague intent into a documented, approved design spec through structured dialogue —
 before any codebase research or implementation planning begins.
@@ -43,7 +49,7 @@ exist and be approved.
 
 Every new feature with unclear design goes through this process. A new config capability, a new function that expands behavior, a new UI path — if the shape is still fuzzy, this is where you turn it into an approved spec. "Simple" feature work is where unexamined assumptions cause the most wasted planning work. The spec can be a paragraph. But you MUST present it and get approval.
 
-This is not the path for trivial non-feature corrections already covered by `small_change` or `Micro Mode`. If the request is only a wording fix, local correction, or similarly bounded non-feature adjustment, follow the lighter route defined by `pulse:using-pulse` instead of forcing a brainstorming spec.
+Clear small changes and prototypes may use compact decisions and a short plan through `pulse:using-pulse`; they still initialize or reuse ICM. Use brainstorming only when the design needs clarification, rather than imposing a separate spec on already-clear work.
 
 ---
 
@@ -60,7 +66,7 @@ This is not the path for trivial non-feature corrections already covered by `sma
 | Spec | Write the approved design to `history/<feature>/spec.md` | Stable spec for exploring |
 | Self-review | Run the spec reviewer subagent and fix serious issues | Planning-ready spec |
 | User review gate | Wait for explicit approval on the written spec | Approved handoff artifact |
-| Handoff | Update `.pulse/STATE.md` and recommend `pulse:exploring` as the next manual step | Clean pipeline transition |
+| Handoff | Record the approved spec on the detected runtime's handoff surface, then route to exploring | Clean pipeline transition |
 
 ---
 
@@ -118,7 +124,7 @@ digraph brainstorming {
 }
 ```
 
-**The terminal state is an approved `spec.md` plus `.pulse/STATE.md` update, with a recommendation to run `pulse:exploring` next.** Do NOT invoke planning, validating,
+**The terminal state is an approved `spec.md` plus the runtime-specific handoff described in Phase 9, with a recommendation to run `pulse:exploring` next.** Do NOT invoke planning, validating,
 or any execution skill by default. After brainstorming, the ONLY valid next step is `pulse:exploring`.
 
 ---
@@ -366,24 +372,23 @@ loop. Only proceed once the user approves.
 
 After user spec approval:
 
-1. Update `.pulse/STATE.md`:
-   ```
-   Current: brainstorming complete for <feature>
-   Spec: history/<feature>/spec.md
-   Next: invoke pulse:exploring to lock implementation decisions
-   ```
+1. Resolve the plugin root from this skill and read the runtime with `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`. A conflict, blocked state, or stale approval stops the handoff without mutation.
+2. Record the handoff for that runtime:
+   - **ICM v2:** read the active `run.json`. For its `01_explore` stage, write `stages/01_explore/output/brainstorming-handoff.md` under the active feature history, naming the approved spec and the next action. Set only `run.json.resume_path` to that repo-relative handoff path; preserve the stage, gates and approvals. If another stage or feature owns the active run, surface the mismatch instead of resetting or replacing it. V2 writes no legacy state mirrors.
+   - **Legacy v1:** preserve the existing legacy run and update `.pulse/STATE.md` with the completed brainstorming, approved spec path, and exploring as the next action. Do not migrate the run implicitly.
+   - **None:** preserve the approved spec and route through `pulse:using-pulse` to initialize ICM before continuing. If that spec already occupies the intended history directory, use a distinct new run slug and reference the existing spec; the initializer must not overwrite prior history. Then use the v2 handoff above.
 
-2. Present to user:
+3. Present to user:
    > "Spec approved. Next step: run `pulse:exploring` to extract implementation decisions
    > (gray areas, scope boundaries, and locked choices) before planning begins."
 
-3. Optional continue-now path:
+4. Optional continue-now path:
    - Only if the user explicitly asks to continue now, invoke `pulse:exploring` in the same session.
-   - Otherwise stop after the spec approval + `.pulse/STATE.md` update + recommendation above.
+   - Otherwise stop after the approved spec, runtime-specific handoff, and recommendation above.
 
 <HARD-GATE>
 Do NOT invoke planning, create beads, or write any code.
-The terminal state of this skill is a written, approved spec and STATE update.
+The terminal state of this skill is a written, approved spec and runtime-specific handoff.
 The ONLY valid next step is pulse:exploring (manual by default, or invoked now only when the user explicitly asks).
 </HARD-GATE>
 

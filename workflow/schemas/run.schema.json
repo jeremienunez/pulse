@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pulse ICM run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "workflow_version", "feature", "request_path", "current_stage", "gates", "execution", "resume_path", "created_at", "updated_at", "completed_at"],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "workflow_version": { "const": "1.0" },
+    "feature": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "request_path": { "type": "string" },
+    "current_stage": { "enum": ["01_explore", "02_plan", "03_validate", "04_execute", "05_review", "06_compound", "complete"] },
+    "gates": { "type": "object" },
+    "execution": { "type": "object" },
+    "resume_path": { "type": "string" },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "completed_at": { "type": "string" }
+  }
+}

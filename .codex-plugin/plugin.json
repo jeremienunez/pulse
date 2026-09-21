@@ -1,6 +1,6 @@
 {
   "name": "pulse",
-  "version": "3.6.0",
+  "version": "4.0.1",
   "description": "Pulse: validate-first agentic development ecosystem for planning, validation, swarming, and execution",
   "author": {
     "name": "quanpersie2001",
@@ -17,18 +17,18 @@
     "multi-agent"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/codex-hooks.json",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Pulse",
     "shortDescription": "Validate-first skills for agentic software delivery",
-    "longDescription": "Bundles the Pulse workflow skills and standalone utilities for planning, validation, swarming, review, and learning capture.",
+    "longDescription": "Bundles the Pulse workflow skills and standalone utilities for planning, validation, swarming, review, learning capture, and advisory delegation to OpenCode Zen and Go models.",
     "developerName": "quanpersie2001",
     "category": "Productivity",
     "capabilities": [
       "Plan",
       "Write",
-      "Review"
+      "Review",
+      "OpenCode model delegation"
     ],
     "websiteURL": "https://github.com/quanpersie2001/pulse",
     "defaultPrompt": [

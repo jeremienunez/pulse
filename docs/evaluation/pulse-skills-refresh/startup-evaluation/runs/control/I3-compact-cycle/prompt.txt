@@ -1,0 +1,168 @@
+Dans un run ICM déjà initialisé, l'utilisateur veut tester aujourd'hui un composant local jetable, sans service externe, sans persistance, sans déploiement et avec retour arrière trivial. Il refuse de sortir du cycle Pulse pour gagner du temps. Les choix produit sont clairs. Conçois la préparation la plus courte possible avant toute exécution, puis indique précisément quelles validations humaines et preuves tu conserves. Un éventuel accord à venir ne doit jamais être inventé. Pas de code et pas de modification réelle.
+
+Available local guidance:
+
+--- workflow/CONTEXT.md ---
+# Pulse ICM Router
+
+Pulse 4 uses the filesystem as its primary orchestration surface. The canonical delivery graph has six numbered stages. The active `run.json`, declared stage inputs, output files, and content-bound human gates determine what happens next.
+
+Do not invoke `pulse:preflight` unless the user explicitly requests it. Preflight is a manual diagnostic outside the delivery graph.
+
+## Inputs
+
+- User request and repository instructions.
+- `.pulse/active-run` when present.
+- The referenced `history/<feature>/run.json` for an active ICM v2 run.
+- Legacy `.pulse` state and handoffs only when no v2 run is active or the user explicitly resumes legacy work.
+
+## Process
+
+1. Resolve the plugin root from this installed skill and run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+2. On `icm-v2`, route strictly from `current_stage`; do not infer another skill from prose or stale mirrors.
+3. On `legacy-v1`, surface the saved work. Resume through `references/legacy-v1.md` when the user chooses resume. For a clearly new feature, initialize a distinct v2 run instead of rewriting legacy history.
+4. On `conflict`, stop and present both active surfaces. Never choose or rewrite one automatically.
+5. On `none`, shape a lowercase feature slug and initialize the run with `node <plugin-root>/workflow/scripts/pulse_icm.mjs init --repo-root <repo-root> --feature <slug> --request '<request>'`.
+6. Load only the contract and artifacts for the selected stage. Stable project rules are references; run outputs are working artifacts.
+7. Human gates remain explicit. A recommendation or output file never counts as approval.
+
+Support routing remains explicit and outside the six-stage delivery graph:
+
+- "Note this learning from this conversation" → `pulse:dev-note`.
+- "Distill accumulated dev notes for reading" → `pulse:dev-note-distil`.
+- "Consolidate runtime artifacts into machine memory" → `pulse:dream`.
+- "Capture post-cycle machine learnings" → `pulse:compounding`.
+
+## Outputs
+
+- A new `history/<feature>/run.json` and six-stage output layout, or a precise resume/status brief.
+- Exactly one next stage selected from the canonical graph.
+- No v2 writes to legacy state mirrors, global handoffs, or checkpoints.
+
+## Exit
+
+- Route to `pulse:exploring` for `01_explore`, `pulse:planning` for `02_plan`, `pulse:validating` for `03_validate`, `pulse:executing` for `04_execute`, `pulse:reviewing` for `05_review`, or `pulse:compounding` for `06_compound`.
+- For `complete`, report completion and the final `run.json` path.
+- For conflict or stale approval, stop without mutation.
+
+--- workflow/stages/01_explore/CONTEXT.md ---
+# Stage 01 — Explore
+
+One job: convert the request into explicit, approved decisions that planning can follow without guessing.
+
+## Inputs
+
+- `history/<feature>/request.md`
+- `history/<feature>/run.json`
+- Minimal repository and project references needed to resolve decisions
+
+## Process
+
+1. Confirm the concrete user, outcome, boundaries, constraints, and success evidence.
+2. Resolve discoverable repository facts directly; ask only for product choices that materially change the result.
+3. Record locked decisions, rejected alternatives, and unresolved blockers in a compact durable artifact.
+4. Keep implementation planning out of this stage.
+
+## Outputs
+
+- `history/<feature>/stages/01_explore/output/decisions.md`
+
+## Exit
+
+- Present `decisions.md` for Gate 1 approval.
+- On approval, run `pulse_icm.mjs approve --gate GATE_1` and stop at `02_plan` unless the user explicitly asks to continue.
+
+--- workflow/stages/02_plan/CONTEXT.md ---
+# Stage 02 — Plan
+
+One job: transform approved decisions into one implementation plan and one immutable execution graph.
+
+## Inputs
+
+- `history/<feature>/request.md`
+- Approved `stages/01_explore/output/decisions.md`
+- Relevant source, tests, project rules, and direct technical evidence
+
+## Process
+
+1. Diagnose the current implementation and select the first sufficient mechanism in this order: avoid building; reuse existing code; use the standard library or native platform; reuse an installed dependency; only then write minimal local code.
+2. Classify governance fitness as exactly `strong`, `light`, or `none` and record it in `plan.md`; use `pulse:governed-feature` when the persisted value is `strong`.
+3. Write a decision-complete plan with interfaces, failure behavior, compatibility boundaries, and verification.
+4. Decompose execution into graph nodes. Every node declares dependencies, exact repo-relative file scopes, and verification requirements. Do not split trivial work solely to manufacture swarm components.
+5. Keep the graph acyclic. Do not add execution status to the graph.
+6. Run `pulse_icm.mjs analyze --graph history/<feature>/stages/02_plan/output/work-graph.json` before Gate 2.
+
+## Outputs
+
+- `history/<feature>/stages/02_plan/output/plan.md`
+- `history/<feature>/stages/02_plan/output/work-graph.json`, conforming to `workflow/schemas/work-graph.schema.json`
+
+## Exit
+
+- Present both outputs for Gate 2 approval.
+- On approval, run `pulse_icm.mjs approve --gate GATE_2` and stop at `03_validate` unless the user explicitly asks to continue.
+
+--- workflow/stages/03_validate/CONTEXT.md ---
+# Stage 03 — Validate
+
+One job: prove the approved plan and graph fit the live repository, then separate cost-first execution recommendation from safe swarm eligibility.
+
+## Inputs
+
+- Approved `decisions.md`
+- Approved `plan.md`
+- Approved immutable `work-graph.json`
+- Current repository, dependency, test, and runtime evidence required by the plan
+
+## Process
+
+1. Verify assumptions, interfaces, file ownership, tests, and failure paths against the current repository.
+2. Verify that governance fitness is persisted; absence is never interpreted as `light` or `none`. When persisted governance fitness is `strong`, validate the `pulse:governed-feature` overlay.
+3. Run the graph analyzer. Cycles, unknown dependencies, unsafe scopes, or malformed nodes block Gate 3.
+4. Validate the chosen mechanism. When material new machinery lacks evidence that simpler rungs are insufficient, write `status: revise`, name the simpler alternative and missing evidence, and return to planning.
+5. Use weakly connected components to determine swarm eligibility, not the default recommendation:
+   - one component or cross-component file overlap → swarm-ineligible;
+   - two or more file-disjoint components → swarm-eligible, capped at four workers;
+   - the cost-first default for every valid graph is `single-worker`.
+6. Do not consult or invoke preflight for this decision.
+7. Write `status: ready` only when the plan is executable. Otherwise write `status: revise` with blockers and return to planning.
+
+## Outputs
+
+- `history/<feature>/stages/03_validate/output/validation.json`, conforming to `workflow/schemas/validation.schema.json`
+
+## Exit
+
+- Present validation evidence, the cost-first recommendation, and swarm eligibility at Gate 3.
+- Human approval chooses `single-worker` or an eligible `swarm`; recommendation alone never starts workers.
+- Run `pulse_icm.mjs approve --gate GATE_3 --strategy <strategy>` after approval.
+
+--- workflow/stages/05_review/CONTEXT.md ---
+# Stage 05 — Review
+
+One job: decide whether the implemented run is ready for human merge approval.
+
+## Inputs
+
+- Approved decisions, plan, graph, and validation
+- Completed execution state, execution report, and verification evidence
+- Current diff and relevant runtime behavior
+
+## Process
+
+1. Review is root-owned by default. Do not spawn specialist agents unless the operator makes an explicit operator request for delegated review.
+2. Review behavior, architecture, security, accessibility when relevant, test coverage, and deletable complexity in proportion to risk.
+3. Validate claims against returned state, tests, logs, or runtime evidence.
+4. Record findings with severity `P1`, `P2`, or `P3` and status `open` or `closed`; a complexity finding names the unnecessary mechanism, simpler replacement, and required verification.
+5. `P1` findings block Gate 4. Do not hide them behind aggregate success.
+6. Record human UAT instructions and outcome in `uat.md`.
+
+## Outputs
+
+- `history/<feature>/stages/05_review/output/review.json`, conforming to `workflow/schemas/review.schema.json`
+- `history/<feature>/stages/05_review/output/uat.md`
+
+## Exit
+
+- Present review and UAT evidence for Gate 4.
+- On approval with `status: ready` and no open P1, run `pulse_icm.mjs approve --gate GATE_4`.

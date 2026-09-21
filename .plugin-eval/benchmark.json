@@ -13,7 +13,7 @@
   ],
   "shared": {
     "verifiers": [
-      "node .pulse/scripts/pulse_status.mjs --json",
+      "node skills/using-pulse/scripts/pulse_status.mjs --json",
       "bash scripts/check-markdown-links.sh"
     ]
   },

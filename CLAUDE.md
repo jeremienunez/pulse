@@ -1,125 +1,89 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This repository packages Pulse 4 for Codex first, with best-effort Claude metadata compatibility.
 
-## What This Repo Is
+## Architecture
 
-Pulse is a packaged skill plugin for Claude Code and Codex. Its workflow contract lives primarily in `SKILL.md` files, while repo-local Node scripts handle onboarding, state sync, dependency checks, and other control-plane behavior. The repo ships 22 skills that chain together to move from vague requirements to shipped, reviewed, compounded code.
+Pulse uses Interpretable Context Methodology:
 
-## Repository Layout
+- `workflow/CONTEXT.md`  router and Layer 1 context.
+- `workflow/stages/01_explore` through `06_compound`  canonical numbered stage contracts.
+- `workflow/graph.json`  declarative stage graph.
+- `skills/*/SKILL.md`  plugin-discovered skills; seven core skills are generated from workflow contracts.
+- `skills/*/references/legacy-v1.md`  frozen complete legacy contracts.
+- `skills/using-pulse/scripts/pulse_icm.mjs`  deterministic run, gate, hash, and connectivity mechanics.
+- `.mcp.json`  GitNexus, Docker MCP, and Morph companion configuration.
+- No lifecycle hooks are packaged or installed.
 
-- `skills/` — canonical source for all skill definitions (each skill is a `SKILL.md` file in its own directory)
-- `.codex-plugin/plugin.json` — Codex plugin manifest
-- `.claude-plugin/plugin.json` — Claude plugin manifest
-- `.mcp.json` — packaged MCP manifest for shared runtime servers
-- `.agents/plugins/marketplace.json` — Codex marketplace metadata
-- `scripts/sync-skills.sh` — raw skill mirror helper for agents/Claude compatibility
-- `AGENTS.md` — workflow rules and bead integration (re-read after context compaction)
-- `references/` — upstream/pedagogical material (Superpowers, AI Multimodal, Khuym lineage docs); not part of the shipping plugin
+## Delivery Graph
 
-## Key Tools
-
-| Tool | CLI | Purpose |
-|------|-----|---------|
-| Beads CLI | **`br`** (not `bd`) | Create, update, close, sync work items |
-| Beads viewer | `bv` | TUI and graph inspection |
-| Git | `git` | Version control |
-| Native swarm adapters | — | Claude Code teammates or Codex subagents in swarm mode |
-| GitNexus | `gitnexus` | Optional graph-backed codebase intelligence |
-
-**Important:** The beads CLI binary is `br`. Use `br` in Pulse workflows and examples.
-
-## Delivery Chain
-
-The core workflow is a gated, linear pipeline:
-
-```
-pulse:preflight → pulse:using-pulse → pulse:exploring → pulse:planning → pulse:validating → pulse:swarming → pulse:executing(×N) → pulse:reviewing → pulse:compounding
+```text
+using-pulse -> exploring -> planning -> validating -> executing -> reviewing -> compounding
 ```
 
-Four human gates control progression:
-- **GATE 1** (after exploring): Approve `CONTEXT.md`
-- **GATE 2** (after planning): Approve selected shape artifact (`work-shape.md` | `phase-plan.md` | `epic-map.md`)
-- **GATE 3** (after validating): Approve feasibility-validated current work execution — never skip this
-- **GATE 4** (after reviewing): P1 findings must be fixed before merge approval
+Brainstorming is optional. Preflight is explicit-only. Swarming is an approved Stage 04 strategy.
 
-## Artifact Locations
+## New-Run Artifacts
 
-```
-.pulse/tooling-status.json           ← preflight writes this
-.pulse/state.json                    ← machine-readable routing mirror
-.pulse/STATE.md                      ← shared state across phases
-.pulse/project-docs.json             ← routing map for repo-owned project docs consumed by Pulse
-.pulse/handoffs/manifest.json        ← owner-scoped pause/resume index
-history/<feature>/verification/      ← canonical verification evidence
-history/<feature>/CONTEXT.md         ← exploring output (source of truth for decisions)
-history/<feature>/approach.md        ← planning synthesis
-history/<feature>/work-shape.md      ← canonical shape artifact for direct/spike/small
-history/<feature>/phase-plan.md      ← canonical shape artifact for milestone-shaped work
-history/<feature>/epic-map.md        ← canonical shape artifact for capability/risk-shaped work
-history/<feature>/current-story-pack.md ← current-work artifact when using epic-map path
-history/<feature>/phase-<n>-contract.md ← current-work contract when using phase-plan path
-history/<feature>/phase-<n>-story-map.md ← bead map for the active current-work contract
-history/<feature>/lifecycle-summary.md ← durable audit summary for gates/outcomes/follow-up debt
-                                       ← contract: using-pulse/references/history-lifecycle-contract.md
-.beads/                              ← bead files (planning may create for direct/small; validate-first paths may create after readiness)
-.spikes/                             ← spike verification results
-.pulse/memory/                      ← shared reusable memory output
+```text
+.pulse/active-run
+history/<feature>/
+  request.md
+  run.json
+  stages/01_explore/output/decisions.md
+  stages/02_plan/output/plan.md
+  stages/02_plan/output/work-graph.json
+  stages/03_validate/output/validation.json
+  stages/04_execute/output/execution-state.json
+  stages/04_execute/output/execution-report.md
+  stages/04_execute/output/verification/
+  stages/05_review/output/review.json
+  stages/05_review/output/uat.md
+  stages/06_compound/output/compounding.md
 ```
 
-## Editing Skills
+Gate approvals bind hashes. Work graph status never changes after Gate 2; execution status belongs in `execution-state.json`.
 
-Each skill lives at `skills/<name>/SKILL.md`. When adding or modifying a skill:
+## Editing and Testing
 
-1. The SKILL.md is the entire skill definition — there's no separate code to compile.
-2. Skills are auto-discovered — no per-skill registration needed in manifests.
-3. Use `pulse:writing-pulse-skills` for controlled `BASELINE → INTERVENTION → RETEST` skill evaluation.
-
-## Testing
-
-Pulse has automated coverage for onboarding/runtime control-plane behavior in `skills/using-pulse/scripts/test_onboard_pulse.mjs`. The `references/superpowers/tests/brainstorm-server/` suite is separate reference material and not part of the shipping plugin.
-
-## Session Protocol
-
-```bash
-git status              # Check what changed
-git add <files>         # Stage code changes
-br sync --flush-only   # Flush bead changes to disk
-git commit -m "..."     # Commit code
-br sync --flush-only   # Flush any new bead changes to disk
-git push                # Push to remote
-```
+1. Edit canonical files under `workflow/`, then run `node scripts/build-workflow-skills.mjs`.
+2. Preserve each frozen legacy contract unless intentionally fixing legacy behavior with its own baseline/retest.
+3. Run `node --test workflow/scripts/test_pulse_icm.mjs workflow/scripts/test_workflow_contracts.mjs`.
+4. Run `node skills/using-pulse/scripts/test_onboard_pulse.mjs`.
+5. Run the strict plugin evaluator and plugin validator before installation.
+6. Use `pulse:writing-pulse-skills` for exact-profile BASELINE -> INTERVENTION -> RETEST evidence.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **pulse** (2501 symbols, 3738 relationships, 151 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **pulse-tuned** (2155 symbols, 3755 relationships, 159 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+> Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
 ## Always Do
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
+- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
+- **MUST run `detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows. For regression review, compare against the default branch: `detect_changes({scope: "compare", base_ref: "main"})`.
 - **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+- When exploring unfamiliar code, use `query({search_query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `context({name: "symbolName"})`.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
 
 ## Never Do
 
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
+- NEVER edit a function, class, or method without first running `impact` on it.
 - NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
+- NEVER commit changes without running `detect_changes()` to check affected scope.
 
 ## Resources
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/pulse/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/pulse/clusters` | All functional areas |
-| `gitnexus://repo/pulse/processes` | All execution flows |
-| `gitnexus://repo/pulse/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/pulse-tuned/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/pulse-tuned/clusters` | All functional areas |
+| `gitnexus://repo/pulse-tuned/processes` | All execution flows |
+| `gitnexus://repo/pulse-tuned/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

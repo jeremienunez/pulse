@@ -1,272 +1,79 @@
 ---
 name: using-pulse
-description: Use when bootstrapping or resuming work in a Pulse project after pulse:preflight, or when a request needs Pulse work-shape/current-work routing and mode-aware skill selection.
+description: "Use at the start of any project task, including small changes, prototypes and unclear ideas, or when resuming an existing Pulse run."
 metadata:
-  version: '2.2'
+  version: '4.0'
   ecosystem: pulse
+  generated_from: 'workflow/CONTEXT.md'
   dependencies:
     - id: node-runtime
       kind: command
       command: node
       missing_effect: unavailable
-      reason: Pulse scout and session helpers require Node.js 18+.
-    - id: beads-cli
-      kind: command
-      command: br
-      missing_effect: unavailable
-      reason: using-pulse assumes preflight has confirmed Pulse bead tooling before routing execution-capable work.
-    - id: beads-viewer
-      kind: command
-      command: bv
-      missing_effect: unavailable
-      reason: using-pulse assumes preflight has confirmed Pulse bead tooling before routing execution-capable work.
+      reason: Pulse ICM run and graph helpers require Node.js 18+.
 ---
+
+<!-- GENERATED FROM PULSE ICM WORKFLOW. EDIT THE CANONICAL CONTRACT, NOT THIS FILE. -->
 
 # using-pulse
 
-Bootstrap meta-skill. Load this after `pulse:preflight` to route into the correct next Pulse skill and resume safely inside a preflight-ready Pulse environment.
+## Runtime Selection
 
-Use this 3-plane model:
-- **Operator plane** — user goal, approvals, active mode, and next gate.
-- **Cookbook plane** — which Pulse skill to invoke next.
-- **Scout plane** — repo truth: onboarding/tooling health, state mirrors, handoffs, checkpoints, and memory pointers.
+1. Resolve the installed Pulse plugin root from this `SKILL.md` path.
+2. Run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+3. If status is `icm-v2`, follow the embedded canonical contract below and do not load legacy guidance.
+4. If status is `legacy-v1`, read `references/legacy-v1.md` and follow that frozen contract without rewriting history.
+5. If status is `conflict`, stop and surface the conflicting v2 and legacy surfaces.
+6. If status is `none`, follow the router contract below to initialize a new ICM v2 run.
 
-This skill is a pure router + scout brief inside a preflight-ready Pulse runtime. It does not replace downstream skill contracts, and it does not make onboarding/remediation or runtime-readiness decisions.
+## ICM v2 Contract
 
-## Preflight Contract
+# Pulse ICM Router
 
-`pulse:preflight` is the sole readiness authority for a Pulse session.
+Pulse 4 uses the filesystem as its primary orchestration surface. The canonical delivery graph has six numbered stages. The active `run.json`, declared stage inputs, output files, and content-bound human gates determine what happens next.
 
-- If preflight readiness is missing or stale in `.pulse/tooling-status.json`, invoke `pulse:preflight`.
-- If `.pulse/tooling-status.json` is missing, invoke `pulse:preflight`.
-- If preflight reported `FAIL` or `blocked`, stop and present that result instead of re-checking tooling here.
-- Missing `br`/`bv` is a preflight blocker for Pulse execution-capable routing; this skill must not treat missing bead tooling as a local workaround case.
-- If preflight reported `DEGRADED`, route within the approved downgrade and do not rerun onboarding or tool-health checks.
-- If dependency warnings are surfaced in preflight output, keep command-vs-MCP wording explicit:
-  - `Missing commands: ...`
-  - `Missing MCP server configuration: ...`
+Start every new project task through this router, including a small edit, a disposable prototype or an unclear idea. Detect and initialize ICM before producing project, prototype or brainstorming artifacts. Reuse the matching active run instead of creating one per session. The model, task size and intended lifetime do not change this entry rule.
 
-Do not run `onboard_pulse.mjs --apply` from this skill. Any onboarding or remediation change belongs to `pulse:preflight`.
+Do not invoke `pulse:preflight` unless the user explicitly requests it. Preflight is a manual diagnostic outside the delivery graph.
 
-## Before Anything Else
+## Inputs
 
-1. Read `.pulse/tooling-status.json`.
-2. If `.pulse/scripts/pulse_status.mjs` exists, run `node .pulse/scripts/pulse_status.mjs --json`.
-3. If the scout script is missing, or preflight readiness artifacts are missing/stale/blocked, run `pulse:preflight` first.
-4. Respect `recommended_mode` from preflight:
-   - `swarm` → `pulse:swarming` allowed
-   - `single-worker` → skip swarming, use `pulse:executing`
-   - `planning-only` → do not start execution
-   - `blocked` → clear blockers first
+- User request and repository instructions.
+- `.pulse/active-run` when present.
+- The referenced `history/<feature>/run.json` for an active ICM v2 run.
+- Legacy `.pulse` state and handoffs only when no v2 run is active or the user explicitly resumes legacy work.
 
-## Session Scout
+## Process
 
-After onboarding, run:
+1. Resolve the plugin root from this installed skill and run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+2. On `icm-v2`, route strictly from `current_stage`; do not infer another skill from prose or stale mirrors.
+3. On `legacy-v1`, surface the saved work. Resume through `references/legacy-v1.md` when the user chooses resume. For a clearly new feature, initialize a distinct v2 run instead of rewriting legacy history.
+4. On `conflict`, stop and present both active surfaces. Never choose or rewrite one automatically.
+5. On `none`, shape a lowercase feature slug and initialize the run with `node <plugin-root>/workflow/scripts/pulse_icm.mjs init --repo-root <repo-root> --feature <slug> --request '<request>'`.
+6. Load only the contract and artifacts for the selected stage. Stable project rules are references; run outputs are working artifacts.
+7. Human gates remain explicit. A recommendation or output file never counts as approval.
 
-```bash
-node .pulse/scripts/pulse_status.mjs --json
-```
+## Proportionate preparation
 
-Scout is read-only orientation. It summarizes onboarding, dependency health, state mirrors, handoffs, advisory checkpoints, project-doc routing hints, and targeted memory recall.
+Simple work and prototypes stay inside the same ICM cycle. Keep decisions short, use one graph node when sufficient, and verify the actual behavior with the project's existing tools. Record the prototype's purpose, limits and disposal path. Do not require a new framework, a large specification, Beads, swarm or legacy onboarding merely to make it count as Pulse work.
 
-Scout output is context, not a gate bypass. Keep gates and downstream skill contracts intact.
+Use the existing human approvals; do not add new confirmation rounds for choices already authorized. Readiness checks apply to the capabilities the selected work actually needs. A prototype is neither an exemption from ICM nor an automatic reason to run the optional full preflight diagnostic.
 
-Project docs are part of the scout contract:
-- if `.pulse/project-docs.json` is mapped, read the mapped repo-level docs before feature history when terminology or architecture boundaries matter
-- if project docs are only detected, surface that and consider `pulse:bootstrap-project-context` before deeper planning
-- if project docs are missing, do not invent a repo glossary silently; keep the absence explicit
+Support routing remains explicit and outside the six-stage delivery graph:
 
-### Checkpoint and State Posture
+- "Note this learning from this conversation" → `pulse:dev-note`.
+- "Distill accumulated dev notes for reading" → `pulse:dev-note-distil`.
+- "Consolidate runtime artifacts into machine memory" → `pulse:dream`.
+- "Capture post-cycle machine learnings" → `pulse:compounding`.
 
-Checkpoint files under `.pulse/checkpoints/<feature>/...` are **advisory snapshots only**.
+## Outputs
 
-Authoritative sources remain:
-1. active entries in `.pulse/handoffs/manifest.json`
-2. owner handoff file selected from the active manifest
-3. current state mirrors (`.pulse/state.json`, `.pulse/STATE.md`)
+- A new `history/<feature>/run.json` and six-stage output layout, or a precise resume/status brief.
+- Exactly one next stage selected from the canonical graph.
+- No v2 writes to legacy state mirrors, global handoffs, or checkpoints.
 
-Use checkpoints for quick comparison, recall hooks, and resume briefing acceleration. Never treat checkpoints as a second state machine.
+## Exit
 
-See `references/handoff-contract.md` for canonical pause/resume companion rendering, and `references/history-lifecycle-contract.md` for durable audit expectations.
-
-### GitNexus Readiness Is Part of Session Start
-
-Treat `gitnexus` as preferred discovery when configured.
-- `configured = true`: prefer `pulse:gitnexus`, then verify with file reads.
-- `configured = false`: continue with grep/file inspection.
-- Use `matched_sources` to verify where MCP config came from.
-
-Readiness here is config availability, not index-quality validation.
-
----
-
-## Dependency Declaration Contract
-
-Every packaged Pulse skill must make its dependency posture explicit. There are only three valid states:
-
-1. **Command-backed skill** — declare each required CLI under `metadata.dependencies` with `kind: command`, the binary name in `command`, a truthful `missing_effect`, and a short `reason`.
-2. **MCP-backed skill** — declare each required MCP server under `metadata.dependencies` with `kind: mcp_server`, the expected `server_names`, the supported `config_sources`, a truthful `missing_effect`, and a short `reason`.
-3. **Dependency-free packaged skill** — declare `metadata.dependencies: []` to say the skill was reviewed and does not rely on first-class external tools.
-
-Do not leave a packaged skill with undeclared dependency posture.
-
-When updating or adding packaged Pulse skills, run:
-- `node skills/using-pulse/scripts/test_onboard_pulse.mjs`
-- `bash scripts/sync-skills.sh --dry-run`
-
----
-
-## Routing Cookbook
-
-Use this routing cookbook to route into the next specialist skill. It is a maintained using-pulse routing aid, not a complete packaged-skill inventory.
-
-| # | Skill | Load when... |
-|---|---|---|
-| 0 | `pulse:preflight` | Starting, resuming, or before execution-capable flow |
-| 1 | `pulse:using-pulse` | After preflight on any Pulse session |
-| 1b | `pulse:brainstorming` | Intent is vague and design is not locked |
-| 2 | `pulse:exploring` | Feature intent exists but implementation decisions are fuzzy |
-| 3 | `pulse:planning` | Decisions are locked and implementation planning is next |
-| 4 | `pulse:validating` | Current work and beads must be proven execution-ready |
-| 5 | `pulse:swarming` | `recommended_mode=swarm` and execution is approved |
-| 6 | `pulse:executing` | Direct implementation is happening |
-| 7 | `pulse:reviewing` | Execution is complete and quality gate is next |
-| 8 | `pulse:compounding` | Completed Pulse cycle and post-cycle machine learnings should be captured |
-| 9 | `pulse:systematic-debug-fix` | Agent path is blocked by failures |
-| 10 | `pulse:gitnexus` | Architecture/discovery/impact questions when configured |
-| 11 | `pulse:dev-note` | User explicitly asks to record one learning from this conversation |
-| 12 | `pulse:dev-note-distil` | User asks to distill accumulated dev-notes into reader-facing topics |
-| 13 | `pulse:dream` | User asks to consolidate runtime artifacts into machine-readable memory |
-| 14 | `pulse:writing-pulse-skills` | Editing Pulse skills |
-| 15 | `pulse:architecture-rescue` | Architecture cleanup report is requested |
-| 16 | `pulse:bootstrap-project-context` | Project-doc bootstrap or glossary setup is requested |
-
-## Routing Logic
-
-### Mode Selection
-
-| Mode | Use when... |
-|---|---|
-| `small_change` | Low-risk local fix/tweak with no new capability/API/data-model/ownership boundary |
-| `standard_feature` | Default for feature work and medium-scope refactors |
-| `high_risk_feature` | Cross-cutting or high-blast-radius feature/refactor work |
-
-If a request introduces user-visible capability, workflow, subsystem, API surface, durable data-model change, or ownership boundary, it is feature work.
-
-### First-Skill Routing
-
-| Request type | First skill |
-|---|---|
-| Unformed idea / unclear design intent | `pulse:brainstorming` |
-| Feature intent is clear but implementation decisions are unresolved | `pulse:exploring` |
-| Clear implementation request with decisions already locked (approved `CONTEXT.md`) | `pulse:planning` |
-| Small low-risk fix | `pulse:exploring` for an approved mini `CONTEXT.md`, then `pulse:planning` (`small_change`) |
-| "Review my code" | `pulse:reviewing` |
-| "Note this learning from this conversation" | `pulse:dev-note` |
-| "Distill accumulated dev notes for reading" | `pulse:dev-note-distil` |
-| "Consolidate runtime artifacts into machine memory" | `pulse:dream` |
-| "Capture post-cycle machine learnings" | `pulse:compounding` |
-| "Improve Pulse itself" | `pulse:writing-pulse-skills` |
-| "Architecture rescue" asks | `pulse:architecture-rescue` |
-| Architecture/discovery asks | `pulse:gitnexus` |
-| Repo/project-doc bootstrap or glossary setup | `pulse:bootstrap-project-context` |
-| Blocked/failing agent flow | `pulse:systematic-debug-fix` |
-| `/go` / full pipeline | Go Mode (`references/go-mode-pipeline.md`) |
-| Resume interrupted work | Resume logic from handoff manifest |
-
-Deterministic tie-breaker:
-- If the request is still unclear after a quick scout (problem, user, or success criteria not concrete), route to `pulse:brainstorming` first.
-- Otherwise, route to `pulse:exploring`.
-
-Maintenance rule: when adding/removing a first-skill routing row in the table above, update this Routing Cookbook in the same change.
-
-Do not route directly to `pulse:planning` unless an approved `history/<feature>/CONTEXT.md` already exists for this exact work slice.
-
-## Gate and State Ownership
-
-Entry-layer ownership is explicit:
-- `pulse:preflight` owns readiness artifacts (`.pulse/tooling-status.json`, `.pulse/state.json`, preflight status in `.pulse/STATE.md`).
-- `pulse:using-pulse` owns routing guidance only; it must not rewrite gate outcomes from later phases.
-- `pulse:exploring` owns writing `history/<feature>/CONTEXT.md` and handoff-ready state hints.
-- Gate 1 approval is a human decision on `history/<feature>/CONTEXT.md`; after approval, runtime state should carry `gate_status: approved`, `next_skill_recommended: pulse:planning`, and `next_action: manual_invoke` by default.
-
-Do not mark Gate 1 approved before explicit user approval.
-
-## Resume Logic
-
-Resume handling stays in the scout plane.
-
-1. Read `.pulse/handoffs/manifest.json`.
-2. Present active handoffs by owner, skill, feature, active work slice, summary, and next action.
-3. If multiple active entries exist, ask user which one to resume.
-4. Open only the selected owner file and resume from `summary`, `next_action`, `read_first`, and `payload.transfer`.
-5. Optionally use latest matching checkpoint as advisory aid.
-6. Load the chosen handoff skill and continue.
-7. Do not auto-resume without user confirmation.
-
-Canonical pause/resume schema and rendered companion contract live in `references/handoff-contract.md`.
-
-## Go Mode
-
-Go mode is the full operator-plane pipeline with 4 human gates. Canonical details live in `references/go-mode-pipeline.md`.
-
-Trigger:
-- `/go <feature>`
-- "run the full pipeline"
-- "go mode"
-
-Non-negotiable gates:
-- Gate 1: approve `history/<feature>/CONTEXT.md`
-- Gate 2: approve selected shape artifact (`work-shape.md`, `phase-plan.md`, or `epic-map.md`)
-- Gate 3: approve feasibility-validated current work execution
-- Gate 4: approve merge after reviewing (`P1` findings still block)
-
-Execution branch from preflight:
-- `recommended_mode=swarm` → `pulse:swarming`
-- `recommended_mode=single-worker` → `pulse:executing`
-- `recommended_mode=planning-only|blocked` → do not start execution
-
-## Priority Rules
-
-1. `P1` review findings always block merge.
-2. Context budget always applies: if context exceeds 65%, current owner writes its own handoff and updates manifest.
-3. `CONTEXT.md` is source of truth for product and architecture decisions.
-4. Planning owns `critical-patterns.md` ingestion; workers execute from bead context first.
-5. Planning defines `spike_question` for each HIGH-risk item; validating owns spike bead creation/execution.
-6. GATE 3 is critical. If plan soundness is uncertain, do not approve execution.
-7. Spike failures halt pipeline and route back to planning.
-8. Preflight decides swarming vs direct executing path.
-9. Never skip validating.
-
-## Red Flags
-
-Pause and surface immediately when:
-- flow jumps from exploring to execution
-- execution starts with `recommended_mode=blocked`
-- retired/global handoff path is used instead of owner-scoped handoffs
-- HIGH-risk plan has no `spike_question`
-- review is skipped outside approved lightweight `small_change` flow
-- active handoff manifest/file references are inconsistent
-- `state.json` or `STATE.md` is stale after active-work transition
-
-## File Quick Reference
-
-```text
-.pulse/tooling-status.json            <- preflight output
-.pulse/state.json                     <- machine-readable routing/status mirror
-.pulse/STATE.md                       <- shared project state
-.pulse/project-docs.json              <- project-doc routing map
-.pulse/handoffs/manifest.json         <- active handoff index (authoritative)
-.pulse/checkpoints/<feature>/...      <- advisory checkpoint snapshots
-history/<feature>/CONTEXT.md          <- locked decisions from exploring
-history/<feature>/work-shape.md       <- approved shape for direct/spike/small work
-history/<feature>/phase-plan.md       <- approved shape for milestone/phase-shaped work
-history/<feature>/epic-map.md         <- approved shape for capability/risk-shaped work
-history/<feature>/lifecycle-summary.md <- durable audit summary
-```
-
-## References
-
-- `references/go-mode-pipeline.md`
-- `references/handoff-contract.md`
-- `references/history-lifecycle-contract.md`
+- Route to `pulse:exploring` for `01_explore`, `pulse:planning` for `02_plan`, `pulse:validating` for `03_validate`, `pulse:executing` for `04_execute`, `pulse:reviewing` for `05_review`, or `pulse:compounding` for `06_compound`.
+- For `complete`, report completion and the final `run.json` path.
+- For conflict or stale approval, stop without mutation.

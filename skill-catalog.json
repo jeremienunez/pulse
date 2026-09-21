@@ -4,7 +4,7 @@
   "generatedFiles": [
     "skill-catalog.json"
   ],
-  "skillCount": 22,
+  "skillCount": 23,
   "skills": [
     {
       "directory": "architecture-rescue",
@@ -37,8 +37,8 @@
       "name": "brainstorming",
       "description": "Use before feature work only when the design is still unclear — for shaping vague product intent, comparing possible feature shapes, and turning fuzzy requests into a documented, approved spec before exploring or planning begins. Do not use this when the feature intent is already clear and the remaining work is to lock implementation decisions; that belongs to pulse:exploring. Trigger phrases: design, brainstorm, think through, what should we build, help me think, explore options, compare directions, unclear feature shape, vague product request.",
       "metadata": {
-        "version": "1.2",
-        "position": "1b of 9 — optional pre-step before pulse:exploring"
+        "version": "1.3",
+        "position": "optional design support before 01_explore decisions"
       },
       "hasReferencesDir": true,
       "hasScriptsDir": true,
@@ -48,10 +48,10 @@
     {
       "directory": "compounding",
       "name": "compounding",
-      "description": "Use after completed Pulse work when the user asks to capture post-cycle machine-readable learnings for future planning and execution.",
+      "description": "Use after approved Pulse review to capture durable post-cycle learnings.",
       "metadata": {
-        "version": "1.4",
-        "position": "8 of 9 — runs after reviewing, before next feature"
+        "version": "4.0",
+        "position": null
       },
       "hasReferencesDir": true,
       "hasScriptsDir": false,
@@ -100,9 +100,9 @@
     {
       "directory": "executing",
       "name": "executing",
-      "description": "Use when implementing approved Pulse beads, either as a swarm worker or as a single worker when swarming is unavailable.",
+      "description": "Use when an approved Pulse work graph is ready for single-worker or swarm execution.",
       "metadata": {
-        "version": "1.6",
+        "version": "4.0",
         "position": null
       },
       "hasReferencesDir": true,
@@ -113,10 +113,10 @@
     {
       "directory": "exploring",
       "name": "exploring",
-      "description": "Use before implementation planning when feature intent is clear but implementation decisions are still unresolved, and the user needs those decisions locked first.",
+      "description": "Use when a new Pulse run needs product and architecture decisions locked before planning.",
       "metadata": {
-        "version": "1.0",
-        "position": "2 of 9 — runs after using-pulse, before planning"
+        "version": "4.0",
+        "position": null
       },
       "hasReferencesDir": true,
       "hasScriptsDir": false,
@@ -150,11 +150,24 @@
       "skillPath": "skills/governed-feature/SKILL.md"
     },
     {
+      "directory": "opencode-models",
+      "name": "opencode-models",
+      "description": "Use when the user wants to list available OpenCode Zen or Go models, ask one model for an advisory answer, or compare two to four models through Pulse.",
+      "metadata": {
+        "version": null,
+        "position": null
+      },
+      "hasReferencesDir": false,
+      "hasScriptsDir": false,
+      "hasAgentsDir": true,
+      "skillPath": "skills/opencode-models/SKILL.md"
+    },
+    {
       "directory": "planning",
       "name": "planning",
-      "description": "Use after pulse:exploring when locked decisions are ready and the user needs a mode-gated plan with an approved work shape and current-work prep for validation.",
+      "description": "Use after Pulse exploration when approved decisions need one plan and a work graph.",
       "metadata": {
-        "version": "2.6",
+        "version": "4.0",
         "position": null
       },
       "hasReferencesDir": true,
@@ -165,10 +178,10 @@
     {
       "directory": "preflight",
       "name": "preflight",
-      "description": "Use when starting any Pulse workflow, resuming a Pulse session, or before planning or execution when tool readiness or onboarding state may block the flow.",
+      "description": "Use only when the user explicitly asks to run Pulse preflight or requests a Pulse readiness/onboarding check.",
       "metadata": {
-        "version": "1.2",
-        "position": "0 - runs before using-pulse or any execution-capable phase"
+        "version": "1.4",
+        "position": "operator-invoked diagnostic outside the default delivery chain"
       },
       "hasReferencesDir": true,
       "hasScriptsDir": false,
@@ -204,9 +217,9 @@
     {
       "directory": "reviewing",
       "name": "reviewing",
-      "description": "Use after execution completes when the user needs final quality verification and release-readiness review before closeout.",
+      "description": "Use after Pulse execution to produce final findings and UAT evidence before merge approval.",
       "metadata": {
-        "version": "1.4",
+        "version": "4.0",
         "position": null
       },
       "hasReferencesDir": true,
@@ -243,9 +256,9 @@
     {
       "directory": "using-pulse",
       "name": "using-pulse",
-      "description": "Use when bootstrapping or resuming work in a Pulse project after pulse:preflight, or when a request needs Pulse work-shape/current-work routing and mode-aware skill selection.",
+      "description": "Use at the start of any project task, including small changes, prototypes and unclear ideas, or when resuming an existing Pulse run.",
       "metadata": {
-        "version": "2.2",
+        "version": "4.0",
         "position": null
       },
       "hasReferencesDir": true,
@@ -256,10 +269,10 @@
     {
       "directory": "validating",
       "name": "validating",
-      "description": "Use after planning and before execution to verify approved current work is reality-fit, feasibility-ready, and explicitly approved at Gate 3.",
+      "description": "Use after Pulse planning to verify the plan and work graph before execution approval.",
       "metadata": {
-        "version": "1.7",
-        "position": "3"
+        "version": "4.0",
+        "position": null
       },
       "hasReferencesDir": true,
       "hasScriptsDir": false,

@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenCode Models"
+  short_description: "List, ask, and compare OpenCode models"
+  default_prompt: "Use $pulse:opencode-models to list available OpenCode Go models."

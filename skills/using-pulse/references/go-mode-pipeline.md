@@ -6,13 +6,15 @@
 
 ## Overview
 
-Go mode is the full Pulse pipeline from raw feature request to merged, compounded learnings. It always starts with preflight and always has exactly 4 human gates. The pipeline now separates a whole-feature work shape from the current work slice so each gate protects the next irreversible commitment.
+Go mode is the full Pulse pipeline from raw feature request to merged, compounded learnings. It starts with `pulse:using-pulse` and has exactly 4 human gates. Preflight is an optional operator-requested diagnostic outside the default chain. The pipeline separates a whole-feature work shape from the current work slice so each gate protects the next irreversible commitment.
 
 ```text
 User: "/go <feature>"
        |
        v
-[BOOTSTRAP] preflight -> using-pulse -> check state, read critical-patterns.md
+[BOOTSTRAP] using-pulse -> check state, read critical-patterns.md
+       |
+       |-- optional only on explicit user request: preflight readiness diagnostic
        |
        v
 [STEP 1] exploring
@@ -68,28 +70,30 @@ DONE
 
 ## Runtime Branch
 
-Read `.pulse/tooling-status.json` after preflight:
+If a current explicit preflight result exists, read `.pulse/tooling-status.json`:
 
 - `recommended_mode=swarm` -> use `pulse:swarming`, then worker `pulse:executing`
 - `recommended_mode=single-worker` -> skip `pulse:swarming`, invoke `pulse:executing` directly
 - `recommended_mode=planning-only` -> stop before execution
 - `recommended_mode=blocked` -> stop entirely
 
+If no current preflight result exists, planning continues normally and execution defaults to single-worker. Use swarm only after the user explicitly requests it and `pulse:swarming` verifies live runtime and reservation capability.
+
 ---
 
-## Step 0: Preflight + Bootstrap
+## Step 0: Bootstrap
 
-Run `pulse:preflight`.
+Run `pulse:using-pulse`. Run `pulse:preflight` only when the user explicitly requests it.
 
-Outputs:
+Optional preflight outputs, when explicitly requested:
 
 - `.pulse/tooling-status.json`
 - `.pulse/STATE.md`
 - optional resume notice via `.pulse/handoffs/manifest.json`
 
-Do not enter the rest of Go mode until preflight returns `PASS` or `DEGRADED`.
+When a current explicit preflight result exists, honor any checked-mode blocker it reports. Missing or stale preflight output does not block Go mode and must not trigger a refresh.
 
-After preflight passes, bootstrap the pipeline:
+Bootstrap the pipeline:
 
 1. Run State Bootstrap from `pulse:using-pulse` (check `.pulse/`, read `critical-patterns.md`).
 2. Determine feature slug from the user's description (lowercase-hyphenated, e.g. `agent-email-inbox`).
@@ -321,7 +325,7 @@ If the user selects `Approve and continue now`, or gives equivalent explicit app
 
 ## Step 5: Swarming + Executing (Current Work Slice)
 
-Use `pulse:swarming` if preflight recommends `swarm`, otherwise invoke `pulse:executing` directly.
+Use `pulse:swarming` when a current explicit preflight recommends `swarm`, or when the user explicitly requests swarm and live capability checks pass. Otherwise invoke `pulse:executing` directly.
 
 **The pulse:swarming skill will:**
 
@@ -505,10 +509,10 @@ Do not write or read the retired global handoff file.
 
 When resuming:
 
-1. run preflight if tooling may have changed
-2. load `pulse:using-pulse`
-3. read the manifest
-4. resume the selected owner
+1. load `pulse:using-pulse`
+2. read the manifest
+3. resume the selected owner
+4. run preflight only if the user explicitly requests a refreshed readiness diagnostic
 
 ---
 
@@ -542,8 +546,8 @@ Absent = enabled. Only set to disable.
 For small fixes (<=3 files, LOW risk, no gray areas):
 
 ```text
-preflight
-  -> verify tooling, write STATE.md
+using-pulse
+  -> scout state; preflight remains opt-in
   |
 planning (lightweight)
   -> one-slice shape plan

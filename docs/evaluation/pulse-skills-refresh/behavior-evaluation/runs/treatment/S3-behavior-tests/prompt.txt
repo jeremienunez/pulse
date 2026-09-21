@@ -1,0 +1,64 @@
+Tu exécutes un nœud approuvé en single-worker. L'API publique quoteBasket([{sku:"A",unitCents:1000,qty:2}], {discountPercent:10,deliveryCents:300}) doit renvoyer 2100 cents : remise sur les marchandises puis livraison. Quantité négative : erreur publique. Le dépôt utilise node:test. Les interfaces et ce périmètre sont déjà approuvés. Un collègue suggère de mocker les helpers privés, de copier la formule de calcul dans l'assertion et d'ajouter Jest. Propose le contenu minimal des tests et l'ordre de réalisation du nœud. Un changement indépendant de texte statique est aussi demandé ; dis quelle vérification lui convient. Ne modifie aucun fichier et ne redemande pas l'approbation déjà accordée.
+
+Available local guidance:
+
+--- workflow/stages/04_execute/CONTEXT.md ---
+# Stage 04 — Execute
+
+One job: complete the approved work graph and record verification without changing its plan-time structure.
+
+## Inputs
+
+- Approved `decisions.md`, `plan.md`, `work-graph.json`, and `validation.json`
+- `run.json.execution.approved_strategy`
+- Relevant source and test files for the selected graph node
+
+## Process
+
+1. Read the immutable graph and create `execution-state.json`; node states are `pending`, `in_progress`, `complete`, or `blocked`.
+2. For `single-worker`, do not spawn execution agents; the root executes ready nodes sequentially and updates execution state after direct verification.
+3. For `swarm`, invoke `pulse:swarming` with the approved component partition and `max_workers`. Beads and reservations are coordination projections only; reconcile completion back into `execution-state.json` centrally.
+4. Never exceed declared file scopes. Stop on a scope conflict, failed verification, or stale approval.
+5. When a node is investigative debugging, `pulse:systematic-debug-fix` is the authoritative owner for reproduction, root-cause tracing, the minimal repair, and regression proof.
+6. Record node-specific evidence under `output/verification/` and summarize the implementation in `execution-report.md`.
+
+## Outputs
+
+- `history/<feature>/stages/04_execute/output/execution-state.json`
+- `history/<feature>/stages/04_execute/output/execution-report.md`
+- `history/<feature>/stages/04_execute/output/verification/`
+
+## Exit
+
+- When every node is `complete`, run `pulse_icm.mjs complete --stage 04_execute` and route to `pulse:reviewing`.
+- Any blocked node prevents advancement.
+
+--- workflow/stages/05_review/CONTEXT.md ---
+# Stage 05 — Review
+
+One job: decide whether the implemented run is ready for human merge approval.
+
+## Inputs
+
+- Approved decisions, plan, graph, and validation
+- Completed execution state, execution report, and verification evidence
+- Current diff and relevant runtime behavior
+
+## Process
+
+1. Review is root-owned by default. Do not spawn specialist agents unless the operator makes an explicit operator request for delegated review.
+2. Review behavior, architecture, security, accessibility when relevant, test coverage, and deletable complexity in proportion to risk.
+3. Validate claims against returned state, tests, logs, or runtime evidence.
+4. Record findings with severity `P1`, `P2`, or `P3` and status `open` or `closed`; a complexity finding names the unnecessary mechanism, simpler replacement, and required verification.
+5. `P1` findings block Gate 4. Do not hide them behind aggregate success.
+6. Record human UAT instructions and outcome in `uat.md`.
+
+## Outputs
+
+- `history/<feature>/stages/05_review/output/review.json`, conforming to `workflow/schemas/review.schema.json`
+- `history/<feature>/stages/05_review/output/uat.md`
+
+## Exit
+
+- Present review and UAT evidence for Gate 4.
+- On approval with `status: ready` and no open P1, run `pulse_icm.mjs approve --gate GATE_4`.

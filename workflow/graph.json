@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "workflow": "pulse-icm",
+  "workflow_version": "1.0",
+  "entry_skill": "pulse:using-pulse",
+  "manual_diagnostics": ["pulse:preflight"],
+  "optional_pre_stages": ["pulse:brainstorming"],
+  "execution_strategies": ["single-worker", "pulse:swarming"],
+  "stages": [
+    {
+      "id": "01_explore",
+      "skill": "pulse:exploring",
+      "contract": "workflow/stages/01_explore/CONTEXT.md",
+      "inputs": ["request"],
+      "outputs": ["decisions"],
+      "gate_after": "GATE_1"
+    },
+    {
+      "id": "02_plan",
+      "skill": "pulse:planning",
+      "contract": "workflow/stages/02_plan/CONTEXT.md",
+      "inputs": ["request", "decisions"],
+      "outputs": ["plan", "work_graph"],
+      "gate_after": "GATE_2"
+    },
+    {
+      "id": "03_validate",
+      "skill": "pulse:validating",
+      "contract": "workflow/stages/03_validate/CONTEXT.md",
+      "inputs": ["decisions", "plan", "work_graph"],
+      "outputs": ["validation"],
+      "gate_after": "GATE_3"
+    },
+    {
+      "id": "04_execute",
+      "skill": "pulse:executing",
+      "contract": "workflow/stages/04_execute/CONTEXT.md",
+      "inputs": ["decisions", "plan", "work_graph", "validation", "approved_execution_strategy"],
+      "outputs": ["execution_state", "execution_report", "verification"],
+      "gate_after": ""
+    },
+    {
+      "id": "05_review",
+      "skill": "pulse:reviewing",
+      "contract": "workflow/stages/05_review/CONTEXT.md",
+      "inputs": ["decisions", "plan", "work_graph", "validation", "execution_report", "verification"],
+      "outputs": ["review", "uat"],
+      "gate_after": "GATE_4"
+    },
+    {
+      "id": "06_compound",
+      "skill": "pulse:compounding",
+      "contract": "workflow/stages/06_compound/CONTEXT.md",
+      "inputs": ["decisions", "plan", "validation", "execution_report", "review", "uat"],
+      "outputs": ["compounding"],
+      "gate_after": ""
+    }
+  ]
+}

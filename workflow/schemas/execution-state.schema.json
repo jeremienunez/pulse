@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pulse execution state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "nodes"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "nodes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "enum": ["pending", "in_progress", "complete", "blocked"] }
+    }
+  }
+}

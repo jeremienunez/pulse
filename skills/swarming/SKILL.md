@@ -20,7 +20,7 @@ metadata:
 
 # Swarming
 
-If preflight readiness is missing, stale, or blocked (check `.pulse/tooling-status.json`), stop and invoke `pulse:using-pulse` before continuing.
+Preflight is opt-in. Do not invoke it automatically. A current explicit preflight result may constrain swarm mode; without one, run direct live swarm and reservation capability checks before spawning workers.
 
 ## Role Boundary — Read First
 

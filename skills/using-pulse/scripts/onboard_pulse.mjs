@@ -16,6 +16,7 @@ import {
   readDependencyHealthSafe,
   buildDependencyWarningSummary,
 } from "./pulse_dependencies.mjs";
+import { detectPulseRuntime } from "./pulse_icm.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const USING_PULSE_DIR = path.dirname(path.dirname(SCRIPT_PATH));
@@ -33,6 +34,7 @@ const LEGACY_HOOK_SCRIPT_FILENAMES = [
   "pulse_stop.py",
 ];
 const MANAGED_SUPPORT_FILES = {
+  "pulse_icm.mjs": path.join(USING_PULSE_DIR, "scripts", "pulse_icm.mjs"),
   "pulse_status.mjs": path.join(USING_PULSE_DIR, "scripts", "pulse_status.mjs"),
   "pulse_state.mjs": path.join(USING_PULSE_DIR, "scripts", "pulse_state.mjs"),
   "pulse_dependencies.mjs": path.join(USING_PULSE_DIR, "scripts", "pulse_dependencies.mjs"),
@@ -285,11 +287,10 @@ function renderCompactPromptBlock() {
     "STOP. Before doing anything else:",
     "1. Read AGENTS.md completely.",
     "2. If present, run `node .pulse/scripts/pulse_status.mjs --json` for a quick Pulse status snapshot.",
-    "3. Read .pulse/tooling-status.json, .pulse/state.json, and .pulse/STATE.md if they exist.",
-    "4. Read .pulse/handoffs/manifest.json and any active owner handoff you are resuming.",
-    "5. Re-open the active feature CONTEXT.md before more planning or edits.",
-    "6. Re-open the current bead or task before running more implementation commands.",
-    "7. Check the current worktree state with git status before resuming.",
+    "3. If status reports ICM v2, open only .pulse/active-run, its run.json, and the current numbered stage outputs.",
+    "4. If status reports legacy v1, read .pulse/state.json, .pulse/STATE.md, and the selected active handoff.",
+    "5. Re-open the current stage contract or frozen legacy skill contract before more work.",
+    "6. Check the current worktree state with git status before resuming.",
     "",
     "After completing these steps, briefly confirm what context you restored and only then continue.",
     '"""',
@@ -363,12 +364,6 @@ function mergeCodexConfig(configPath, allowCompactPromptReplace) {
   if (nextProjectDocText !== updatedText) {
     changes.push("set_project_doc_max_bytes");
     updatedText = nextProjectDocText;
-  }
-
-  const nextFeatureText = upsertFeaturesCodexHooks(updatedText);
-  if (nextFeatureText !== updatedText) {
-    changes.push("enable_codex_hooks_feature");
-    updatedText = nextFeatureText;
   }
 
   const compactResult = mergeCompactPrompt(updatedText, allowCompactPromptReplace);
@@ -577,6 +572,7 @@ export function checkRepo(repoRoot) {
   const dependencyWarning = buildDependencyWarningSummary(dependencyHealth);
 
   const pluginVersion = loadPluginVersion();
+  const pulseRuntime = detectPulseRuntime(repoRoot);
   const agentsPath = path.join(repoRoot, "AGENTS.md");
   const configPath = path.join(repoRoot, ".codex", "config.toml");
   const hooksPath = path.join(repoRoot, ".codex", "hooks.json");
@@ -616,9 +612,6 @@ export function checkRepo(repoRoot) {
     if (projectDocMaxBytes === undefined || projectDocMaxBytes < 65536) {
       actions.push("set_project_doc_max_bytes");
     }
-    if (!isCodexHooksEnabled(configText)) {
-      actions.push("enable_features.codex_hooks");
-    }
     if (compactPromptConflict) {
       actions.push("compact_prompt_requires_confirmation");
     } else if (!compactPromptManaged) {
@@ -647,12 +640,14 @@ export function checkRepo(repoRoot) {
     actions.push("sync_pulse_dependency_inventory");
   }
 
-  const state = readJsonIfExists(statePath);
-  const normalizedState = normalizePulseState(state);
-  const stateNeedsWrite =
-    !state || JSON.stringify(state, null, 2) !== JSON.stringify(normalizedState, null, 2);
-  if (stateNeedsWrite) {
-    actions.push("write_.pulse/state.json");
+  if (pulseRuntime.kind !== "icm-v2") {
+    const state = readJsonIfExists(statePath);
+    const normalizedState = normalizePulseState(state);
+    const stateNeedsWrite =
+      !state || JSON.stringify(state, null, 2) !== JSON.stringify(normalizedState, null, 2);
+    if (stateNeedsWrite) {
+      actions.push("write_.pulse/state.json");
+    }
   }
 
   if (onboarding.plugin_version !== pluginVersion) {
@@ -677,6 +672,7 @@ export function checkRepo(repoRoot) {
       compact_prompt_conflict: compactPromptConflict,
       onboarding_state: Object.keys(onboarding).length > 0 ? onboarding : null,
       state_exists: fs.existsSync(statePath),
+      pulse_runtime: pulseRuntime.kind,
       runtime,
       dependency_health: dependencyHealth,
       dependency_warning: dependencyWarning,
@@ -691,6 +687,7 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
   }
 
   const pluginVersion = loadPluginVersion();
+  const pulseRuntime = detectPulseRuntime(repoRoot);
   const template = readTemplate();
 
   const agentsPath = path.join(repoRoot, "AGENTS.md");
@@ -708,9 +705,13 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
   ensureParent(agentsPath);
   ensureParent(configPath);
   ensureParent(onboardingPath);
-  ensureParent(statePath);
+  if (pulseRuntime.kind !== "icm-v2") {
+    ensureParent(statePath);
+  }
   assertSafeDependencyInventoryTarget(repoRoot, dependencyInventoryPath);
-  fs.mkdirSync(checkpointsRootPath, { recursive: true });
+  if (pulseRuntime.kind !== "icm-v2") {
+    fs.mkdirSync(checkpointsRootPath, { recursive: true });
+  }
   fs.mkdirSync(memoryLearningsPath, { recursive: true });
   fs.mkdirSync(memoryCorrectionsPath, { recursive: true });
   fs.mkdirSync(memoryRatchetPath, { recursive: true });
@@ -730,13 +731,15 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
     }
   }
 
-  const defaultState = buildDefaultState();
-  const nextState = normalizePulseState({
-    ...defaultState,
-    ...readJsonIfExists(statePath),
-  });
-  fs.writeFileSync(statePath, `${JSON.stringify(nextState, null, 2)}\n`, "utf8");
-  syncPulseRuntimeArtifacts(repoRoot);
+  if (pulseRuntime.kind !== "icm-v2") {
+    const defaultState = buildDefaultState();
+    const nextState = normalizePulseState({
+      ...defaultState,
+      ...readJsonIfExists(statePath),
+    });
+    fs.writeFileSync(statePath, `${JSON.stringify(nextState, null, 2)}\n`, "utf8");
+    syncPulseRuntimeArtifacts(repoRoot);
+  }
 
   const legacyHookScripts = cleanupLegacyHookScripts(repoRoot);
   const legacySupportScripts = cleanupLegacySupportScripts(repoRoot);
@@ -769,8 +772,8 @@ export function applyRepo(repoRoot, allowCompactPromptReplace) {
       legacy_support_scripts_removed: legacySupportScripts,
       support_scripts: supportScripts,
       dependency_inventory: path.relative(repoRoot, dependencyInventoryPath),
-      state_file: path.relative(repoRoot, statePath),
-      checkpoints_root: path.relative(repoRoot, checkpointsRootPath),
+      state_file: pulseRuntime.kind === "icm-v2" ? "" : path.relative(repoRoot, statePath),
+      checkpoints_root: pulseRuntime.kind === "icm-v2" ? "" : path.relative(repoRoot, checkpointsRootPath),
       memory_root: path.relative(repoRoot, memoryRootPath),
       memory_directories: [
         path.relative(repoRoot, memoryLearningsPath),

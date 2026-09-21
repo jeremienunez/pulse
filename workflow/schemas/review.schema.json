@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pulse review result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "summary", "findings"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "status": { "enum": ["ready", "blocked"] },
+    "summary": { "type": "string" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "severity", "status", "summary"],
+        "properties": {
+          "id": { "type": "string" },
+          "severity": { "enum": ["P1", "P2", "P3"] },
+          "status": { "enum": ["open", "closed"] },
+          "summary": { "type": "string" }
+        }
+      }
+    }
+  }
+}
