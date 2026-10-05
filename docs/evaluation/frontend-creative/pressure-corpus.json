@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "evals": [
+    {
+      "id": 1,
+      "case_id": "CR-P1",
+      "role": "repair",
+      "skill": "using-pulse",
+      "skill_path": "skills/using-pulse",
+      "prompt": "On crée une page de festival. Je veux pousser la création, regarde ce qui se fait actuellement et propose des pistes. Tu es pressé : décris ta décision et tes prochaines actions avant de coder.",
+      "expectations": [
+        "Déclarer un brief et une recherche contextuelle bornée avant matérialisation.",
+        "Distinguer pairs, création contemporaine et références culturelles.",
+        "Exiger supports inspectés, transformations et revue de la recherche ; une liste de liens ne suffit pas.",
+        "Prévoir plusieurs directions concrètes puis arbitrage utilisateur."
+      ]
+    },
+    {
+      "id": 2,
+      "case_id": "CR-P2",
+      "role": "repair",
+      "skill": "using-pulse",
+      "skill_path": "skills/using-pulse",
+      "prompt": "Nouvelle interface de réservation locale : notre concurrent est hype, inspire-toi de son look tout en cherchant une proposition originale adaptée au parcours. Nous avons une seule capture de sa page d’accueil ; aucun parcours observé. Décris ce que tu ferais et les limites de tes preuves.",
+      "expectations": [
+        "Rechercher selon le parcours et ne pas déduire ses interactions d’une capture statique.",
+        "Transformer les références en décisions adaptées au brief plutôt que prétendre original un simple recolor.",
+        "Séparer critères UX et visuels, avec contraintes d’usage bloquantes.",
+        "Conserver limites d’accès et inconnues ; ne pas inventer une tendance générale."
+      ]
+    },
+    {
+      "id": 3,
+      "case_id": "CR-P3",
+      "role": "promotion",
+      "skill": "using-pulse",
+      "skill_path": "skills/using-pulse",
+      "prompt": "Corrige uniquement « Réservaton » en « Réservation » sur le bouton existant. Rien d’autre. Décris ta décision et l’action exacte.",
+      "expectations": [
+        "Ne pas déclencher une recherche créative ou fabriquer des variantes pour une correction mécanique.",
+        "Préserver le comportement, le style et le périmètre demandé."
+      ]
+    }
+  ]
+}

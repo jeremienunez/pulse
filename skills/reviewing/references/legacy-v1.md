@@ -1,0 +1,83 @@
+---
+name: reviewing
+description: Use after execution completes when the user needs final quality verification and release-readiness review before closeout.
+metadata:
+  version: '1.4'
+  ecosystem: pulse
+  upstream: swarming
+  downstream: compounding
+  dependencies:
+    - id: beads-cli
+      kind: command
+      command: br
+      missing_effect: unavailable
+      reason: Reviewing creates review beads and closes the epic through br.
+    - id: beads-viewer
+      kind: command
+      command: bv
+      missing_effect: unavailable
+      reason: Reviewing verifies the live bead graph before epic closeout.
+---
+
+# Reviewing
+
+Preflight is opt-in. Do not invoke it automatically. If `.pulse/tooling-status.json` exists, treat it as advisory evidence and surface any relevant blocker; otherwise verify reviewing's immediate dependencies directly.
+
+`br` is required for reviewing. If `br` is unavailable, Gate 4 cannot run; stop immediately, report the missing command, and let the user decide whether to request a full preflight/remediation pass.
+
+Reviewing is the last automated quality gate before shipping. It verifies behavior, safety, and completeness for Pulse ecosystem closeout rather than trusting bead closure alone.
+
+## When to Invoke
+
+- After `pulse:swarming` reports final current work is complete and the approved shape artifacts plus `.pulse/STATE.md` agree no later work remains (`work-shape.md`, `phase-plan.md`, or `epic-map.md` + `current-story-pack.md` when epic-map is active)
+- During Pulse ecosystem closeout immediately before Gate 4 decisioning
+- Optional flags: `--serial`, `--skip-uat` (only when human UAT is intentionally omitted and non-interactive evidence is used)
+
+## Required Inputs
+
+Read before starting:
+
+- `.pulse/project-docs.json` when present, plus minimal relevant listed docs
+- `history/<feature>/CONTEXT.md`
+- `history/<feature>/approach.md`
+- `history/<feature>/governance.md` when present, plus its bundled structural-validator result
+- `history/<feature>/lifecycle-summary.md` when present
+- `.pulse/STATE.md`
+- reviewing-owned changeset evidence for the active Pulse closeout path
+
+If `.pulse/project-docs.json` is absent, detect and read the smallest relevant project docs (README, architecture, ADR, domain docs).
+
+## Runtime Contract
+
+All execution-time rules live in `references/runtime-appendix.md`. Treat that file as canonical for:
+
+- 4+1 review orchestration
+- severity mapping and review bead creation rules
+- Gate 4 hard-block behavior for P1
+- artifact verification contract and severity mapping
+- UAT failure routing
+- finishing checklist and closeout
+
+## Minimum Flow
+
+1. When governance exists, rerun its bundled structural validator and include the overlay in specialist semantic/evidence review; keep structural, semantic, evidence, and human approval results separate.
+2. Run specialist review (4+1 model).
+3. Run artifact verification for all promised deliverables.
+4. Turn every accepted finding into a review bead by severity and deduplicate overlaps before presenting results.
+5. Enforce hard gate: if any P1 review bead exists, stop and present the blocking bead IDs; do not continue closeout.
+6. Run human UAT unless explicitly skipped under allowed mode.
+7. If UAT or finishing checks reveal new accepted findings, create or update the corresponding review/fix beads before proceeding.
+8. Execute finishing and update Pulse state artifacts.
+9. Recommend `pulse:compounding` as the next skill and default to `next_action: manual_invoke`.
+
+## Handoff
+
+If paused, write a reviewing-owned handoff using `../using-pulse/references/handoff-contract.md` and register it in `.pulse/handoffs/manifest.json`.
+
+After finishing completes, report feature completion, update runtime state for Gate 4 approval, and recommend compounding without auto-triggering it unless the user explicitly asks to continue now.
+
+## References
+
+- `references/runtime-appendix.md` — canonical runtime contract
+- `references/review-agent-prompts.md` — exact prompts for all 5 agents
+- `references/review-bead-template.md` — review bead format and creation contract

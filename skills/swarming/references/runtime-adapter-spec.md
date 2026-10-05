@@ -92,8 +92,10 @@ Do not force Codex workers through fake inbox, topic, or registration flows. Par
 
 If the active runtime cannot satisfy the behaviors above well enough for safe swarm execution:
 
-- preflight must recommend `single-worker`
+- report the failed live capability check and select `single-worker`
 - Pulse skips `pulse:swarming`
 - execution continues through standalone `pulse:executing`
+
+Run preflight only if the user explicitly requests the broader diagnostic.
 
 Do not fake swarm behavior with missing progress visibility or missing reservation enforcement.

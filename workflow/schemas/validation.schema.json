@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pulse validation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "summary", "evidence", "blockers"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "status": { "enum": ["ready", "revise"] },
+    "summary": { "type": "string" },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "blockers": { "type": "array", "items": { "type": "string" } }
+  }
+}

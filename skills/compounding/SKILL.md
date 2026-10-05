@@ -1,57 +1,50 @@
 ---
 name: compounding
-description: Use after completed Pulse work when the user asks to capture post-cycle machine-readable learnings for future planning and execution.
+description: "Use after approved Pulse review to capture durable post-cycle learnings."
 metadata:
-  version: '1.4'
+  version: '4.0'
   ecosystem: pulse
-  position: '8 of 9 — runs after reviewing, before next feature'
-  dependencies:
-    - id: beads-cli
-      kind: command
-      command: br
-      missing_effect: unavailable
-      reason: Compounding reads bead history to reconstruct executed work.
+  generated_from: 'workflow/stages/06_compound/CONTEXT.md'
+  dependencies: []
 ---
 
-# Compounding
+<!-- GENERATED FROM PULSE ICM WORKFLOW. EDIT THE CANONICAL CONTRACT, NOT THIS FILE. -->
 
-If preflight readiness is missing, stale, or blocked (check `.pulse/tooling-status.json`), stop and invoke `pulse:using-pulse` before continuing.
+# compounding
 
-Compounding turns completed feature work into reusable memory for future planning and execution.
+## Runtime Selection
 
-Compounding is the canonical post-cycle, machine-readable learning pass for completed Pulse work. Use `pulse:dream` for runtime-artifact consolidation outside that post-cycle moment.
+1. Resolve the installed Pulse plugin root from this `SKILL.md` path.
+2. Run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+3. If status is `icm-v2`, follow the embedded canonical contract below and do not load legacy guidance.
+4. If status is `legacy-v1`, read `references/legacy-v1.md` and follow that frozen contract without rewriting history.
+5. If status is `conflict`, stop and surface the conflicting v2 and legacy surfaces.
+6. If status is `none`, route to `pulse:using-pulse`; this stage must not invent a run.
 
-## When to Use
+## ICM v2 Contract
 
-- after `pulse:reviewing` completes and feature is merged
-- after systematic bug-fix work reveals non-obvious root cause
-- after abandoned work that produced reusable lessons
+# Stage 06 — Compound
 
-Skip only when no durable/reusable learning emerged.
+One job: turn observed execution and review evidence into durable source-level improvements. Compounding is the canonical post-cycle, machine-readable learning pass for completed Pulse work. Use `pulse:dream` for runtime-artifact consolidation outside that post-cycle moment.
 
-## Runtime Contract
+## Inputs
 
-All operational rules live in `references/runtime-appendix.md`. Treat that file as canonical for:
+- Decisions, plan, validation, execution report, verification, review, and UAT artifacts
+- Existing `.pulse/memory/` patterns relevant to the completed run
 
-- 3-stream analysis (pattern/decision/failure)
-- synthesis quality bar (`applicable-when` must be specific)
-- propagation taxonomy and routing destinations
-- promotion rules for `critical-patterns.md`
-- durable memory capture behavior in `.pulse/memory/*`
-- state updates and handoff outputs
+## Process
 
-## Minimum Flow
+1. Separate reusable patterns from feature-specific detail.
+2. Trace recurring output corrections back to the contract, reference, or source decision that should improve.
+3. Write concise learnings with applicability conditions and evidence paths.
+4. Promote only durable findings into `.pulse/memory/`; never store secrets or raw transcript noise.
 
-1. Gather context from history artifacts, verification evidence, and bead graph.
-2. Run three analysis streams and collect outputs.
-3. Synthesize one learnings file at `.pulse/memory/learnings/YYYYMMDD-<slug>.md`.
-4. Classify each learning by propagation type and route to destination.
-5. Promote only truly global-critical learnings.
-6. Update `.pulse/STATE.md` and `.pulse/state.json`.
+## Outputs
 
-## References
+- `history/<feature>/stages/06_compound/output/compounding.md`
+- Any justified promotions under `.pulse/memory/`
 
-- `references/runtime-appendix.md` — canonical runtime contract
-- `references/learnings-template.md` — learnings file structure
-- `references/analysis-prompts.md` — prompts for pattern/decision/failure analysis
-- `references/corrections-and-ratchets.md` — correction and ratchet file structures
+## Exit
+
+- Run `pulse_icm.mjs complete --stage 06_compound`.
+- Report the completed run path, promoted learnings, and any explicitly deferred work.

@@ -1,83 +1,53 @@
 ---
 name: reviewing
-description: Use after execution completes when the user needs final quality verification and release-readiness review before closeout.
+description: "Use after Pulse execution to produce final findings and UAT evidence before merge approval."
 metadata:
-  version: '1.4'
+  version: '4.0'
   ecosystem: pulse
-  upstream: swarming
-  downstream: compounding
-  dependencies:
-    - id: beads-cli
-      kind: command
-      command: br
-      missing_effect: unavailable
-      reason: Reviewing creates review beads and closes the epic through br.
-    - id: beads-viewer
-      kind: command
-      command: bv
-      missing_effect: unavailable
-      reason: Reviewing verifies the live bead graph before epic closeout.
+  generated_from: 'workflow/stages/05_review/CONTEXT.md'
+  dependencies: []
 ---
 
-# Reviewing
+<!-- GENERATED FROM PULSE ICM WORKFLOW. EDIT THE CANONICAL CONTRACT, NOT THIS FILE. -->
 
-If preflight readiness is missing, stale, or blocked (check `.pulse/tooling-status.json`), stop and invoke `pulse:using-pulse` before continuing.
+# reviewing
 
-`br` is required for reviewing. If `br` is unavailable, Gate 4 cannot run; stop immediately and route to preflight/tooling remediation via `pulse:using-pulse`.
+## Runtime Selection
 
-Reviewing is the last automated quality gate before shipping. It verifies behavior, safety, and completeness for Pulse ecosystem closeout rather than trusting bead closure alone.
+1. Resolve the installed Pulse plugin root from this `SKILL.md` path.
+2. Run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+3. If status is `icm-v2`, follow the embedded canonical contract below and do not load legacy guidance.
+4. If status is `legacy-v1`, read `references/legacy-v1.md` and follow that frozen contract without rewriting history.
+5. If status is `conflict`, stop and surface the conflicting v2 and legacy surfaces.
+6. If status is `none`, route to `pulse:using-pulse`; this stage must not invent a run.
 
-## When to Invoke
+## ICM v2 Contract
 
-- After `pulse:swarming` reports final current work is complete and the approved shape artifacts plus `.pulse/STATE.md` agree no later work remains (`work-shape.md`, `phase-plan.md`, or `epic-map.md` + `current-story-pack.md` when epic-map is active)
-- During Pulse ecosystem closeout immediately before Gate 4 decisioning
-- Optional flags: `--serial`, `--skip-uat` (only when human UAT is intentionally omitted and non-interactive evidence is used)
+# Stage 05 — Review
 
-## Required Inputs
+One job: decide whether the implemented run is ready for human merge approval.
 
-Read before starting:
+## Inputs
 
-- `.pulse/project-docs.json` when present, plus minimal relevant listed docs
-- `history/<feature>/CONTEXT.md`
-- `history/<feature>/approach.md`
-- `history/<feature>/governance.md` when present, plus its bundled structural-validator result
-- `history/<feature>/lifecycle-summary.md` when present
-- `.pulse/STATE.md`
-- reviewing-owned changeset evidence for the active Pulse closeout path
+- Approved decisions, plan, graph, and validation
+- Completed execution state, execution report, and verification evidence
+- Current diff and relevant runtime behavior
 
-If `.pulse/project-docs.json` is absent, detect and read the smallest relevant project docs (README, architecture, ADR, domain docs).
+## Process
 
-## Runtime Contract
+1. Review is root-owned by default. Do not spawn specialist agents unless the operator makes an explicit operator request for delegated review.
+2. Review behavior, architecture, security, accessibility when relevant, test coverage, and deletable complexity in proportion to risk.
+3. Validate claims against returned state, tests, logs, or runtime evidence.
+4. Record findings with severity `P1`, `P2`, or `P3` and status `open` or `closed`; a complexity finding names the unnecessary mechanism, simpler replacement, and required verification.
+5. `P1` findings block Gate 4. Do not hide them behind aggregate success.
+6. Record human UAT instructions and outcome in `uat.md`.
 
-All execution-time rules live in `references/runtime-appendix.md`. Treat that file as canonical for:
+## Outputs
 
-- 4+1 review orchestration
-- severity mapping and review bead creation rules
-- Gate 4 hard-block behavior for P1
-- artifact verification contract and severity mapping
-- UAT failure routing
-- finishing checklist and closeout
+- `history/<feature>/stages/05_review/output/review.json`, conforming to `workflow/schemas/review.schema.json`
+- `history/<feature>/stages/05_review/output/uat.md`
 
-## Minimum Flow
+## Exit
 
-1. When governance exists, rerun its bundled structural validator and include the overlay in specialist semantic/evidence review; keep structural, semantic, evidence, and human approval results separate.
-2. Run specialist review (4+1 model).
-3. Run artifact verification for all promised deliverables.
-4. Turn every accepted finding into a review bead by severity and deduplicate overlaps before presenting results.
-5. Enforce hard gate: if any P1 review bead exists, stop and present the blocking bead IDs; do not continue closeout.
-6. Run human UAT unless explicitly skipped under allowed mode.
-7. If UAT or finishing checks reveal new accepted findings, create or update the corresponding review/fix beads before proceeding.
-8. Execute finishing and update Pulse state artifacts.
-9. Recommend `pulse:compounding` as the next skill and default to `next_action: manual_invoke`.
-
-## Handoff
-
-If paused, write a reviewing-owned handoff using `../using-pulse/references/handoff-contract.md` and register it in `.pulse/handoffs/manifest.json`.
-
-After finishing completes, report feature completion, update runtime state for Gate 4 approval, and recommend compounding without auto-triggering it unless the user explicitly asks to continue now.
-
-## References
-
-- `references/runtime-appendix.md` — canonical runtime contract
-- `references/review-agent-prompts.md` — exact prompts for all 5 agents
-- `references/review-bead-template.md` — review bead format and creation contract
+- Present review and UAT evidence for Gate 4.
+- On approval with `status: ready` and no open P1, run `pulse_icm.mjs approve --gate GATE_4`.

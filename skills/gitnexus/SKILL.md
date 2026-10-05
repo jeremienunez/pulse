@@ -21,7 +21,7 @@ metadata:
 
 Codebase intelligence support skill for Pulse.
 
-If preflight readiness is missing, stale, or blocked (check `.pulse/tooling-status.json`), stop and invoke `pulse:using-pulse` first.
+Preflight is opt-in. Do not invoke it automatically. Use the read-only repo scout when available, then fall back to direct inspection if GitNexus is not configured.
 
 ## Start With The Repo Scout
 

@@ -6,7 +6,9 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-import { readPulseStatus } from "../.pulse/scripts/pulse_state.mjs";
+import { readPulseStatus } from "../skills/using-pulse/scripts/pulse_state.mjs";
+import { conditionFromFiles, prepareEvidence, caseDefinition, runnerPacket, validateEvidence } from "./lib/pulse-skill-evidence.mjs";
+import { prepareCreativeSession, recordCreativeEvent, checkCreativeSession, finalizeCreativeSession } from "./lib/pulse-creative-session.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +25,7 @@ const EVIDENCE_KIND = "pulse-chat-benchmark-evidence";
 const EVIDENCE_SCHEMA_VERSION = 3;
 
 function parseArgs(argv) {
-  const subcommands = new Set(["run", "analyze", "scout", "benchmark"]);
+  const subcommands = new Set(["run", "analyze", "scout", "benchmark", "creative"]);
   const args = {
     command: "run",
     workspace: DEFAULT_WORKSPACE,
@@ -39,6 +41,12 @@ function parseArgs(argv) {
     strict: false,
     json: false,
     help: false,
+    legacyAudit: false,
+    executionKind: "native",
+    condition: null,
+    references: [],
+    creativePhase: null,
+    creativeInput: null,
   };
 
   let index = 0;
@@ -62,6 +70,12 @@ function parseArgs(argv) {
     else if (token === "--strict") args.strict = true;
     else if (token === "--json") args.json = true;
     else if (token === "--help" || token === "-h") args.help = true;
+    else if (token === "--legacy-audit") args.legacyAudit = true;
+    else if (token === "--execution-kind") args.executionKind = argv[++index];
+    else if (token === "--condition") args.condition = path.resolve(argv[++index]);
+    else if (token === "--references") args.references = argv[++index].split(",").filter(Boolean);
+    else if (args.command === "creative" && token === "--phase") args.creativePhase = argv[++index];
+    else if (args.command === "creative" && token === "--input") args.creativeInput = path.resolve(argv[++index]);
     else throw new Error(`Unknown option: ${token}`);
   }
 
@@ -77,6 +91,7 @@ Usage:
   node scripts/pulse-plugin-eval.mjs analyze [options]
   node scripts/pulse-plugin-eval.mjs scout [options]
   node scripts/pulse-plugin-eval.mjs benchmark [options]
+  node scripts/pulse-plugin-eval.mjs creative --phase prepare|record|check|finalize --input JSON --json
 
 Commands:
   run                     Run all evaluator stages (default)
@@ -98,6 +113,10 @@ Options:
   --strict                Exit non-zero when any WARN occurs
   --json                  Print JSON summary only
   --help                  Show this help
+  --legacy-audit          Use historical v3 workflow; never eligible for promotion
+  --execution-kind <kind> native (default) or fixture; fixtures cannot certify a model
+  --condition <path>     Explicit frozen condition JSON instead of source SKILL.md
+  --references <paths>   Comma-separated declared references to include inline
 `);
 }
 
@@ -767,6 +786,92 @@ function finalizeBenchmark(results, args, config, sourcePath, selectedScenarios,
   };
 }
 
+function captureV4Conditions(scenarios, args, config) {
+  const explicit = args.condition ? readJson(args.condition) : null;
+  return Object.fromEntries(scenarios.map(scenario => {
+    const def = caseDefinition(scenario);
+    if (explicit) {
+      const condition = conditionFromFiles(explicit.owner, explicit.files);
+      if (explicit.digest !== condition.digest) throw new Error("Explicit condition digest mismatch.");
+      const expectedOwner = scenario.skill_path.endsWith("SKILL.md") ? scenario.skill_path : `${scenario.skill_path}/SKILL.md`;
+      if (condition.owner !== expectedOwner) throw new Error("Condition owner differs from selected skill.");
+      return [def.case_id, condition];
+    }
+    const owner = scenario.skill_path.endsWith("SKILL.md") ? scenario.skill_path : `${scenario.skill_path}/SKILL.md`;
+    const paths = [owner, ...(config.skillReferences?.[scenario.skill] || []), ...args.references];
+    const files = [...new Set(paths)].map(file => {
+      const target = path.resolve(repoRoot, file);
+      const relative = path.relative(repoRoot, target);
+      if (!file || path.isAbsolute(file) || relative.startsWith("..") || path.isAbsolute(relative)) throw new Error("Condition path escapes repository.");
+      const stat = fs.lstatSync(target);
+      if (!stat.isFile() || stat.isSymbolicLink() || !fs.realpathSync(target).startsWith(`${fs.realpathSync(repoRoot)}${path.sep}`)) throw new Error("Condition must be a regular in-repository file.");
+      const content = fs.readFileSync(target, "utf8");
+      return { path:file, content };
+    });
+    return [def.case_id, conditionFromFiles(owner, files)];
+  }));
+}
+
+function runV4Benchmark(results, args, config, sourcePath, scenarios, iterationName, iterationPath) {
+  const manifestPath = path.join(iterationPath, "preparation.json");
+  const evidencePath = args.evidence || path.join(iterationPath, DEFAULT_EVIDENCE_FILE);
+  const packetsPath = path.join(iterationPath, "runner-packet.json");
+  const conditions = captureV4Conditions(scenarios,args,config);
+  const paths = { configPath:relativeToRepo(args.config), sourcePath:relativeToRepo(sourcePath) };
+  if (!args.evidence) {
+    if (fs.existsSync(manifestPath) || fs.existsSync(evidencePath)) throw new Error("Preparation already exists; use a new iteration. Frozen evidence is never overwritten.");
+    const prepared = prepareEvidence({ iteration:iterationName, ...paths, scenarios, conditions, executionKind:args.executionKind });
+    fs.mkdirSync(iterationPath,{recursive:true});
+    writeJson(manifestPath,prepared.manifest);
+    writeJson(evidencePath,prepared.evidence);
+    writeJson(packetsPath,{kind:"pulse-runner-packets",schemaVersion:4,cases:prepared.packets});
+    writeJson(path.join(iterationPath,"judge-packet.json"),prepared.judge);
+    const runnerMarkdown = prepared.packets.map(packet => `## ${packet.case_id}\n\n${packet.request}`).join("\n");
+    fs.writeFileSync(path.join(iterationPath,"runner-packet.md"),runnerMarkdown);
+    fs.writeFileSync(path.join(iterationPath,DEFAULT_PACKET_FILE),runnerMarkdown);
+    addResult(results,"benchmark","v4-prepared","PASS","Runner guidance inline; judge packet separate; no model invoked.");
+    addResult(results,"benchmark","benchmark-ready","WARN","Capture each exact submitted request and native response separately, then fill criterion results outside the replay context.");
+    return {mode:"prepared",schemaVersion:4,iterationName,iterationPath,scenarioSourcePath:sourcePath,packetPath:packetsPath,evidencePath,manifestPath,benchmarkJsonPath:null};
+  }
+  const manifest = readJson(manifestPath);
+  const evidence = readJson(evidencePath);
+  const definitions = scenarios.map(caseDefinition);
+  const packets = definitions.map(def => runnerPacket(def,conditions[def.case_id]));
+  const checked = validateEvidence(manifest,evidence,definitions,packets);
+  const bindingPathsCurrent = manifest.iteration===iterationName && manifest.config_path===paths.configPath && manifest.scenario_source===paths.sourcePath;
+  if (!bindingPathsCurrent) checked.errors.push("Requested preparation paths or iteration differ.");
+  checked.ok = checked.ok && bindingPathsCurrent;
+  const base = {schemaVersion:4,iterationName,iterationPath,scenarioSourcePath:sourcePath,packetPath:packetsPath,evidencePath,manifestPath};
+  if (!checked.ok) {
+    addResult(results,"benchmark","v4-evidence","FAIL",checked.errors.join("; "));
+    return {...base,mode:"rejected",benchmarkJsonPath:null};
+  }
+  const benchmarkPath = path.join(iterationPath,"benchmark.json");
+  if (fs.existsSync(benchmarkPath)) throw new Error("Final result already exists; it is never replaced by another attempt.");
+  const failed = checked.scenarios.filter(item=>item.content_verdict!=='pass').length;
+  const runSummary = {count:checked.scenarios.length,completed:checked.scenarios.length,incomplete:0,
+    passed:checked.scenarios.length-failed,failed,qualified_passed:checked.qualification.status==='complete' ? checked.scenarios.length-failed : 0,
+    diagnostic:checked.qualification.status==='diagnostic' ? checked.scenarios.length : 0,
+    pass_rate:checked.qualification.status==='complete' ? (checked.scenarios.length-failed)/checked.scenarios.length : null};
+  const benchmark = {kind:"pulse-benchmark-result",schemaVersion:4,iteration:iterationName,
+    scenario_digest:manifest.scenario_digest,preparation_digest:manifest.preparation_digest,
+    evidence_path:relativeToRepo(evidencePath),runner:evidence.runner,provenance:evidence.provenance,
+    execution_kind:evidence.execution_kind,qualification:checked.qualification,
+    promotion_eligible:checked.promotion_eligible,scenarios:checked.scenarios,run_summary:runSummary,
+    verifiers:runVerifierCommands(config.shared?.verifiers||[],repoRoot),
+    notes:["Content verdict is distinct from proof qualification; no authentication of externally supplied transcripts is claimed."]};
+  for (const verifier of benchmark.verifiers) addResult(results,"benchmark",`verifier:${verifier.command}`,verifier.status,verifier.stderr||verifier.stdout);
+  if (benchmark.verifiers.some(verifier=>verifier.status!=='PASS')) benchmark.promotion_eligible=false;
+  writeJson(benchmarkPath,benchmark);
+  const rows = benchmark.scenarios.map(item=>`${item.case_id}: ${item.content_verdict} / ${item.qualification_status}`);
+  const report = [`# Pulse benchmark ${iterationName}`,"",`Proof qualification: ${checked.qualification.status}`,`Promotion eligible: ${benchmark.promotion_eligible}`,"",...rows].join("\n")+"\n";
+  fs.writeFileSync(path.join(iterationPath,"benchmark.md"),report);
+  fs.writeFileSync(path.join(args.workspace,"pulse-eval-review.html"),`<!doctype html><html lang="en"><meta charset="utf-8"><title>Pulse evidence review</title><h1>Pulse evidence review</h1><pre>${escapeHtml(report)}</pre></html>`);
+  addResult(results,"benchmark","v4-content",failed ? "FAIL" : "PASS",`content passed=${runSummary.passed}, failed=${failed}`);
+  addResult(results,"benchmark","proof-qualification",checked.qualification.status==='complete' ? "PASS" : "WARN",checked.qualification.reasons.join(", ")||"complete");
+  return {...base,mode:"finalized",benchmarkJsonPath:benchmarkPath};
+}
+
 function runBenchmark(results, args) {
   const config = loadBenchmarkConfig(args.config);
   const { sourcePath, scenarios } = loadScenarioLibrary(config, args.workspace);
@@ -786,14 +891,27 @@ function runBenchmark(results, args) {
   }
 
   const iterationName = normalizeIterationName(args.iteration) || nextIterationName(args.workspace);
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(iterationName)) throw new Error("Iteration must be a single safe directory name.");
   const iterationPath = path.join(args.workspace, iterationName);
+  if (!args.legacyAudit) return runV4Benchmark(results,args,config,sourcePath,selectedScenarios,iterationName,iterationPath);
+  if (fs.existsSync(path.join(iterationPath,"benchmark.json")) || fs.existsSync(path.join(args.workspace,"pulse-eval-review.html"))) throw new Error("Legacy audit needs a fresh output workspace; historical results remain untouched.");
+  addResult(results,"benchmark","legacy-audit","WARN","Historical v3 evidence only; no new promotion eligibility.");
   fs.mkdirSync(iterationPath, { recursive: true });
 
   if (!args.evidence) {
     return prepareBenchmark(results, args, config, sourcePath, selectedScenarios, iterationName, iterationPath);
   }
 
-  return finalizeBenchmark(results, args, config, sourcePath, selectedScenarios, iterationName, iterationPath, args.evidence);
+  const audited = finalizeBenchmark(results, args, config, sourcePath, selectedScenarios, iterationName, iterationPath, args.evidence);
+  if (audited.benchmarkJsonPath) {
+    const historical = readJson(audited.benchmarkJsonPath);
+    historical.promotion_eligible = false;
+    historical.audit_only = true;
+    writeJson(audited.benchmarkJsonPath,historical);
+    fs.appendFileSync(path.join(iterationPath,"benchmark.md"),"\nLegacy audit only: not eligible for a new promotion or certification.\n");
+    fs.appendFileSync(path.join(args.workspace,"pulse-eval-review.html"),"<!-- Legacy audit only: no promotion or certification eligibility. -->");
+  }
+  return audited;
 }
 
 function findSkillCountClaims(raw) {
@@ -905,9 +1023,6 @@ function runStaticChecks(results) {
   const pluginManifestPath = path.join(repoRoot, ".codex-plugin/plugin.json");
   const claudePluginPath = path.join(repoRoot, ".claude-plugin/plugin.json");
   const claudeMarketplacePath = path.join(repoRoot, ".claude-plugin/marketplace.json");
-  const claudeHooksPath = path.join(repoRoot, "hooks", "hooks.json");
-  const codexHooksPath = path.join(repoRoot, "hooks", "codex-hooks.json");
-  const claudeSessionStartHookPath = path.join(repoRoot, "hooks", "session-start.mjs");
   const marketplacePath = path.join(repoRoot, ".agents/plugins/marketplace.json");
   const benchmarkConfigPath = path.join(repoRoot, ".plugin-eval/benchmark.json");
   const scenarioLibraryPath = path.join(repoRoot, "pulse-eval-workspace/evals.json");
@@ -916,17 +1031,20 @@ function runStaticChecks(results) {
   const executingSkillPath = path.join(skillsRoot, "executing", "SKILL.md");
   const planningSkillPath = path.join(skillsRoot, "planning", "SKILL.md");
   const validatingSkillPath = path.join(skillsRoot, "validating", "SKILL.md");
+  const workflowGraphPath = path.join(repoRoot, "workflow", "graph.json");
+  const workflowAdaptersPath = path.join(repoRoot, "workflow", "skill-adapters.json");
+  const workflowRuntimePath = path.join(skillsRoot, "using-pulse", "scripts", "pulse_icm.mjs");
 
   const required = [
     pluginManifestPath,
     claudePluginPath,
     claudeMarketplacePath,
-    claudeHooksPath,
-    codexHooksPath,
-    claudeSessionStartHookPath,
     marketplacePath,
     mcpPath,
     skillsRoot,
+    workflowGraphPath,
+    workflowAdaptersPath,
+    workflowRuntimePath,
   ];
   for (const targetPath of required) {
     addResult(results, "static", `exists:${relativeToRepo(targetPath)}`, exists(targetPath) ? "PASS" : "FAIL", "");
@@ -937,8 +1055,6 @@ function runStaticChecks(results) {
   const manifest = readJson(pluginManifestPath);
   const claudePlugin = readJson(claudePluginPath);
   const claudeMarketplace = readJson(claudeMarketplacePath);
-  const claudeHooks = readJson(claudeHooksPath);
-  const codexHooks = readJson(codexHooksPath);
   const marketplace = readJson(marketplacePath);
   const mcp = readJson(mcpPath);
 
@@ -973,46 +1089,13 @@ function runStaticChecks(results) {
   addResult(
     results,
     "static",
-    "codex-plugin-hook-declaration",
-    manifest?.hooks === "./hooks/codex-hooks.json" ? "PASS" : "WARN",
-    `hooks=${manifest?.hooks ?? "n/a"}`,
-  );
-  const codexSessionStartEntries = Array.isArray(codexHooks?.hooks?.SessionStart)
-    ? codexHooks.hooks.SessionStart
-    : [];
-  const codexPreToolUseEntries = Array.isArray(codexHooks?.hooks?.PreToolUse)
-    ? codexHooks.hooks.PreToolUse
-    : [];
-  const codexStopEntries = Array.isArray(codexHooks?.hooks?.Stop)
-    ? codexHooks.hooks.Stop
-    : [];
-  const codexSessionStartHook = codexSessionStartEntries[0]?.hooks?.[0] || null;
-  const codexPreToolUseHook = codexPreToolUseEntries[0]?.hooks?.[0] || null;
-  const codexStopHook = codexStopEntries[0]?.hooks?.[0] || null;
-  addResult(
-    results,
-    "static",
-    "codex-hook-registration",
-    codexSessionStartEntries[0]?.matcher === "startup|resume"
-      && codexPreToolUseEntries[0]?.matcher === "Bash"
-      && codexStopEntries.length > 0
+    "automatic-hook-absence",
+    !Object.hasOwn(manifest, "hooks")
+      && !Object.hasOwn(claudePlugin, "hooks")
+      && !exists(path.join(repoRoot, "hooks"))
       ? "PASS"
-      : "WARN",
-    `SessionStart=${codexSessionStartEntries[0]?.matcher ?? "n/a"}, PreToolUse=${codexPreToolUseEntries[0]?.matcher ?? "n/a"}, Stop=${codexStopEntries.length > 0 ? "present" : "missing"}`,
-  );
-  addResult(
-    results,
-    "static",
-    "codex-hook-command-contract",
-    codexSessionStartHook?.command
-        === 'node "${PLUGIN_ROOT}/hooks/session-start.mjs"'
-      && codexPreToolUseHook?.command
-        === 'node "${PLUGIN_ROOT}/hooks/pre-tool-use.mjs"'
-      && codexStopHook?.command
-        === 'node "${PLUGIN_ROOT}/hooks/stop.mjs"'
-      ? "PASS"
-      : "WARN",
-    `SessionStart=${codexSessionStartHook?.command ?? "n/a"}, PreToolUse=${codexPreToolUseHook?.command ?? "n/a"}, Stop=${codexStopHook?.command ?? "n/a"}`,
+      : "FAIL",
+    "Pulse 4 must not package lifecycle orchestration hooks",
   );
   addResult(
     results,
@@ -1021,35 +1104,12 @@ function runStaticChecks(results) {
     claudePlugin?.skills === "./skills/" && claudePlugin?.mcpServers === "./.mcp.json" ? "PASS" : "WARN",
     `skills=${claudePlugin?.skills ?? "n/a"}, mcpServers=${claudePlugin?.mcpServers ?? "n/a"}`,
   );
-  const claudeSessionStartEntries = Array.isArray(claudeHooks?.hooks?.SessionStart)
-    ? claudeHooks.hooks.SessionStart
-    : [];
-  const claudeSessionStartHook = claudeSessionStartEntries[0]?.hooks?.[0] || null;
-  addResult(
-    results,
-    "static",
-    "claude-hook-registration",
-    claudeSessionStartEntries.length > 0 && claudeSessionStartEntries[0]?.matcher === "startup|clear|compact"
-      ? "PASS"
-      : "WARN",
-    `matcher=${claudeSessionStartEntries[0]?.matcher ?? "n/a"}`,
-  );
-  addResult(
-    results,
-    "static",
-    "claude-hook-command-contract",
-    claudeSessionStartHook?.command === 'node "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs"' && claudeSessionStartHook?.async === false
-      ? "PASS"
-      : "WARN",
-    `command=${claudeSessionStartHook?.command ?? "n/a"}, async=${claudeSessionStartHook?.async ?? "n/a"}`,
-  );
   const executingSkill = exists(executingSkillPath) ? fs.readFileSync(executingSkillPath, "utf8") : "";
-  const investigateSection = executingSkill.match(/For `investigate`:[\s\S]*?\n---/u)?.[0] || "";
   addResult(
     results,
     "static",
     "investigate-debug-owner-contract",
-    /`pulse:systematic-debug-fix` is the authoritative workflow owner/u.test(investigateSection)
+    /`pulse:systematic-debug-fix` is the authoritative owner/u.test(executingSkill)
       ? "PASS"
       : "FAIL",
     "investigate mode must route reproduction and tracing through pulse:systematic-debug-fix",
@@ -1057,8 +1117,8 @@ function runStaticChecks(results) {
   const planningSkill = exists(planningSkillPath) ? fs.readFileSync(planningSkillPath, "utf8") : "";
   const validatingSkill = exists(validatingSkillPath) ? fs.readFileSync(validatingSkillPath, "utf8") : "";
   const governanceRoutingPasses = [
-    /classify every planned feature as exactly `strong`, `light`, or `none`/u.test(planningSkill),
-    /Phase 3 cannot begin while it is absent/u.test(planningSkill),
+    /Classify governance fitness as exactly `strong`, `light`, or `none`/u.test(planningSkill),
+    /use `pulse:governed-feature` when the persisted value is `strong`/u.test(planningSkill),
     /absence is never interpreted as `light` or `none`/u.test(validatingSkill),
     /persisted governance fitness is `strong`/u.test(validatingSkill),
   ].every(Boolean);
@@ -1180,8 +1240,26 @@ function runStaticChecks(results) {
     [catalogCheck.stdout, catalogCheck.stderr].filter(Boolean).join("\n").trim() || "(no output)",
   );
 
-  const mcpServers = Object.keys(mcp || {});
-  addResult(results, "static", "mcp-servers-parse", mcpServers.length > 0 ? "PASS" : "WARN", `servers=${mcpServers.join(", ") || "none"}`);
+  const workflowSkillsCheck = runCommand(
+    process.execPath,
+    [path.join(repoRoot, "scripts/build-workflow-skills.mjs"), "--check"],
+  );
+  addResult(
+    results,
+    "static",
+    "workflow-skills-generated",
+    workflowSkillsCheck.status === 0 ? "PASS" : "FAIL",
+    [workflowSkillsCheck.stdout, workflowSkillsCheck.stderr].filter(Boolean).join("\n").trim() || "(no output)",
+  );
+
+  const mcpServers = Object.keys(mcp?.mcpServers || {});
+  addResult(
+    results,
+    "static",
+    "mcp-servers-parse",
+    ["gitnexus", "MCP_DOCKER", "morph-mcp"].every((name) => mcpServers.includes(name)) ? "PASS" : "FAIL",
+    `servers=${mcpServers.join(", ") || "none"}`,
+  );
 }
 
 function runRuntimeChecks(results, runCmd) {
@@ -1268,6 +1346,11 @@ function runScenarioChecks(results, workspacePath, iterationArg, evalIdsArg, sce
   if (!exists(benchmarkJsonPath)) return;
 
   const benchmark = readJson(benchmarkJsonPath);
+  if (benchmark.schemaVersion===4) {
+    addResult(results,"scenarios","v4-qualification",benchmark.qualification?.status==='complete' ? "PASS" : "WARN",benchmark.qualification?.status||"unavailable");
+    addResult(results,"scenarios","v4-summary",benchmark.run_summary.failed ? "FAIL" : "PASS",`content cases=${benchmark.run_summary.count}; promotion eligible=${benchmark.promotion_eligible}`);
+    return;
+  }
   if (benchmark.runner?.mode) {
     addResult(results, "scenarios", "benchmark-runner-mode", benchmark.runner.mode === "chat" ? "PASS" : "WARN", benchmark.runner.mode);
   }
@@ -1365,6 +1448,27 @@ async function main() {
 
   if (args.help) {
     printHelp();
+    return;
+  }
+
+  if (args.command === "creative") {
+    try {
+      if (!args.creativeInput || !args.creativePhase) throw new Error("Creative phase and input are required.");
+      const stat = fs.lstatSync(args.creativeInput);
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 2 * 1024 * 1024) throw new Error("Creative input must be a bounded regular JSON file.");
+      const input = readJson(args.creativeInput);
+      let result;
+      if (args.creativePhase === "prepare") result = prepareCreativeSession(input);
+      else if (args.creativePhase === "record") result = recordCreativeEvent(input.root, input.event);
+      else if (args.creativePhase === "check") result = checkCreativeSession(input.root, input.brief_id, input.target || "research");
+      else if (args.creativePhase === "finalize") result = finalizeCreativeSession(input.root);
+      else throw new Error("Unknown creative phase.");
+      console.log(JSON.stringify(result, null, 2));
+      if (result.ok === false || ["invalid-evidence", "partial", "budget-exhausted"].includes(result.status)) process.exitCode = 1;
+    } catch (error) {
+      console.log(JSON.stringify({ kind: "pulse-creative-error", schema_version: "1.0", error: String(error.message || error), promotion_eligible: false }, null, 2));
+      process.exitCode = 1;
+    }
     return;
   }
 

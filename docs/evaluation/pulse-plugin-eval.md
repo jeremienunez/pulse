@@ -1,205 +1,68 @@
 # Pulse Plugin Evaluation
 
-This runbook defines the maintainer entrypoint for Pulse plugin evaluation.
+The evaluator keeps static/runtime/scout checks and adds schema-v4 preparation and finalization. Its role is evidence integrity, not provider execution or automatic skill deployment. See [recursive skills](recursive-skills.md) for the bounded cycle and native operator protocol.
 
-It assumes the canonical workflow model in [`../ARCHITECTURE.md`](../ARCHITECTURE.md) and the live operator rules in [`../../AGENTS.md`](../../AGENTS.md). This file owns evaluator behavior only.
-
-## Primary commands
-
-Run the evaluator from repo root:
+## Commands
 
 ```bash
-node scripts/pulse-plugin-eval.mjs run
-node scripts/pulse-plugin-eval.mjs analyze
-node scripts/pulse-plugin-eval.mjs scout
-node scripts/pulse-plugin-eval.mjs benchmark
+node scripts/pulse-plugin-eval.mjs run --json
+node scripts/pulse-plugin-eval.mjs analyze --json
+node scripts/pulse-plugin-eval.mjs scout --json
+node scripts/pulse-plugin-eval.mjs benchmark --iteration baseline --eval-ids 21,2 --json
 ```
 
-`run` is the default when no subcommand is provided.
+`run` combines static, runtime, scout and benchmark; `analyze` checks structure and local prerequisites; `scout` remains read-only. `benchmark` prepares artifacts or finalizes an explicitly supplied evidence file. Preflight is not invoked automatically.
 
-## Stage map
+Existing `--workspace`, `--config`, `--run-cmd`, `--iteration`, `--eval-ids`, `--evidence`, skip flags, `--strict` and `--json` remain. `--runtime` is accepted as the existing deprecated option. New options:
 
-| Command | Stages | Purpose |
-|---|---|---|
-| `run` | `static` → `runtime` → `scout` → `benchmark` | Full maintainer pass plus chat-benchmark preparation/finalization |
-| `analyze` | `static` → `runtime` | Structural and local dependency checks only |
-| `scout` | `scout` | Read Pulse readiness state without touching benchmark artifacts |
-| `benchmark` | `benchmark` (+ `scenarios` after finalization) | Prepare packet/template for an interactive chat run, or compile final artifacts from filled evidence |
+| Option | Purpose |
+| --- | --- |
+| `--condition JSON` | Load a frozen explicit skill condition with exact inline content |
+| `--references PATHS` | Declare comma-separated references loaded inline alongside the skill |
+| `--execution-kind native` | Native response evidence, subject to provenance qualification |
+| `--execution-kind fixture` | Synthetic structure test; never promotion eligible |
+| `--legacy-audit` | Historical v3 path in a fresh output workspace, audit only |
 
-Use `--json` with any command for machine-readable output.
+The default inputs remain [benchmark config](../../.plugin-eval/benchmark.json) and [scenario library](../../pulse-eval-workspace/evals.json). The config may declare `skillReferences` keyed by skill name. Each scenario needs a unique ID, prompt and explicit expectations. A condition includes SKILL.md and only the references explicitly declared; no autonomous discovery is claimed.
 
-## Common options
+## Prepare v4
 
-| Option | Applies to | Purpose |
-|---|---|---|
-| `--workspace <path>` | all commands | Override the eval workspace root |
-| `--config <path>` | all commands | Override the benchmark config file |
-| `--run-cmd "..."` | `analyze`, `run` | Execute an additional local verification command during runtime checks |
-| `--iteration <name|num>` | `benchmark`, `run` | Choose the benchmark iteration directory |
-| `--eval-ids <list>` | `benchmark`, `run` | Select a comma-separated subset of scenario IDs |
-| `--evidence <path>` | `benchmark`, `run` | Finalize benchmark artifacts from a filled evidence file |
-| `--skip-static` | `run` | Skip static checks |
-| `--skip-runtime` | `run` | Skip runtime and scout checks |
-| `--skip-scenarios` | `run` | Skip benchmark preparation/finalization and scenario checks |
-| `--strict` | all commands | Exit non-zero when any warning is present |
-| `--runtime <value>` | `benchmark`, `run` | Accepted for compatibility in chat-run mode, but ignored |
-| `--help` | all commands | Print CLI help |
+Use a new single-component iteration directory name. Preparation refuses to overwrite existing frozen input or evidence.
 
-## Inputs
+It writes:
 
-The evaluator reads from two canonical inputs:
+- `preparation.json`: private frozen corpus, criteria, condition and request bindings.
+- `runner-packet.json` and `.md`: exact inline guidance, context and prompt, without the case oracle.
+- `judge-packet.json`: criteria and their stable IDs, kept outside the replay context.
+- `benchmark-evidence.json`: schema v4 template containing full evidence and judgments.
+- `benchmark-packet.md`: compatibility alias of the blind runner Markdown.
 
-- [`.plugin-eval/benchmark.json`](../../.plugin-eval/benchmark.json) — pilot scenario IDs, shared verifier commands, and chat-run benchmark notes
-- [`pulse-eval-workspace/evals.json`](../../pulse-eval-workspace/evals.json) — canonical scenario library
+Submit one `runner-packet.json.cases[n].request` per fresh context. Preserve the actual tool arguments, fork mode, request bytes, native identity and response verbatim. Never send the preparation manifest, judge packet, prior answers or whole folder to the replay. The evaluator itself invokes no model.
 
-The benchmark config selects which scenario IDs to run. The scenario library remains the source of truth for prompt content and expectation checklists.
+## Finalize v4
 
-## Static stage
-
-`analyze` and `run` both check:
-
-- `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/marketplace.json`, and `.mcp.json` parse cleanly
-- plugin and marketplace versions stay aligned
-- every `skills/*/SKILL.md` contract exists
-- every scenario has a unique ID and a shipped `skills/*/SKILL.md` path, and every pilot ID exists
-- skill-catalog generation still matches the repo state
-- packaged memory-oriented skills keep their boundary markers intact
-
-## Runtime stage
-
-`analyze` and `run` both check local prerequisites:
-
-- `git`, `br`, and `bv` on PATH
-- optional repo-local verification via `--run-cmd`
-
-Example:
+Fill each required `criterion_results` entry with `criterion_id`, `pass|fail|invalid`, a quote present in the response, and its reason. Criteria coverage is exact. If a supplied `judge.passed` contradicts the derived verdict, finalization fails. Copied prompts, oracles, expectations and request bindings must match the frozen manifest and current condition; divergent values are rejected rather than silently replaced with canonical text.
 
 ```bash
-node scripts/pulse-plugin-eval.mjs analyze \
-  --run-cmd "node skills/using-pulse/scripts/test_onboard_pulse.mjs"
+node scripts/pulse-plugin-eval.mjs benchmark --iteration baseline --eval-ids 21,2 --evidence pulse-eval-workspace/baseline/benchmark-evidence.json --json
 ```
 
-This stage does not check for headless `claude` or `codex` execution, because benchmark scenarios run in the current interactive chat instead.
+Use the same config, condition and reference options as preparation. Invalid or incomplete evidence creates no finalized result. A complete judged failure remains publishable audit evidence with a non-zero content result. A finalized iteration cannot be overwritten by another attempt.
 
-## Scout stage
+Successful evidence validation writes `benchmark.json`, `benchmark.md` and the existing HTML review entrypoint. The JSON preserves full responses and criteria. Content verdicts and proof qualification are separate:
 
-`scout` and `run` read Pulse readiness through `readPulseStatus()` from `.pulse/scripts/pulse_state.mjs`.
+- `complete`: declared profile and full no-tools trace are available under the operator's provenance contract.
+- `diagnostic`: fields are missing/unverified, or the run is an explicit fixture.
+- `invalid`: observed tools conflict with the no-tools measurement.
 
-The scout surfaces:
+Unavailable metadata remains null with a reason; an absent trace is not an empty verified tool list. Diagnostic text can be archived and judged, but cannot certify or support promotion. The evaluator checks consistency and hashes, not authenticity of an externally supplied transcript. A zero exit code on structure is not proof that a model was run.
 
-- onboarding status and plugin version
-- tooling status and `recommended_mode`
-- GitNexus readiness and fallback guidance
+Shared verifier commands stay explicit config inputs. Their failures prevent promotion eligibility. They are separate from content judgment. `--strict` treats warnings, including diagnostic qualification, as a failing exit.
 
-This stage is read-only. It tells you whether benchmark conclusions are being collected in a healthy Pulse runtime or in a degraded repo state.
+## Legacy and published results
 
-## Benchmark stage
+Use `--legacy-audit` with a fresh output workspace to inspect a matching v3 corpus/evidence. Existing archive files are not migrated or overwritten. Outputs are `audit_only: true` and `promotion_eligible: false`; v3 cannot certify a new condition by inference.
 
-The benchmark stage works in two steps.
+Report IDs, exact observed profile and its source, execution kind, content counts, qualification and missing metadata, prepared/finalized status, verifiers and links to full evidence. Paired superiority needs the same frozen cases/profile/context, corrected targeted failures and zero required regressions; the evaluator alone does not establish a baseline delta.
 
-### Step 1 — prepare chat-run artifacts
-
-Run `benchmark` without `--evidence` to create the packet and template for the current chat session:
-
-```bash
-node scripts/pulse-plugin-eval.mjs benchmark --iteration 8 --eval-ids 21,2
-```
-
-This writes:
-
-- `pulse-eval-workspace/iteration-8/benchmark-packet.md`
-- `pulse-eval-workspace/iteration-8/benchmark-evidence.json`
-
-Numeric iterations are auto-numbered. Explicit descriptive names such as `baseline`, `intervention`, or `retest` are also valid. Every child run directory is generated and ignored by git, while the workspace-root `README.md` and `evals.json` remain tracked inputs.
-
-`benchmark-packet.md` is the scenario packet to use in chat. `benchmark-evidence.json` is the template you fill with:
-
-- `runner.model_id`, `runner.model_version`, `runner.reasoning_effort`, and `runner.runtime` from the exact active profile
-- the assistant response for each scenario
-- the manual verdict from the same interactive session
-
-All four runner fields are mandatory. Finalization records an `evidence-profile` failure and exits non-zero when any value is missing. Do not infer a model version or reasoning effort from a previous run: a new profile requires a new replay.
-
-The evidence template also binds the run to its schema version, iteration, config path, scenario source, exact ordered scenario IDs, and a SHA-256 digest of the selected frozen scenario content. Finalization rejects stale, reordered, duplicate, or corpus-mismatched evidence before it writes final benchmark artifacts.
-
-The evaluator intentionally stops here with a warning-level reminder telling you to run the selected scenarios in chat and rerun with `--evidence`.
-
-### Step 2 — finalize from filled evidence
-
-After the chat run, compile the final benchmark artifacts:
-
-```bash
-node scripts/pulse-plugin-eval.mjs benchmark \
-  --iteration 8 \
-  --eval-ids 21,2 \
-  --evidence pulse-eval-workspace/iteration-8/benchmark-evidence.json \
-  --json
-```
-
-This reads the filled evidence file, runs shared verifier commands, and writes:
-
-- `pulse-eval-workspace/iteration-8/benchmark.json`
-- `pulse-eval-workspace/iteration-8/benchmark.md`
-- `pulse-eval-workspace/pulse-eval-review.html`
-
-After finalization, the evaluator also runs the `scenarios` checks against the generated benchmark artifacts.
-
-The compiled JSON, Markdown, and HTML preserve the exact runner tuple. The scenario stage independently rejects a compiled result whose tuple is incomplete.
-
-Every selected scenario must also contain a non-empty response and a valid manual verdict. Incomplete evidence is rejected before final JSON, Markdown, or HTML is published. A complete judged failure remains publishable audit evidence, but the evaluator exits non-zero.
-
-## Scenario validation stage
-
-After a finalized benchmark run, the evaluator checks:
-
-- `pulse-eval-workspace/evals.json` exists and contains the requested IDs
-- `pulse-eval-workspace/pulse-eval-review.html` exists
-- the selected `iteration-*` exists
-- `benchmark-packet.md` and `benchmark-evidence.json` exist
-- `benchmark.json` and `benchmark.md` were written
-- `benchmark.json` exposes summary data plus a discrimination note
-
-## Generated artifacts
-
-Prepare step:
-
-- `pulse-eval-workspace/iteration-*/benchmark-packet.md`
-- `pulse-eval-workspace/iteration-*/benchmark-evidence.json`
-
-Finalize step:
-
-- `pulse-eval-workspace/iteration-*/benchmark.json`
-- `pulse-eval-workspace/iteration-*/benchmark.md`
-- `pulse-eval-workspace/pulse-eval-review.html`
-
-Treat all child run directories and review HTML as generated artifacts, not hand-maintained source files. The workspace-root `README.md` and `evals.json` remain tracked source files.
-
-## Fix-first triage order
-
-Use this order when reading failures:
-
-1. static contract failures
-2. local dependency failures (`git`, `br`, `bv`, or `--run-cmd`)
-3. scout readiness warnings that explain degraded results
-4. missing or malformed benchmark packet/evidence artifacts
-5. incomplete scenario evidence in `benchmark-evidence.json`
-6. judged behavioral misses in completed scenarios
-7. doc drift between this runbook and generated artifacts
-
-## Public reporting requirements
-
-Every published evaluation summary should include:
-
-- exact model ID, model version, reasoning effort, and runtime
-- scenario IDs tested
-- whether the run was prepared only or fully finalized
-- completed / passed / failed / incomplete counts
-- readiness or dependency caveats from scout/runtime checks
-- links to `benchmark-packet.md`, `benchmark-evidence.json`, `benchmark.json`, and `benchmark.md`
-- whether the discrimination note is still only a placeholder for this run
-
-## Version certification
-
-A version certificate aggregates frozen, independently judged runs without changing their oracles. “Superior” is always scoped to the named corpus and exact profile tuples: it requires more paired passes, zero regressions among previously passing pairs, a perfect final sweep, and green structural checks.
-
-The current published certificate is [Pulse 3.6.0](certifications/pulse-3.6.0.md), with a machine-readable companion at [`certifications/pulse-3.6.0.json`](certifications/pulse-3.6.0.json). Re-run the frozen corpus for every newly declared model or reasoning profile; never inherit this result.
+Historical [Pulse 3.6.0 certification](certifications/pulse-3.6.0.md) and its fixed verifier remain unchanged. New profiles, conditions or runtimes require their own evidence. No new version certificate or installation is produced by this workflow.

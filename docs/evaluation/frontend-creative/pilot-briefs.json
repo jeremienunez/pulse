@@ -1,0 +1,204 @@
+{
+  "kind": "pulse-creative-pilot-briefs",
+  "schema_version": "1.0",
+  "cases": [
+    {
+      "id": "CV1",
+      "terrain": "visual",
+      "title": "Festival de création contemporaine fictif",
+      "audience": "Public curieux et visiteurs qui préparent une sortie",
+      "goal": "Découvrir la singularité du festival, lire son programme et préparer une visite",
+      "fictional": true,
+      "required_content": {
+        "name": "Traversées",
+        "dates": "15–17 octobre 2027",
+        "place": "Un lieu culturel fictif en ville",
+        "programme": [
+          "Installation — Matières en mouvement",
+          "Rencontre — Fabriquer autrement",
+          "Performance — Échos"
+        ],
+        "visit": "Horaires, accès et informations pratiques ; aucun achat"
+      },
+      "required_actions": [
+        "Lire le programme",
+        "Atteindre les informations de visite"
+      ],
+      "constraints": [
+        "Aucun service externe ou achat",
+        "Assets de prototype originaux ou explicitement autorisés",
+        "Aucune esthétique ou police imposée"
+      ],
+      "criteria": [
+        {
+          "id": "C-BRIEF",
+          "required": true,
+          "expectation": "Respecter les besoins, le contenu fictif et le périmètre du brief."
+        },
+        {
+          "id": "C-RESEARCH",
+          "required": true,
+          "expectation": "Recherche complète et revue avant génération ; deux références par ensemble au minimum, au plus huit au total."
+        },
+        {
+          "id": "C-DIVERGENCE",
+          "required": true,
+          "expectation": "Deux ou trois directions diffèrent par composition ou interaction, au-delà des palettes."
+        },
+        {
+          "id": "C-MOBILE",
+          "required": true,
+          "expectation": "Inspection à 1280×900 et 390×844 ; contenu et actions essentiels restent lisibles et utilisables sans débordement horizontal."
+        },
+        {
+          "id": "C-KEYBOARD",
+          "required": true,
+          "expectation": "Actions essentielles accessibles au clavier, focus visible, ordre cohérent et absence de piège."
+        },
+        {
+          "id": "C-MOTION",
+          "required": true,
+          "expectation": "L’information reste accessible avec mouvement réduit ; aucun effet obligatoire ne bloque un parcours."
+        },
+        {
+          "id": "C-PROOF",
+          "required": true,
+          "expectation": "Rendus, observations et verdicts liés à captures locales et logs admis ; limites explicites."
+        },
+        {
+          "id": "V-HIERARCHY",
+          "required": true,
+          "expectation": "Nom, programme, dates, lieu et accès sont repérables dans le rendu."
+        },
+        {
+          "id": "V-IDENTITY",
+          "required": false,
+          "expectation": "Composition, typographie et rythme forment une intention cohérente et distinctive, expliquée par rapport aux références."
+        },
+        {
+          "id": "V-TRANSFER",
+          "required": false,
+          "expectation": "Une transformation des références est visible et explicitée ; son originalité reste relative au corpus examiné."
+        }
+      ]
+    },
+    {
+      "id": "UX1",
+      "terrain": "product-ux",
+      "title": "Planning d’atelier partagé fictif",
+      "audience": "Membres d’un atelier qui réservent une zone ou un outil partagé",
+      "goal": "Trouver un créneau et créer, modifier puis annuler une réservation locale",
+      "fictional": true,
+      "required_content": {
+        "resources": [
+          "Table de montage",
+          "Cabine photo"
+        ],
+        "date": "15 octobre 2027",
+        "opening_hours": "09:00–18:00",
+        "seed_reservation": {
+          "resource": "Table de montage",
+          "start": "10:00",
+          "end": "11:00",
+          "owner": "Autre membre fictif"
+        }
+      },
+      "required_actions": [
+        "Choisir ressource et créneau",
+        "Créer réservation locale",
+        "Modifier réservation",
+        "Refuser un chevauchement",
+        "Annuler réservation",
+        "Retour à un état vide"
+      ],
+      "constraints": [
+        "Données en mémoire ou stockage local dédié au prototype",
+        "Aucune connexion à un agenda, compte ou paiement réel",
+        "Aucune erreur ne détruit la saisie valide"
+      ],
+      "criteria": [
+        {
+          "id": "C-BRIEF",
+          "required": true,
+          "expectation": "Respecter les besoins, le contenu fictif et le périmètre du brief."
+        },
+        {
+          "id": "C-RESEARCH",
+          "required": true,
+          "expectation": "Recherche complète et revue avant génération ; deux références par ensemble au minimum, au plus huit au total."
+        },
+        {
+          "id": "C-DIVERGENCE",
+          "required": true,
+          "expectation": "Deux ou trois directions diffèrent par composition ou interaction, au-delà des palettes."
+        },
+        {
+          "id": "C-MOBILE",
+          "required": true,
+          "expectation": "Inspection à 1280×900 et 390×844 ; contenu et actions essentiels restent lisibles et utilisables sans débordement horizontal."
+        },
+        {
+          "id": "C-KEYBOARD",
+          "required": true,
+          "expectation": "Actions essentielles accessibles au clavier, focus visible, ordre cohérent et absence de piège."
+        },
+        {
+          "id": "C-MOTION",
+          "required": true,
+          "expectation": "L’information reste accessible avec mouvement réduit ; aucun effet obligatoire ne bloque un parcours."
+        },
+        {
+          "id": "C-PROOF",
+          "required": true,
+          "expectation": "Rendus, observations et verdicts liés à captures locales et logs admis ; limites explicites."
+        },
+        {
+          "id": "U-FLOW",
+          "required": true,
+          "expectation": "Créer, modifier et annuler produit les états locaux attendus, inspectés dans le navigateur."
+        },
+        {
+          "id": "U-CONFLICT",
+          "required": true,
+          "expectation": "Le créneau 10:30–11:30 sur Table de montage est refusé sans perdre une saisie valide ; correction et reprise possibles."
+        },
+        {
+          "id": "U-RECOVERY",
+          "required": true,
+          "expectation": "Feedback, erreur, vide et récupération sont observables ; aucun succès fictif ne masque un refus."
+        },
+        {
+          "id": "U-CLARITY",
+          "required": false,
+          "expectation": "Hiérarchie, disponibilité et état sélectionné réduisent les ambiguïtés du parcours, selon une critique motivée."
+        }
+      ]
+    },
+    {
+      "id": "NA1",
+      "terrain": "nonactivation",
+      "title": "Correction mécanique d’un libellé",
+      "prompt": "Remplacer « Réservaton » par « Réservation » dans un bouton existant. Aucun changement de composition, parcours, comportement ou style.",
+      "criteria": [
+        {
+          "id": "NA-SCOPE",
+          "required": true,
+          "expectation": "Seul le libellé est corrigé."
+        },
+        {
+          "id": "NA-NO-RESEARCH",
+          "required": true,
+          "expectation": "Recherche et prototypes ne sont pas déclenchés ; résultat not-applicable avec justification de portée."
+        }
+      ],
+      "baseline_fixture": {
+        "path": "button.html",
+        "content": "<!doctype html><html lang=\"fr\"><meta charset=\"utf-8\"><title>Réservation</title><button type=\"button\">Réservaton</button></html>\n",
+        "allowed_change": {
+          "before": "Réservaton",
+          "after": "Réservation"
+        }
+      }
+    }
+  ]
+}

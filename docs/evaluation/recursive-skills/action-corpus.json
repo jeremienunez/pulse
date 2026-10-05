@@ -1,0 +1,174 @@
+{
+  "kind": "pulse-skill-action-corpus",
+  "schema_version": "1.0",
+  "notes": [
+    "Derived fixtures, not full repository UAT. Author knows the oracle. AP4/AP5 are reserved until final freeze. No model results used in authorship."
+  ],
+  "evals": [
+    {
+      "skill": "systematic-debug-fix",
+      "skill_path": "skills/systematic-debug-fix",
+      "context": {
+        "scope": "Only the declared module may be patched. Public tests are fixed. Private checks and old results are outside the replay."
+      },
+      "id": 1,
+      "case_id": "AP1",
+      "role": "repair",
+      "observation_id": "P2-CLI-COMPLETE-HASH-OUTPUT",
+      "prompt": "approve and complete currently expose the full stored run, including artifact hashes. Both must return only current_stage and execution, preserving the input run unchanged. Reproduce, repair the cause, and cover both sibling lifecycle paths.",
+      "expected_output": "Preserve the stated valid behavior and repair the reported regression.",
+      "expectations": [
+        "Reproduce the reported failure with fixture_test before patching.",
+        "Repair the declared behavior and preserve its neighboring valid paths.",
+        "Run the fixed public verification after the repair and report observed results."
+      ],
+      "fixture": {
+        "files": [
+          {
+            "path": "case.mjs",
+            "content": "export const approve = run => run;\nexport const complete = run => run;\n"
+          }
+        ],
+        "public_test": "import assert from 'node:assert/strict';\nimport {approve} from './case.mjs';const r={current_stage:'04_execute',execution:{approved_strategy:'single-worker'},gates:{hash:'private'}};assert.deepEqual(approve(r),{current_stage:r.current_stage,execution:r.execution});"
+      },
+      "checks": [
+        {
+          "check_id": "AP1-C1",
+          "program": "import assert from 'node:assert/strict';\nimport {approve,complete} from './case.mjs';for(const fn of [approve,complete]){const r={current_stage:'04_execute',execution:{approved_strategy:'single-worker'},gates:{artifact:'preserve'}};const before=JSON.stringify(r);assert.deepEqual(fn(r),{current_stage:r.current_stage,execution:r.execution});assert.equal(JSON.stringify(r),before);}console.log('lifecycle and stored state preserved');"
+        }
+      ]
+    },
+    {
+      "skill": "systematic-debug-fix",
+      "skill_path": "skills/systematic-debug-fix",
+      "context": {
+        "scope": "Only the declared module may be patched. Public tests are fixed. Private checks and old results are outside the replay."
+      },
+      "id": 2,
+      "case_id": "AP2",
+      "role": "repair",
+      "observation_id": "RV-1",
+      "prompt": "readAttempt trusts a mutable result mirror even when it contradicts the sealed receipt. Reject a divergent mirror, preserve the sealed receipt and accept a matching mirror. Reproduce the defect and verify both paths.",
+      "expected_output": "Preserve the stated valid behavior and repair the reported regression.",
+      "expectations": [
+        "Reproduce the reported failure with fixture_test before patching.",
+        "Repair the declared behavior and preserve its neighboring valid paths.",
+        "Run the fixed public verification after the repair and report observed results."
+      ],
+      "fixture": {
+        "files": [
+          {
+            "path": "case.mjs",
+            "content": "export function readAttempt(a) { return a.result; }\n"
+          }
+        ],
+        "public_test": "import assert from 'node:assert/strict';\nimport {readAttempt} from './case.mjs';assert.throws(()=>readAttempt({result:{verdict:'pass'},receipt:{result:{verdict:'fail'}}}));"
+      },
+      "checks": [
+        {
+          "check_id": "AP2-C1",
+          "program": "import assert from 'node:assert/strict';\nimport {readAttempt} from './case.mjs';const a={result:{verdict:'pass'},receipt:{result:{verdict:'fail'}}};const saved=JSON.stringify(a.receipt);assert.throws(()=>readAttempt(a));assert.equal(JSON.stringify(a.receipt),saved);assert.deepEqual(readAttempt({result:{verdict:'pass'},receipt:{result:{verdict:'pass'}}}),{verdict:'pass'});console.log('sealed receipt and matching mirror preserved');"
+        }
+      ]
+    },
+    {
+      "skill": "systematic-debug-fix",
+      "skill_path": "skills/systematic-debug-fix",
+      "context": {
+        "scope": "Only the declared module may be patched. Public tests are fixed. Private checks and old results are outside the replay."
+      },
+      "id": 3,
+      "case_id": "AP3",
+      "role": "repair",
+      "observation_id": "RV-2",
+      "prompt": "isTimeout counts operator preparation and later judging against a 120000 ms model deadline. Measure only submitted to received. Exactly 120000 ms is valid; 120001 ms is timeout. All timestamps here are numbers; use deterministic examples without sleeping.",
+      "expected_output": "Preserve the stated valid behavior and repair the reported regression.",
+      "expectations": [
+        "Reproduce the reported failure with fixture_test before patching.",
+        "Repair the declared behavior and preserve its neighboring valid paths.",
+        "Run the fixed public verification after the repair and report observed results."
+      ],
+      "fixture": {
+        "files": [
+          {
+            "path": "case.mjs",
+            "content": "export function isTimeout(a) { return a.judged - a.prepared > 120000; }\n"
+          }
+        ],
+        "public_test": "import assert from 'node:assert/strict';\nimport {isTimeout} from './case.mjs';assert.equal(isTimeout({prepared:0,submitted:999999,received:1000000,judged:2000000}),false);"
+      },
+      "checks": [
+        {
+          "check_id": "AP3-C1",
+          "program": "import assert from 'node:assert/strict';\nimport {isTimeout} from './case.mjs';assert.equal(isTimeout({prepared:-999999,submitted:0,received:120000,judged:999999}),false);assert.equal(isTimeout({prepared:0,submitted:0,received:120001,judged:120001}),true);assert.equal(isTimeout({prepared:-1000000,submitted:10,received:11,judged:1000000}),false);console.log('submission/arrival boundary preserved');"
+        }
+      ]
+    },
+    {
+      "skill": "systematic-debug-fix",
+      "skill_path": "skills/systematic-debug-fix",
+      "context": {
+        "scope": "Only the declared module may be patched. Public tests are fixed. Private checks and old results are outside the replay."
+      },
+      "id": 4,
+      "case_id": "AP4",
+      "role": "promotion",
+      "observation_id": "RV-3",
+      "prompt": "validateCondition accepts any nonempty file list, even if the owner skill body is absent. Require a nonempty owner string and a declared file with that exact path and nonempty string content. Reject missing owner bodies; accept valid bodies and references without mutating the input.",
+      "expected_output": "Preserve the stated valid behavior and repair the reported regression.",
+      "expectations": [
+        "Reproduce the reported failure with fixture_test before patching.",
+        "Repair the declared behavior and preserve its neighboring valid paths.",
+        "Run the fixed public verification after the repair and report observed results."
+      ],
+      "fixture": {
+        "files": [
+          {
+            "path": "case.mjs",
+            "content": "export function validateCondition(c) { if (!c.files.length) throw Error('empty'); return c; }\n"
+          }
+        ],
+        "public_test": "import assert from 'node:assert/strict';\nimport {validateCondition} from './case.mjs';assert.throws(()=>validateCondition({owner:'skills/owner/SKILL.md',files:[{path:'ref.md',content:'reference'}]}));"
+      },
+      "checks": [
+        {
+          "check_id": "AP4-C1",
+          "program": "import assert from 'node:assert/strict';\nimport {validateCondition} from './case.mjs';const c={owner:'skills/owner/SKILL.md',files:[{path:'skills/owner/SKILL.md',content:'body'},{path:'ref.md',content:'reference'}]};const before=JSON.stringify(c);assert.deepEqual(validateCondition(c),c);assert.equal(JSON.stringify(c),before);assert.throws(()=>validateCondition({owner:'',files:c.files}));assert.throws(()=>validateCondition({owner:c.owner,files:[{path:c.owner,content:''}]}));console.log('owner body and valid references preserved');"
+        }
+      ]
+    },
+    {
+      "skill": "systematic-debug-fix",
+      "skill_path": "skills/systematic-debug-fix",
+      "context": {
+        "scope": "Only the declared module may be patched. Public tests are fixed. Private checks and old results are outside the replay."
+      },
+      "id": 5,
+      "case_id": "AP5",
+      "role": "promotion",
+      "observation_id": "RV-4",
+      "prompt": "prepare returns an empty prepared ID matrix for an empty corpus. Reject an empty evals array while preserving the output and input for a nonempty corpus. Do not redefine a successful nonempty preparation.",
+      "expected_output": "Preserve the stated valid behavior and repair the reported regression.",
+      "expectations": [
+        "Reproduce the reported failure with fixture_test before patching.",
+        "Repair the declared behavior and preserve its neighboring valid paths.",
+        "Run the fixed public verification after the repair and report observed results."
+      ],
+      "fixture": {
+        "files": [
+          {
+            "path": "case.mjs",
+            "content": "export function prepare(c) { return c.evals.map(e=>e.id); }\n"
+          }
+        ],
+        "public_test": "import assert from 'node:assert/strict';\nimport {prepare} from './case.mjs';assert.throws(()=>prepare({evals:[]}));"
+      },
+      "checks": [
+        {
+          "check_id": "AP5-C1",
+          "program": "import assert from 'node:assert/strict';\nimport {prepare} from './case.mjs';const c={evals:[{id:1},{id:2}]};const before=JSON.stringify(c);assert.deepEqual(prepare(c),[1,2]);assert.equal(JSON.stringify(c),before);assert.throws(()=>prepare({evals:[]}));console.log('nonempty preparation preserved');"
+        }
+      ]
+    }
+  ]
+}

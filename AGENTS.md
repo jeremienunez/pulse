@@ -4,7 +4,7 @@ Read this file at every session start. Re-read after any context compaction.
 
 ## What is Pulse?
 
-A validate-first, docs-first skill ecosystem for agentic software delivery, built on the Flywheel toolchain (`br`, `bv`, runtime-native swarm adapters, and local reservations). Skills chain together to move from vague requirements to shipped, reviewed, compounded code.
+A validate-first, filesystem-orchestrated skill ecosystem for agentic software delivery. Numbered contracts, explicit input/output artifacts, a plain JSON work graph, and content-bound human gates carry new runs from request to reviewed implementation. Beads and native workers are optional swarm adapters rather than the primary state machine.
 
 ## What Pulse Is / Is Not
 
@@ -22,26 +22,25 @@ Pulse is not:
 
 ## One-Line Glossary
 
-- `CONTEXT.md` — locked decisions that downstream work must honor.
-- `work-shape.md` / `phase-plan.md` / `epic-map.md` — approved planning shape artifact.
-- current-work artifact — execution-ready slice (`work-shape.md` section, `current-story-pack.md`, or `phase-<n>-contract.md` + `phase-<n>-story-map.md`).
-- story map — the reason beads are sequenced the way they are.
-- bead — one worker-sized unit of work with exact files and checks.
-- handoff — the pause/resume contract for the next actor.
+- `run.json` — canonical ICM v2 stage, gate, and execution-strategy state.
+- stage contract — numbered Inputs, Process, Outputs, and Exit instructions.
+- `work-graph.json` — immutable approved execution DAG.
+- `execution-state.json` — mutable per-node completion state.
+- legacy v1 — frozen state/shape/handoff workflow used only for existing runs.
 - `pulse_status` — the read-only scout for current workflow state.
 
 ## Skill Catalog (core chain + selected support)
 
 | Skill | Purpose | Invoke When |
 |-------|---------|-------------|
-| `pulse:using-pulse` | Bootstrap/meta — routing, go mode, state bootstrap | Session start, "build feature X" |
-| `pulse:preflight` | Tool readiness, mode selection, project tooling status | Before planning or execution |
-| `pulse:exploring` | Extract decisions via Socratic dialogue → CONTEXT.md | New feature, unclear requirements |
-| `pulse:planning` | Route mode → shape → current work; synthesize artifacts and bead timing | After exploring, with CONTEXT.md |
-| `pulse:validating` | Feasibility/readiness verification + spikes + constrained routing | After planning, before execution |
-| `pulse:swarming` | Launch + tend parallel worker agents | After validating approves beads |
-| `pulse:executing` | Per-agent worker loop (report online → implement → close) | Loaded by workers spawned by swarming |
-| `pulse:reviewing` | Specialist reviewers + 3-level verification + UAT + finishing | After swarming completes all beads |
+| `pulse:using-pulse` | ICM run detection, creation, and stage routing | Session start, "build feature X" |
+| `pulse:preflight` | Tool readiness, mode selection, project tooling status | Only on an explicit user request |
+| `pulse:exploring` | Write explicit decisions | Stage 01 |
+| `pulse:planning` | Write one plan and one work graph | Stage 02 |
+| `pulse:validating` | Verify reality, cost-first recommendation, and swarm eligibility | Stage 03 |
+| `pulse:swarming` | Optional execution strategy and Beads projection | Approved Stage 04 swarm |
+| `pulse:executing` | Complete the approved work graph | Stage 04 |
+| `pulse:reviewing` | Root-owned proportional review; specialists only by explicit request | After execution completes |
 | `pulse:compounding` | Capture learnings → .pulse/memory/learnings/ | After reviewing, always |
 | `pulse:writing-pulse-skills` | Controlled BASELINE → INTERVENTION → RETEST skill evaluation | Creating/improving Pulse skills |
 
@@ -63,58 +62,56 @@ Pulse is not:
 ## The Chain
 
 ```
-pulse:preflight → pulse:using-pulse → pulse:exploring → pulse:planning → pulse:validating → pulse:swarming → pulse:executing(×N) → pulse:reviewing → pulse:compounding
+pulse:using-pulse → pulse:exploring → pulse:planning → pulse:validating → pulse:executing → pulse:reviewing → pulse:compounding
 ```
+
+`pulse:preflight` is an operator-invoked diagnostic side path, not an automatic prerequisite.
 
 ## Go Mode Gates
 
-- **GATE 1** (after exploring): approve `CONTEXT.md` before planning
-- **GATE 2** (after planning): approve the selected shape artifact (`work-shape.md` | `phase-plan.md` | `epic-map.md`)
-- **GATE 3** (after validating): approve feasibility-validated current work before swarming or single-worker execution
+- **GATE 1** (after exploring): approve `decisions.md`
+- **GATE 2** (after planning): approve `plan.md` and immutable `work-graph.json`
+- **GATE 3** (after validating): approve execution strategy before Stage 04
 - **GATE 4** (after reviewing): approve merge; P1 findings block this gate
 
 ## Core Tools
 
-- `br` — beads CLI (create/update/close work items)
-- `bv` — beads viewer (graph analytics, priority routing)
+- `workflow/scripts/pulse_icm.mjs` — run, gate, hash, and connectivity mechanics
+- `br` / `bv` — optional swarm graph projection and coordination
 - native swarm adapters — Claude Code teammates or Codex subagents in swarm mode
 - `.pulse/scripts/pulse_reservations.mjs` — shared local file reservations for swarm safety
 - `gitnexus` — graph-backed codebase intelligence (optional)
 - CASS/CM — session search, cognitive memory (optional)
 
-## 3-Plane Model
+## Five-Layer Context Model
 
 Use this mental model when deciding where to read next:
 
-1. **Control plane — `.pulse/`**: live workflow state, routing, handoffs, and active operator surfaces.
-2. **Memory plane — `.pulse/memory/`**: shared root for reusable cross-feature memory, including critical patterns, learnings, corrections, and ratchet artifacts.
-3. **Feature record plane — `history/`**: feature-specific decisions, plans, contracts, story maps, canonical verification evidence, and durable audit narrative.
+1. **Identity** — `AGENTS.md` / `CLAUDE.md`.
+2. **Routing** — `workflow/CONTEXT.md`, `.pulse/active-run`, and `run.json`.
+3. **Stage contract** — `workflow/stages/<number>/CONTEXT.md`.
+4. **References** — stable project rules and `.pulse/memory/`.
+5. **Working artifacts** — `history/<feature>/stages/*/output/`.
 
 Downstream repos may also expose a separate project-docs plane through repo-owned `CONTEXT.md`, `CONTEXT-MAP.md`, and `docs/adr/`; Pulse maps those inputs via `.pulse/project-docs.json` and keeps them distinct from feature history.
 
 ## File Conventions
 
 ```
-.pulse/STATE.md                 ← Working memory
-.pulse/config.json              ← Feature toggles (absent=enabled)
-.pulse/tooling-status.json      ← Preflight result + recommended mode
-.pulse/project-docs.json        ← Mapping artifact for repo-owned project docs
-.pulse/handoffs/manifest.json   ← Owner-scoped handoff index
-.pulse/handoffs/*.json          ← Per-owner pause/resume state
-history/<feature>/verification/      ← Canonical verification evidence for the current feature
-.pulse/memory/                  ← Shared reusable memory root
-history/<feature>/              ← Per-feature artifacts, including lifecycle-summary.md and canonical verification evidence
-.beads/                         ← Bead files
-.spikes/                        ← Spike verification results
+.pulse/active-run                       ← relative path to active v2 run.json
+history/<feature>/run.json              ← canonical stage and gate state
+history/<feature>/stages/*/output/      ← stage intermediate representations
+.pulse/memory/                          ← durable cross-run reference material
+.beads/                                 ← optional swarm projection only
 ```
 
 ## Critical Rules
 
-1. **Never execute without validating.** GATE 3 is non-negotiable.
-2. **`CONTEXT.md` is the source of truth.** All downstream agents honor locked decisions.
-3. **Context budget: >65% → write an owner-scoped handoff and register it in `.pulse/handoffs/manifest.json`.**
+1. **Never execute without validating.** Gate 3 is non-negotiable.
+2. **Route from `run.json.current_stage`.** Do not infer from legacy mirrors in v2.
+3. **Gate approvals bind hashes.** Changed approved artifacts require reapproval.
 4. **Scout first, drill down second.** Prefer `pulse_status`, then open the specific artifact it points to.
-5. **After compaction: re-read this file + `CONTEXT.md` immediately.**
+5. **After compaction: re-read this file, status, current stage contract, and declared inputs.**
 6. **P1 findings always block merge.** Even in go mode.
 
 ---
@@ -139,7 +136,7 @@ When multiple agents operate in the same repository:
 
 ### Shared rules
 
-- beads plus `bv` remain the source of truth for work selection
+- `work-graph.json` defines approved work; Beads mirrors it only during approved swarm execution
 - do not edit without reservations
 - do not invent extra registration, inbox, or topic mechanics when the runtime does not use them
 - release reservations before advertising completion or pause
@@ -158,16 +155,16 @@ Some runtimes expose high-level worker-spawn macros. Others expose a smaller set
 
 - **Forgetting to release files.** Always release reservations after closing a bead or pausing.
 - **Skipping `[ONLINE]`.** Startup is not complete until the worker reports in.
-- **Treating tasks or chat threads as the work graph.** Beads plus `bv` stay authoritative.
+- **Treating tasks, Beads, or chat threads as the approved plan.** The immutable `work-graph.json` stays authoritative.
 - **Editing around a conflict.** Report `[FILE CONFLICT]` and wait for resolution.
 
 ---
 
 <!-- bv-agent-instructions-v1 -->
 
-## Beads Workflow Integration
+## Beads Workflow Integration (Legacy V1 and Approved Swarm Only)
 
-This project uses [beads_rust](https://github.com/Dicklesworthstone/beads_rust) for issue tracking. Durable issue state lives in `.beads/issues.jsonl` and `.beads/config.yaml`.
+Pulse may use [beads_rust](https://github.com/Dicklesworthstone/beads_rust) for legacy v1 work or as a temporary coordination projection after Gate 3 approves swarm. New v2 planning never makes Beads the canonical graph.
 
 **Important:** `br` is non-invasive — it NEVER runs git commands automatically. After `br sync --flush-only`, stage durable Beads files explicitly before committing. Do not stage SQLite cache/sidecar or recovery artifacts such as `.beads/beads.db`, `.beads/beads.db-wal`, `.beads/beads.db-shm`, or `.beads/.br_recovery/`.
 
@@ -190,7 +187,7 @@ br sync --flush-only  # Flush bead changes to disk (does NOT run git)
 
 ### Workflow Pattern
 
-1. **Scout**: Run `node .pulse/scripts/pulse_status.mjs --json` when available, then `br ready` to find actionable work
+1. **Project**: Materialize only the approved component/node set from `work-graph.json`
 2. **Claim**: Use `br update <id> --status=in_progress`
 3. **Work**: Implement the task
 4. **Complete**: Use `br close <id>`
@@ -246,9 +243,9 @@ bv --robot-insights            # Graph health analysis
 bv --robot-triage --graph-root <ID>  # Scoped to a specific epic/subtree
 ```
 
-### The Workflow: Start With Triage
+### The Legacy/Swarm Adapter Workflow
 
-Every planning, validation, or execution session should begin with:
+Use triage only when a legacy run or approved swarm projection is active:
 
 ```bash
 bv --robot-triage
@@ -336,21 +333,21 @@ bv --robot-triage | jq '.[] | select(.blockers | length > 0) | {id, blockers}'
 
 ### Start a fresh Pulse session
 
-1. Run `pulse:preflight`.
-2. Run `pulse:using-pulse`.
-3. Use `node .pulse/scripts/pulse_status.mjs --json` when available for a read-only scout pass.
-4. Open only the artifacts the scout points at: usually `.pulse/state.json`, `.pulse/STATE.md`, `.pulse/handoffs/manifest.json`, `history/<feature>/CONTEXT.md`, and the selected shape/current-work artifacts.
+1. Run `pulse:using-pulse`.
+2. Use `node .pulse/scripts/pulse_status.mjs --json` when available for a read-only scout pass.
+3. For v2, open `.pulse/active-run`, its `run.json`, the current numbered stage contract, and declared inputs. For legacy, surface the selected handoff and state mirrors.
+4. Run `pulse:preflight` only when the user explicitly requests it.
 
 ### Resume safely
 
-- If `.pulse/handoffs/manifest.json` exists, surface it before resuming.
-- Do not auto-resume because a handoff exists; wait for confirmation.
-- Rehydrate from the handoff, then re-check the current state mirrors before new edits.
+- V2 resumes from `run.json.current_stage` and optional `resume_path`.
+- Legacy resumes from the frozen owner-scoped handoff contract.
+- If both are active, stop and ask which surface owns the work.
 
 ### Pick swarm vs single-worker
 
-- Prefer swarm only when approved current work has enough parallelizable beads to justify coordination overhead.
-- Prefer single-worker when approved current work still needs Pulse discipline but not multiple active workers.
+- Recommend swarm only for two or more weakly disconnected, file-disjoint graph components.
+- Use single-worker for one component, overlap, invalid graphs, or a user downgrade.
 - In both paths, Gate 3 approval is still required before execution begins.
 
 ### Scout guidance
@@ -363,9 +360,9 @@ bv --robot-triage | jq '.[] | select(.blockers | length > 0) | {id, blockers}'
 
 Every session must end cleanly. Before stopping, run through this mandatory workflow:
 
-### 1. File Issues
+### 1. Record Remaining Work
 
-Create beads for any discovered work that was not completed:
+For v2, add approved follow-up nodes in a new planning revision; for legacy or approved swarm, Beads may record deferred work:
 
 ```bash
 br create --title="<description>" --type=task --priority=<N>
@@ -383,29 +380,27 @@ If P1 items remain open, they block merge. Fix or escalate before ending.
 
 ### 3. Update Status
 
-Update `.pulse/STATE.md` with approved current work focus, completed work, and any open blockers.
+Update v2 stage outputs and `run.json`, or the frozen legacy state surfaces for legacy work.
 
-### 4. Sync Beads
+### 4. Sync Beads When the Adapter Is Active
 
 ```bash
 br sync --flush-only
 git add .beads/issues.jsonl .beads/config.yaml
-git commit -m "sync beads"
 ```
 
 ### 5. Hand Off
 
 If context budget is near 65%:
 
-1. Write an owner-scoped handoff to `.pulse/handoffs/<owner>.json`
-2. Register it in `.pulse/handoffs/manifest.json`
-3. Update `.pulse/STATE.md` with handoff reference
+1. For v2, write a stage-local handoff and set `run.json.resume_path`.
+2. For legacy, write and register the owner-scoped legacy handoff.
 
 If the session is the final session for a feature:
 
 1. Ensure all beads are closed or intentionally deferred
 2. Run `pulse:compounding` to capture learnings
-3. Push all changes: `git push`
+3. Report the completed run and leave commit/push decisions to the user.
 
 ---
 
@@ -480,151 +475,135 @@ cm list --recent
 <!-- PULSE:START -->
 # Pulse Workflow
 
-Use `pulse:using-pulse` first in this repo unless you are resuming an already approved Pulse handoff.
+Use `pulse:using-pulse` first for new or resumed Pulse work.
 
-## What Pulse Is / Is Not
+## Architecture
 
-Pulse is a validate-first, docs-first skill workflow for Claude Code and Codex.
-Pulse is not a license to skip `CONTEXT.md`, validating, review gates, or human approval.
+Pulse 4 uses an interpretable filesystem workflow. One agent loads only the current numbered stage contract and its declared inputs. Plain Markdown and JSON artifacts carry context between stages; deterministic local scripts validate paths, gates, hashes, and graph connectivity.
 
-## One-Line Glossary
+Preflight is a manual diagnostic outside the delivery graph. Run `pulse:preflight` only when the user explicitly requests it.
 
-- `CONTEXT.md` — locked decisions downstream work must honor.
-- `work-shape.md` / `phase-plan.md` / `epic-map.md` — approved planning shape artifact.
-- current-work artifact — execution-ready slice (`work-shape.md` section, `current-story-pack.md`, or `phase-<n>-contract.md` + `phase-<n>-story-map.md`).
-- story map — the reason beads are sequenced the way they are.
-- bead — one worker-sized unit of work with exact files and checks.
-- handoff — the pause/resume contract for the next actor.
-- `pulse_status` — the read-only scout for current workflow state.
+## Glossary
+
+- `run.json` — canonical v2 run state and content-bound gate approvals.
+- stage contract — one numbered stage's Inputs, Process, Outputs, and Exit rules.
+- `work-graph.json` — immutable approved execution DAG.
+- `execution-state.json` — mutable node completion state; never stored in the plan graph.
+- legacy v1 — existing `.pulse/state.json`, shape artifacts, checkpoints, and owner handoffs, resumed without migration.
 
 ## Startup
 
-1. Read this file at session start and again after any context compaction.
-2. If preflight readiness is missing/stale/blocked in `.pulse/tooling-status.json`, stop and run `pulse:using-pulse` before continuing.
-3. If `.pulse/scripts/pulse_status.mjs` exists, use `node .pulse/scripts/pulse_status.mjs --json` for a fast read-only status snapshot.
-4. If `.pulse/handoffs/manifest.json` exists, do not auto-resume. Surface the saved state and wait for user confirmation.
-5. If `.pulse/memory/critical-patterns.md` exists, read it before planning or execution work.
+1. Read this file after session start or compaction.
+2. Run `node .pulse/scripts/pulse_status.mjs --json` when the helper exists; otherwise invoke `pulse:using-pulse` and resolve the plugin-local ICM status script.
+3. For ICM v2, read `.pulse/active-run`, the referenced `run.json`, the current stage contract, and only its declared inputs.
+4. For legacy v1, surface the active handoff/state and wait for explicit resume confirmation.
+5. If v2 and legacy surfaces conflict, stop without writing either.
 
-## Chain
+## Delivery Graph
 
+```text
+pulse:using-pulse
+  -> pulse:exploring
+  -> pulse:planning
+  -> pulse:validating
+  -> pulse:executing
+  -> pulse:reviewing
+  -> pulse:compounding
 ```
-pulse:preflight
-  → pulse:using-pulse
-  → pulse:exploring
-  → pulse:planning
-  → pulse:validating
-  → pulse:swarming
-  → pulse:executing
-  → pulse:reviewing
-  → pulse:compounding
+
+- `pulse:brainstorming` is an optional pre-stage.
+- `pulse:swarming` is an execution strategy inside Stage 04, not a delivery stage.
+- `pulse:preflight` is invoked only on explicit user request.
+
+## Human Gates
+
+- Gate 1 approves `01_explore/output/decisions.md`.
+- Gate 2 approves `02_plan/output/plan.md` and immutable `work-graph.json`.
+- Gate 3 approves validated execution and the selected strategy.
+- Gate 4 approves merge after review and UAT; open P1 findings block it.
+
+Approvals bind artifact SHA-256 hashes. Any approved artifact edit makes the gate stale and blocks downstream routing until reapproval.
+
+## Execution Strategy
+
+- Every valid graph recommends `single-worker` as the cost-first default.
+- Connectivity determines swarm eligibility only: at least two file-disjoint components are eligible, capped at four workers; conflicts are ineligible.
+- Gate 3 human approval is required before either strategy starts and may explicitly choose eligible `swarm`.
+- Beads and reservations are optional swarm projections. `work-graph.json` remains the plan authority and `execution-state.json` remains the completion authority.
+
+## Canonical Files
+
+```text
+.pulse/active-run
+history/<feature>/
+  request.md
+  run.json
+  stages/
+    01_explore/output/decisions.md
+    02_plan/output/plan.md
+    02_plan/output/work-graph.json
+    03_validate/output/validation.json
+    04_execute/output/execution-state.json
+    04_execute/output/execution-report.md
+    04_execute/output/verification/
+    05_review/output/review.json
+    05_review/output/uat.md
+    06_compound/output/compounding.md
 ```
+
+Legacy files remain readable and executable only through frozen legacy contracts. Never rewrite them into v2 automatically.
 
 ## Critical Rules
 
-1. Never execute without validating.
-2. `CONTEXT.md` is the source of truth for locked decisions.
-3. If context usage passes roughly 65%, write `.pulse/handoffs/manifest.json` and pause cleanly.
-4. Treat `.pulse/state.json` as the routing mirror and `.pulse/STATE.md` as the human-readable narrative; keep them aligned.
-5. After compaction, re-read `AGENTS.md`, run `node .pulse/scripts/pulse_status.mjs --json` if present, then re-open `.pulse/handoffs/manifest.json`, `.pulse/state.json`, `.pulse/STATE.md`, and the active feature context before more work.
-6. P1 review findings block merge.
-
-## 3-Plane Model
-
-1. **Control plane — `.pulse/`**: live workflow state, routing mirrors, handoffs, and operator surfaces.
-2. **Memory plane — `.pulse/memory/`**: shared root for reusable cross-feature memory, including critical patterns, learnings, corrections, and ratchet artifacts.
-3. **Feature record plane — `history/`**: feature-specific decisions, plans, contracts, story maps, and durable narrative.
-
-## Working Files
-
-```
-.pulse/
-  onboarding.json     ← onboarding state for the Pulse plugin
-  state.json          ← machine-readable routing/status mirror
-  STATE.md            ← approved current-work focus
-  handoffs/
-    manifest.json     ← pause/resume artifact
-  memory/             ← shared reusable memory root
-    critical-patterns.md ← globally promoted patterns
-    learnings/          ← durable cross-feature learning entries
-    corrections/        ← durable corrections to prior guidance
-    ratchet/            ← durable quality bars and non-regression rules
-
-history/<feature>/
-  CONTEXT.md          ← locked decisions
-  discovery.md        ← research findings
-  approach.md         ← approach + risk map
-
-.beads/               ← bead/task files when beads are in use
-.spikes/              ← spike outputs when validation requires them
-```
-
-## Operator Cookbook
-
-### Startup scout
-
-1. Run `pulse:using-pulse` if preflight readiness is missing, stale, or blocked.
-2. Run `node .pulse/scripts/pulse_status.mjs --json` when available.
-3. Use the scout to choose the next artifact instead of opening everything at once.
-
-### Resume scout
-
-- If `.pulse/handoffs/manifest.json` exists, surface it and wait for explicit confirmation.
-- Re-open the handoff plus `.pulse/state.json` and `.pulse/STATE.md` before continuing.
-- If current state and a handoff disagree, surface the mismatch instead of guessing.
-
-### Swarm vs single-worker
-
-- Use swarm when approved current work has enough parallelizable beads to justify coordination overhead.
-- Use single-worker when approved current work still needs Pulse discipline but parallelism is not.
-- Gate 3 still blocks both modes until validating approves execution.
-
-## Codex Guardrails
-
-- Repo-local `.codex/` files installed by Pulse are workflow guardrails, not optional decoration.
-- Use `node .pulse/scripts/pulse_status.mjs --json` as the preferred quick scout step when it is available.
-- Treat `compact_prompt` recovery instructions as mandatory.
-- Use `bv` only with `--robot-*` flags. Bare `bv` launches the TUI and should be avoided in agent sessions.
-- If the repo is only partially onboarded, stay in bootstrap/planning mode and surface what is missing before implementation.
+1. Never execute before Gate 3 approval.
+2. Route v2 strictly from `run.json.current_stage`; do not infer a next skill from stale mirrors.
+3. Load only the current stage contract, its Inputs, and minimal project references.
+4. Do not mutate `work-graph.json` after Gate 2; execution progress belongs in `execution-state.json`.
+5. Do not invoke preflight, onboarding, swarming, or legacy migration automatically.
+6. Preserve dirty worktrees and declare exact file scopes before editing.
+7. P1 findings block Gate 4.
+8. Root-owned review is the v2 default; specialist agents require an explicit operator request.
+9. Behavioral changes use scenario-first BDD: define expected behavior, edge cases, and failure behavior before implementation.
 
 ## Session Finish
 
-Before ending a substantial Pulse work chunk:
-
-1. Update or close the active bead/task if one exists.
-2. Leave `.pulse/state.json`, `.pulse/STATE.md`, and `.pulse/handoffs/` consistent with the current pause/resume state.
-3. Mention any remaining blockers, open questions, or next actions in the final response.
+1. Leave current stage outputs and `run.json` coherent.
+2. If pausing v2 work, write a stage-local handoff and record its path in `run.json.resume_path`.
+3. If pausing legacy work, use the frozen owner-scoped handoff contract.
+4. Report blockers, stale approvals, remaining graph nodes, and the next explicit human decision.
 <!-- PULSE:END -->
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **pulse** (2501 symbols, 3738 relationships, 151 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **pulse-tuned** (2155 symbols, 3755 relationships, 159 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+> Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
 ## Always Do
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
+- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
+- **MUST run `detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows. For regression review, compare against the default branch: `detect_changes({scope: "compare", base_ref: "main"})`.
 - **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
-- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+- When exploring unfamiliar code, use `query({search_query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `context({name: "symbolName"})`.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
 
 ## Never Do
 
-- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
+- NEVER edit a function, class, or method without first running `impact` on it.
 - NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
-- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
-- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+- NEVER rename symbols with find-and-replace — use `rename` which understands the call graph.
+- NEVER commit changes without running `detect_changes()` to check affected scope.
 
 ## Resources
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/pulse/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/pulse/clusters` | All functional areas |
-| `gitnexus://repo/pulse/processes` | All execution flows |
-| `gitnexus://repo/pulse/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/pulse-tuned/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/pulse-tuned/clusters` | All functional areas |
+| `gitnexus://repo/pulse-tuned/processes` | All execution flows |
+| `gitnexus://repo/pulse-tuned/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

@@ -12,6 +12,14 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const evaluatorPath = path.join(scriptDir, "pulse-plugin-eval.mjs");
 
+test("creative command rejects incomplete input with its own typed error and no legacy outputs", () => {
+  const out = spawnSync(process.execPath, [evaluatorPath, "creative", "--phase", "prepare", "--json"], { cwd: os.tmpdir(), encoding: "utf8" });
+  assert.equal(out.status, 1);
+  const value = JSON.parse(out.stdout);
+  assert.equal(value.kind, "pulse-creative-error");
+  assert.equal(value.promotion_eligible, false);
+});
+
 function runEvaluator(args) {
   return spawnSync(process.execPath, [evaluatorPath, ...args, "--json"], {
     cwd: repoRoot,
@@ -30,6 +38,8 @@ function prepareCase(root, caseName, mutateEvidence, options = {}) {
     iteration,
     "--eval-ids",
     evalIds,
+    "--execution-kind",
+    "fixture",
   ];
   const prepared = runEvaluator(commonArgs);
   assert.equal(prepared.status, 0, prepared.stderr || prepared.stdout);
@@ -46,6 +56,15 @@ function prepareCase(root, caseName, mutateEvidence, options = {}) {
     runtime: "node:test",
   };
   mutateEvidence(evidence);
+  for (const entry of evidence.scenarios) {
+    if (!entry.response || !entry.judge) continue;
+    entry.criterion_results = entry.criteria.map(criterion => ({
+      criterion_id: criterion.criterion_id,
+      verdict: entry.judge.missed?.includes(criterion.expectation) ? "fail" : "pass",
+      quote: entry.response,
+      reason: "Explicit structural fixture verdict; not a model result.",
+    }));
+  }
   fs.writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
 
   const result = runEvaluator([...commonArgs, "--evidence", evidencePath]);
@@ -109,9 +128,56 @@ test("evaluator finalizes complete passing evidence", () => {
     assert.equal(fs.existsSync(path.join(run.iterationPath, "benchmark.json")), true);
     assert.equal(fs.existsSync(path.join(run.iterationPath, "benchmark.md")), true);
     assert.equal(fs.existsSync(run.reviewPath), true);
+    const benchmark = JSON.parse(fs.readFileSync(path.join(run.iterationPath,"benchmark.json"),"utf8"));
+    assert.equal(benchmark.schemaVersion,4);
+    assert.equal(benchmark.promotion_eligible,false);
+    assert.equal(benchmark.qualification.status,"diagnostic");
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("prepared runner packet supplies exact guidance without the test oracle", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-eval-test-"));
+  try {
+    const result = runEvaluator(["benchmark","--workspace",root,"--iteration","blind","--eval-ids","21"]);
+    assert.equal(result.status,0,result.stderr);
+    const directory=path.join(root,"blind");
+    const packets=JSON.parse(fs.readFileSync(path.join(directory,"runner-packet.json"),"utf8"));
+    const request=JSON.parse(packets.cases[0].request);
+    assert.equal(request.guidance[0].content,fs.readFileSync(path.join(repoRoot,"skills/preflight/SKILL.md"),"utf8"));
+    assert.equal("expectations" in request,false);
+    assert.equal("expected_output" in request,false);
+    assert.equal("criteria" in request,false);
+    assert.ok(fs.existsSync(path.join(directory,"judge-packet.json")));
+    assert.notEqual(packets.cases[0].submitted_request_sha256,"");
+    const again=runEvaluator(["benchmark","--workspace",root,"--iteration","blind","--eval-ids","21"]);
+    assert.equal(again.status,1);
+  } finally { fs.rmSync(root,{recursive:true,force:true}); }
+});
+
+test("legacy audit uses a new workspace and preserves the original evidence bytes", () => {
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),"pulse-legacy-audit-"));
+  try {
+    const original=path.join(root,"original"),audit=path.join(root,"audit");
+    const args=["benchmark","--iteration","historical","--eval-ids","21","--legacy-audit"];
+    const prepared=runEvaluator([...args,"--workspace",original]);
+    assert.equal(prepared.status,0,prepared.stderr);
+    const evidencePath=JSON.parse(prepared.stdout).benchmark.evidencePath;
+    const evidence=JSON.parse(fs.readFileSync(evidencePath,"utf8"));
+    assert.equal(evidence.schemaVersion,3);
+    evidence.runner={mode:"chat",model_id:"historical-fixture",model_version:"fixture-version",reasoning_effort:"low",runtime:"node:test"};
+    evidence.scenarios[0].response="Historical structural fixture, no model run.";
+    evidence.scenarios[0].judge={passed:true,summary:"Explicit fixture.",satisfied:evidence.scenarios[0].expectations,missed:[]};
+    fs.writeFileSync(evidencePath,JSON.stringify(evidence));
+    const before=fs.readFileSync(evidencePath);
+    const finalized=runEvaluator([...args,"--workspace",audit,"--evidence",evidencePath]);
+    assert.equal(finalized.status,0,finalized.stderr||finalized.stdout);
+    assert.deepEqual(fs.readFileSync(evidencePath),before);
+    const benchmark=JSON.parse(fs.readFileSync(JSON.parse(finalized.stdout).benchmark.benchmarkJsonPath,"utf8"));
+    assert.equal(benchmark.audit_only,true);assert.equal(benchmark.promotion_eligible,false);
+    assert.equal(runEvaluator([...args,"--workspace",audit,"--evidence",evidencePath]).status,1);
+  } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test("evaluator publishes complete failing evidence but returns failure", () => {
@@ -163,5 +229,39 @@ test("evaluator rejects evidence not bound to the exact schema and corpus", asyn
         fs.rmSync(root, { recursive: true, force: true });
       }
     });
+  }
+});
+
+test("evaluator rejects a modified prompt and oracle despite an unchanged corpus header", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-eval-test-"));
+  try {
+    const run = prepareCase(root, "prompt-divergence", (evidence) => {
+      const entry = evidence.scenarios[0];
+      entry.prompt = "A different prompt was presented.";
+      entry.expected_output = "A different oracle.";
+      entry.response = "Complete passing response.";
+      entry.judge = { passed: true, summary: "Passing fixture.", satisfied: entry.expectations, missed: [] };
+    });
+    assert.equal(run.result.status, 1);
+    assert.equal(run.output.benchmark.mode, "rejected");
+    assertNoFinalArtifacts(run);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("evaluator rejects success when required expectations are reported missed", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-eval-test-"));
+  try {
+    const run = prepareCase(root, "contradictory-judge", (evidence) => {
+      const entry = evidence.scenarios[0];
+      entry.response = "Complete response with missed behavior.";
+      entry.judge = { passed: true, score: 0, summary: "Contradictory fixture.", satisfied: [], missed: entry.expectations };
+    });
+    assert.equal(run.result.status, 1);
+    assert.equal(run.output.benchmark.mode, "rejected");
+    assertNoFinalArtifacts(run);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
   }
 });

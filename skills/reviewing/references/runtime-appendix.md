@@ -2,7 +2,7 @@
 
 This appendix contains the operational contract for reviewing.
 
-Prerequisite: `br` must be available. If `br` is unavailable, Gate 4 cannot run; stop reviewing and route to preflight/tooling remediation via `pulse:using-pulse`.
+Prerequisite: `br` must be available. If `br` is unavailable, Gate 4 cannot run; stop reviewing, report the missing command, and let the user decide whether to request a full preflight/remediation pass.
 
 ## 1) 4+1 Review Model
 

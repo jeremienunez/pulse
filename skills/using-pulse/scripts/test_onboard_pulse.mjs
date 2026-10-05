@@ -159,157 +159,25 @@ test("applyRepo rejects dependency inventory symlink escapes before onboarding w
   });
 });
 
-test("packaged Codex hook assets are present and point at packaged hook scripts", () => {
-  const pluginManifest = JSON.parse(
+test("Pulse 4 package and onboarding omit automatic lifecycle hooks", () => {
+  const codexManifest = JSON.parse(
     fs.readFileSync(path.join(LOCAL_REPO_ROOT, ".codex-plugin", "plugin.json"), "utf8"),
   );
-  const hooksConfig = JSON.parse(
-    fs.readFileSync(path.join(LOCAL_REPO_ROOT, "hooks", "codex-hooks.json"), "utf8"),
+  const claudeManifest = JSON.parse(
+    fs.readFileSync(path.join(LOCAL_REPO_ROOT, ".claude-plugin", "plugin.json"), "utf8"),
   );
-
-  assert.equal(pluginManifest.hooks, "./hooks/codex-hooks.json");
-  assert.ok(Array.isArray(hooksConfig.hooks?.SessionStart));
-  assert.equal(hooksConfig.hooks.SessionStart[0]?.matcher, "startup|resume");
-  assert.equal(
-    hooksConfig.hooks.SessionStart[0]?.hooks?.[0]?.command,
-    'node "${PLUGIN_ROOT}/hooks/session-start.mjs"',
-  );
-  assert.equal(
-    hooksConfig.hooks.PreToolUse[0]?.hooks?.[0]?.command,
-    'node "${PLUGIN_ROOT}/hooks/pre-tool-use.mjs"',
-  );
-  assert.equal(
-    hooksConfig.hooks.Stop[0]?.hooks?.[0]?.command,
-    'node "${PLUGIN_ROOT}/hooks/stop.mjs"',
-  );
-});
-
-test("packaged Codex hook commands execute packaged hook scripts", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
-  const hooksConfig = JSON.parse(
-    fs.readFileSync(path.join(LOCAL_REPO_ROOT, "hooks", "codex-hooks.json"), "utf8"),
-  );
 
   try {
+    assert.equal(Object.hasOwn(codexManifest, "hooks"), false);
+    assert.equal(Object.hasOwn(claudeManifest, "hooks"), false);
+    assert.equal(fs.existsSync(path.join(LOCAL_REPO_ROOT, "hooks")), false);
+
     applyRepo(root, false);
-    assert.equal(fs.existsSync(path.join(root, "hooks")), false);
-
-    const hookEnv = {
-      ...process.env,
-      PLUGIN_ROOT: LOCAL_REPO_ROOT,
-      CLAUDE_PLUGIN_ROOT: LOCAL_REPO_ROOT,
-    };
-
-    const sessionStart = JSON.parse(
-      execFileSync("sh", ["-lc", hooksConfig.hooks.SessionStart[0].hooks[0].command], {
-        cwd: root,
-        input: JSON.stringify({ cwd: root }),
-        encoding: "utf8",
-        env: hookEnv,
-      }),
-    );
-    const preToolUse = JSON.parse(
-      execFileSync("sh", ["-lc", hooksConfig.hooks.PreToolUse[0].hooks[0].command], {
-        cwd: root,
-        input: JSON.stringify({ tool_input: { command: "bv" } }),
-        encoding: "utf8",
-        env: hookEnv,
-      }),
-    );
-    const stop = JSON.parse(
-      execFileSync("sh", ["-lc", hooksConfig.hooks.Stop[0].hooks[0].command], {
-        cwd: root,
-        input: JSON.stringify({}),
-        encoding: "utf8",
-        env: hookEnv,
-      }),
-    );
-
-    assert.equal(sessionStart.hookSpecificOutput?.hookEventName, "SessionStart");
-    assert.match(sessionStart.hookSpecificOutput?.additionalContext || "", /Pulse repo notes:/);
-    assert.equal(preToolUse.continue, true);
-    assert.match(preToolUse.systemMessage || "", /Pulse expects `bv` only with `--robot-\*` flags/);
-    assert.equal(stop.continue, true);
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
-  }
-});
-
-test("packaged Claude hook assets are present and register SessionStart bootstrap", () => {
-  const hooksConfig = JSON.parse(
-    fs.readFileSync(path.join(LOCAL_REPO_ROOT, "hooks", "hooks.json"), "utf8"),
-  );
-
-  assert.ok(fs.existsSync(path.join(LOCAL_REPO_ROOT, "hooks", "session-start.mjs")));
-  assert.ok(Array.isArray(hooksConfig.hooks?.SessionStart));
-  assert.equal(hooksConfig.hooks.SessionStart[0]?.matcher, "startup|clear|compact");
-  assert.equal(
-    hooksConfig.hooks.SessionStart[0]?.hooks?.[0]?.command,
-    'node "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs"',
-  );
-  assert.equal(hooksConfig.hooks.SessionStart[0]?.hooks?.[0]?.async, false);
-});
-
-test("packaged Claude SessionStart hook prefers repo-local helper context in onboarded repos", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
-
-  try {
-    applyRepo(root, false);
-
-    const stdout = execFileSync(
-      "node",
-      [path.join(LOCAL_REPO_ROOT, "hooks", "session-start.mjs")],
-      {
-        cwd: root,
-        input: JSON.stringify({ cwd: root }),
-        encoding: "utf8",
-        env: {
-          ...process.env,
-          CLAUDE_PLUGIN_ROOT: LOCAL_REPO_ROOT,
-        },
-      },
-    );
-
-    const payload = JSON.parse(stdout);
-    const additionalContext = payload.hookSpecificOutput?.additionalContext || "";
-
-    assert.equal(payload.hookSpecificOutput?.hookEventName, "SessionStart");
-    assert.doesNotMatch(additionalContext, /You have Pulse\./);
-    assert.match(additionalContext, /Pulse repo notes:/);
-    assert.match(additionalContext, /Pulse onboarding is installed for this repo\./);
-    assert.match(additionalContext, /node \.pulse\/scripts\/pulse_status\.mjs --json/);
-  } finally {
-    fs.rmSync(root, { recursive: true, force: true });
-  }
-});
-
-test("packaged Claude SessionStart hook falls back to using-pulse bootstrap before onboarding", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-onboard-"));
-
-  try {
-    const stdout = execFileSync(
-      "node",
-      [path.join(LOCAL_REPO_ROOT, "hooks", "session-start.mjs")],
-      {
-        cwd: root,
-        input: JSON.stringify({ cwd: root }),
-        encoding: "utf8",
-        env: {
-          ...process.env,
-          CLAUDE_PLUGIN_ROOT: LOCAL_REPO_ROOT,
-        },
-      },
-    );
-
-    const payload = JSON.parse(stdout);
-    const additionalContext = payload.hookSpecificOutput?.additionalContext || "";
-
-    assert.equal(payload.hookSpecificOutput?.hookEventName, "SessionStart");
-    assert.match(additionalContext, /You have Pulse\./);
-    assert.match(additionalContext, /# using-pulse/);
-    assert.match(additionalContext, /pulse:preflight/);
-    assert.match(additionalContext, /Pulse repo notes:/);
-    assert.match(additionalContext, /Preflight readiness has not been established for this repo\./);
+    const configText = fs.readFileSync(path.join(root, ".codex", "config.toml"), "utf8");
+    assert.doesNotMatch(configText, /^codex_hooks\s*=\s*true$/m);
+    assert.equal(fs.existsSync(path.join(root, ".codex", "hooks.json")), false);
+    assert.equal(fs.existsSync(path.join(root, ".codex", "hooks")), false);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -428,8 +296,9 @@ test("applyRepo upgrades a stale managed block without altering external instruc
     assert.match(firstPass, /# Project instructions/);
     assert.match(firstPass, /Keep this repository-specific rule\./);
     assert.doesNotMatch(firstPass, /Stale Pulse Workflow|old onboarding-only startup check/);
-    assert.match(firstPass, /`work-shape\.md` \/ `phase-plan\.md` \/ `epic-map\.md`/);
-    assert.match(firstPass, /preflight readiness is missing\/stale\/blocked/);
+    assert.match(firstPass, /`run\.json` — canonical v2 run state/);
+    assert.match(firstPass, /`work-graph\.json` — immutable approved execution DAG/);
+    assert.match(firstPass, /Run `pulse:preflight` only when the user explicitly requests it/);
     assert.equal((firstPass.match(/<!-- PULSE:START -->/g) || []).length, 1);
     assert.equal((firstPass.match(/<!-- PULSE:END -->/g) || []).length, 1);
   } finally {
@@ -2078,16 +1947,79 @@ test("packaged swarm contracts use native runtime adapters instead of Agent Mail
   assert.match(runtimeAppendix, /latest coordinator updates/);
 });
 
-test("using-pulse stays a router/scout and defers onboarding authority to preflight", () => {
+test("using-pulse is a generated ICM router with frozen legacy fallback and opt-in preflight", () => {
   const skillText = fs.readFileSync(LOCAL_USING_PULSE_SKILL_PATH, "utf8");
+  const legacyText = fs.readFileSync(
+    path.join(LOCAL_REPO_ROOT, "skills", "using-pulse", "references", "legacy-v1.md"),
+    "utf8",
+  );
 
-  assert.match(skillText, /pure router \+ scout/i);
-  assert.match(skillText, /`pulse:preflight` is the sole readiness authority/i);
-  assert.match(skillText, /Do not run `onboard_pulse\.mjs --apply` from this skill\./);
-  assert.match(skillText, /Any onboarding or remediation change belongs to `pulse:preflight`\./);
-  assert.match(skillText, /- If preflight readiness is missing or stale in `?\.pulse\/tooling-status\.json`?, invoke `pulse:preflight`\./);
-  assert.match(skillText, /- If `?\.pulse\/tooling-status\.json`? is missing, invoke `pulse:preflight`\./);
-  assert.doesNotMatch(skillText, /run onboard_pulse\.mjs --apply/i);
+  assert.match(skillText, /GENERATED FROM PULSE ICM WORKFLOW/);
+  assert.match(skillText, /active `run\.json`/i);
+  assert.match(skillText, /references\/legacy-v1\.md/);
+  assert.match(skillText, /Do not invoke `pulse:preflight` unless the user explicitly requests it\./);
+  assert.match(skillText, /No v2 writes to legacy state mirrors/);
+  assert.match(legacyText, /## Opt-In Preflight Contract/);
+  assert.match(legacyText, /Do not run `onboard_pulse\.mjs --apply` from this skill\./);
+});
+
+test("preflight has only an explicit user-request edge into the Pulse workflow", () => {
+  const preflightText = fs.readFileSync(
+    path.join(LOCAL_REPO_ROOT, "skills", "preflight", "SKILL.md"),
+    "utf8",
+  );
+  const usingPulseText = fs.readFileSync(LOCAL_USING_PULSE_SKILL_PATH, "utf8");
+  const agentsTemplateText = fs.readFileSync(
+    path.join(LOCAL_REPO_ROOT, "AGENTS.template.md"),
+    "utf8",
+  );
+  const goModeText = fs.readFileSync(
+    path.join(LOCAL_REPO_ROOT, "skills", "using-pulse", "references", "go-mode-pipeline.md"),
+    "utf8",
+  );
+  const architectureText = fs.readFileSync(
+    path.join(LOCAL_REPO_ROOT, "docs", "ARCHITECTURE.md"),
+    "utf8",
+  );
+
+  assert.match(
+    preflightText,
+    /description: Use only when the user explicitly asks to run Pulse preflight or requests a Pulse readiness\/onboarding check\./,
+  );
+  assert.match(
+    preflightText,
+    /Never infer a preflight request from starting, resuming, planning, validating, or executing Pulse work\./,
+  );
+  assert.match(
+    usingPulseText,
+    /Do not invoke `pulse:preflight` unless the user explicitly requests it\./,
+  );
+  assert.doesNotMatch(
+    usingPulseText,
+    /If (?:preflight readiness|`?\.pulse\/tooling-status\.json`?).*invoke `pulse:preflight`/,
+  );
+  assert.match(
+    agentsTemplateText,
+    /Run `pulse:preflight` only when the user explicitly requests it\./,
+  );
+  assert.doesNotMatch(agentsTemplateText, /pulse:preflight\s*\n\s*→ pulse:using-pulse/);
+  assert.doesNotMatch(goModeText, /always starts with preflight/i);
+  assert.doesNotMatch(goModeText, /Run `pulse:preflight`\./);
+  assert.doesNotMatch(architectureText, /PF\["pulse:preflight"\] --> UP/);
+
+  for (const relativePath of [
+    "skills/exploring/SKILL.md",
+    "skills/planning/SKILL.md",
+    "skills/validating/SKILL.md",
+    "skills/swarming/SKILL.md",
+    "skills/executing/SKILL.md",
+    "skills/reviewing/SKILL.md",
+    "skills/compounding/SKILL.md",
+    "skills/gitnexus/SKILL.md",
+  ]) {
+    const text = fs.readFileSync(path.join(LOCAL_REPO_ROOT, relativePath), "utf8");
+    assert.doesNotMatch(text, /invoke `pulse:preflight`|route to preflight/i, relativePath);
+  }
 });
 
 test("packaged Pulse inventory has full dependency coverage", () => {
@@ -2099,20 +2031,20 @@ test("packaged Pulse inventory has full dependency coverage", () => {
       "utf8",
     ),
   );
+  const mcpServers = pluginMcp.mcpServers || pluginMcp;
 
   assert.equal(report.summary.skills_total, report.summary.skills_covered);
   assert.equal(report.summary.skills_uncovered, 0);
   assert.deepEqual(report.uncovered_skills, []);
 
-  assert.match(skillText, /## Dependency Declaration Contract/);
+  const usingPulse = report.skills.find((skill) => skill.skill_name === "using-pulse");
+  assert.equal(usingPulse.coverage_status, "declared_dependencies");
+  assert.equal(usingPulse.dependencies[0].id, "node-runtime");
   assert.match(skillText, /kind: command/);
-  assert.match(skillText, /kind: mcp_server/);
-  assert.match(skillText, /metadata\.dependencies: \[\]/);
-  assert.match(skillText, /bash scripts\/sync-skills\.sh --dry-run/);
-  assert.equal(pluginMcp.gitnexus.type, "stdio");
-  assert.equal(pluginMcp.gitnexus.command, "npx");
-  assert.deepEqual(pluginMcp.gitnexus.args, ["-y", "gitnexus@1.6.3", "mcp"]);
-  assert.deepEqual(pluginMcp.gitnexus.includeTools, [
+  assert.equal(mcpServers.gitnexus.type, "stdio");
+  assert.equal(mcpServers.gitnexus.command, "npx");
+  assert.deepEqual(mcpServers.gitnexus.args, ["-y", "gitnexus@1.6.3", "mcp"]);
+  assert.deepEqual(mcpServers.gitnexus.includeTools, [
     "list_repos",
     "query",
     "context",
@@ -2122,4 +2054,6 @@ test("packaged Pulse inventory has full dependency coverage", () => {
     "shape_check",
     "detect_changes",
   ]);
+  assert.equal(mcpServers.MCP_DOCKER.command, "docker");
+  assert.equal(mcpServers["morph-mcp"].command, "npx");
 });

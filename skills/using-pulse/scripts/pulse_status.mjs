@@ -14,6 +14,10 @@ import {
   resolveRepoRoot,
   syncPulseRuntimeArtifacts,
 } from "./pulse_state.mjs";
+import {
+  detectPulseRuntime,
+  readIcmStatus,
+} from "./pulse_icm.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
@@ -209,6 +213,32 @@ function renderCheckpointResult(result) {
   return JSON.stringify(result, null, 2);
 }
 
+function renderIcmStatus(status) {
+  if (status.status === "conflict") {
+    return [
+      "Pulse ICM status: CONFLICT",
+      `Reason: ${status.reason || "Conflicting runtime state."}`,
+      "Next: choose the v2 run or legacy handoff explicitly; no state was changed.",
+    ].join("\n");
+  }
+  if (status.status === "blocked") {
+    return [
+      "Pulse ICM status: BLOCKED",
+      `Run: ${status.run_path || "(unknown)"}`,
+      `Stage: ${status.current_stage || "(unknown)"}`,
+      `Blocker: ${status.blocker_code || "(unknown)"}`,
+      `Stale gate: ${status.stale_gate || "(none)"}`,
+    ].join("\n");
+  }
+  return [
+    `Pulse ICM status: ${String(status.status || "unknown").toUpperCase()}`,
+    `Run: ${status.run_path || "(none)"}`,
+    `Stage: ${status.current_stage || "(none)"}`,
+    `Next skill: ${status.next_skill || "(none)"}`,
+    `Execution strategy: ${status.execution?.approved_strategy || "(not approved)"}`,
+  ].join("\n");
+}
+
 async function runCheckpointCommand(repoRoot, args) {
   const options = {
     feature: args.feature,
@@ -239,11 +269,31 @@ async function runCheckpointCommand(repoRoot, args) {
 export async function main(argv = process.argv.slice(2)) {
   const args = parseCliArgs(argv);
   const repoRoot = resolveRepoRoot(args.repoRoot, SCRIPT_DIR);
+  const runtime = detectPulseRuntime(repoRoot);
 
   if (args.command === "checkpoint") {
+    if (runtime.kind === "icm-v2" || runtime.kind === "conflict") {
+      const result = {
+        ok: false,
+        operation: args.operation,
+        error: runtime.kind === "icm-v2"
+          ? "ICM v2 uses stage artifacts and run.json; legacy checkpoint commands are unavailable."
+          : runtime.reason,
+      };
+      process.stdout.write(args.json ? `${JSON.stringify(result, null, 2)}\n` : `${renderCheckpointResult(result)}\n`);
+      return 1;
+    }
     const result = await runCheckpointCommand(repoRoot, args);
     process.stdout.write(args.json ? `${JSON.stringify(result, null, 2)}\n` : `${renderCheckpointResult(result)}\n`);
     return result.ok === false ? 1 : 0;
+  }
+
+  if (runtime.kind === "icm-v2" || runtime.kind === "conflict") {
+    const status = readIcmStatus(repoRoot);
+    process.stdout.write(
+      args.json ? `${JSON.stringify(status, null, 2)}\n` : `${renderIcmStatus(status)}\n`,
+    );
+    return status.status === "conflict" ? 1 : 0;
   }
 
   if (args.sync) {

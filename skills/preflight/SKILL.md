@@ -1,27 +1,28 @@
 ---
 name: preflight
-description: Use when starting any Pulse workflow, resuming a Pulse session, or before planning or execution when tool readiness or onboarding state may block the flow.
+description: Use only when the user explicitly asks to run Pulse preflight or requests a Pulse readiness/onboarding check.
 metadata:
-  version: '1.2'
+  version: '1.3'
   ecosystem: pulse
-  position: '0 - runs before using-pulse or any execution-capable phase'
-  type: bootstrap
+  position: 'operator-invoked diagnostic outside the default delivery chain'
+  type: diagnostic
   dependencies: []
 ---
 
 # Preflight
 
-Validate runtime readiness before Pulse spends planning or execution effort.
-This skill is the sole authority for onboarding, tool-health, and readiness decisions in a Pulse session.
-`pulse:using-pulse` consumes the artifacts written here and routes next steps, but it does not rerun onboarding or readiness checks.
-Do not explore, plan, validate, swarm, or execute until this skill finishes.
+Run an explicit operator-requested runtime readiness check.
+This skill is the sole authority for writing Pulse onboarding, tool-health, and readiness decisions.
+`pulse:using-pulse` may consume a current result, but it never invokes or refreshes this skill automatically.
+Never infer a preflight request from starting, resuming, planning, validating, or executing Pulse work.
 
 ## When to Use
 
-- User says: "start Pulse", "run Pulse", "/go", "resume Pulse"
-- Before any full Pulse workflow
-- Before execution if tool availability is uncertain
-- After environment changes: new machine, new shell, new repo clone, broken tooling
+- User explicitly says: "run Pulse preflight" or "run preflight"
+- User explicitly requests a Pulse readiness, onboarding, or full tool-health check
+- User explicitly asks to refresh an existing `.pulse/tooling-status.json`
+
+Do not use this skill merely because Pulse work starts or resumes, an environment changed, a readiness artifact is missing or stale, or another skill encounters a missing dependency. Surface that local fact and continue or stop according to the active skill's own contract unless the user asks for preflight.
 
 ## What This Skill Produces
 
@@ -34,12 +35,13 @@ Load `references/tool-readiness-matrix.md` before Phase 3.
 
 ## Hard Rules
 
-1. Never assume a tool exists because a repo or prior session mentioned it.
-2. Never report `PASS` without running a real minimal check for each required tool.
-3. If a tool is optional, record it as unavailable but do not fail the run.
-4. If a tool is required for the requested mode, block that mode explicitly.
-5. If the result is `FAIL`, do not continue into planning or execution.
-6. If the result is `DEGRADED`, present the downgrade clearly before proceeding.
+1. Do not run unless the user explicitly requested this diagnostic.
+2. Never assume a tool exists because a repo or prior session mentioned it.
+3. Never report `PASS` without running a real minimal check for each required tool.
+4. If a tool is optional, record it as unavailable but do not fail the run.
+5. If a tool is required for the requested mode, block that mode explicitly.
+6. If the result is `FAIL`, do not continue into planning or execution in the checked mode.
+7. If the result is `DEGRADED`, present the downgrade clearly before proceeding.
 
 ## Phase 1: Establish Pulse State
 
@@ -286,6 +288,7 @@ Next:
 - Hiding degraded mode from the user
 - Reusing stale `.pulse/tooling-status.json` without refreshing it
 - Using environment hints instead of real tool invocations
+- Running because another Pulse phase started rather than because the user explicitly requested preflight
 
 ## References
 

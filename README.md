@@ -8,7 +8,7 @@
 
 <p>
   <a href=".codex-plugin/plugin.json">
-    <img alt="Version" src="https://img.shields.io/badge/version-3.6.0-0F766E?style=flat-square" />
+    <img alt="Version" src="https://img.shields.io/badge/version-4.0.0-0F766E?style=flat-square" />
   </a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
   <a href="skills">
@@ -24,24 +24,26 @@
 
 ## What is Pulse?
 
-Pulse wraps AI agents in a **gated delivery chain**. Every decision is locked before planning starts. Every plan is approved before code is written. Every bead of work is verified before it's closed. Every feature is reviewed before it merges.
+Pulse wraps AI agents in a **gated, filesystem-visible delivery chain**. Every decision is locked before planning starts. Every plan and execution graph is approved before code is written. Every graph node is verified before it is complete. Every feature is reviewed before it merges.
 
 Without this structure, agents skip steps. With it, they can't.
 
-Pulse ships as a **skills package**. Each skill is a `SKILL.md` file loaded into context at invocation. The workflow contract lives in those skill files, while repo-local Node helpers handle onboarding, state sync, dependency checks, and local coordination. There is no separate orchestration service to deploy. Pulse is a docs-first skill plugin that uses the tools you already have.
+Pulse ships as a **skills package**. Numbered contracts under `workflow/stages/` are the canonical source; lean `SKILL.md` adapters are generated for plugin discovery. Plain Markdown and JSON files carry stage context, while local Node helpers perform only mechanical validation, hashing, and graph analysis. There is no orchestration service or automatic lifecycle hook.
 
 ## The Delivery Chain
 
-<p align="center">
-  <img src="assets/delivery-chain.png" alt="Pulse delivery chain showing preflight, using-pulse, brainstorming, exploring, planning, validating, swarming, executing, reviewing, and compounding with Gates 1-4 approvals." width="1100" />
-</p>
+```text
+using-pulse → explore → plan → validate → execute → review → compound
+```
+
+`pulse:preflight` is an explicit operator diagnostic. Brainstorming is optional. Swarming is an approved execution strategy, not a delivery stage.
 
 Pulse turns a vague request into a reviewed delivery trail:
 
-1. `pulse:exploring` locks decisions into `CONTEXT.md`
-2. `pulse:planning` selects work shape (`work-shape.md`, `phase-plan.md`, or `epic-map.md`) and prepares current work artifacts
-3. `pulse:validating` verifies feasibility and readiness for the selected current work
-4. `pulse:swarming` or `pulse:executing` implements the approved current work
+1. `pulse:exploring` writes `01_explore/output/decisions.md`
+2. `pulse:planning` writes one `plan.md` and immutable `work-graph.json`
+3. `pulse:validating` verifies feasibility and recommends strategy from weak graph connectivity
+4. `pulse:executing` implements the approved graph, optionally through `pulse:swarming`
 5. `pulse:reviewing` blocks weak merges
 6. `pulse:compounding` captures durable learnings for future work
 
@@ -50,7 +52,7 @@ Pulse turns a vague request into a reviewed delivery trail:
 | Gate | What it blocks |
 | --- | --- |
 | **Gate 1** | Planning before decisions are locked |
-| **Gate 2** | Work-shape execution prep before the selected shape artifact is approved |
+| **Gate 2** | Validation before the plan and immutable work graph are approved |
 | **Gate 3** | Execution before feasibility-validated current work is explicitly approved |
 | **Gate 4** | Merge before review is complete |
 
@@ -58,9 +60,9 @@ Pulse turns a vague request into a reviewed delivery trail:
 
 | Problem | Pulse response |
 | --- | --- |
-| Requirements drift inside chat | Lock decisions in `CONTEXT.md` |
+| Requirements drift inside chat | Lock decisions in a stage output |
 | Plans look plausible but are brittle | Validate before execution starts |
-| Parallel agents step on each other | Coordinate through beads, `bv`, and reservations |
+| Parallel agents step on each other | Recommend swarm only for file-disjoint graph components |
 | Work is hard to audit later | Keep artifacts, evidence, and review trail in the repo |
 
 ## Lineage
@@ -70,7 +72,7 @@ Pulse is downstream of several strong agentic-development systems and distills t
 - **[Khuym](https://github.com/hoangnb24/skills/tree/main)**, which provides most of the validate-first chain and Flywheel-style bead workflow
 - **[Superpowers](https://github.com/obra/superpowers)** 5.1.3 contributes selected, adapted practices for worktree isolation, debugging references, and controlled skill evaluation—not a wholesale copy of its lifecycle.
 - **SPDD Codex Skills** 1.0.0 contributes selected fitness/change routing, REASONS, `OP-n`, safeguard, and traceability concepts through Pulse's single `governed-feature` overlay—not a competing lifecycle.
-- **[Flywheel](https://agent-flywheel.com/complete-guide)** contributes the operational backbone: beads, `bv`, swarm execution, and the habit of turning plans into live work graphs instead of loose TODO lists.
+- **[Flywheel](https://agent-flywheel.com/complete-guide)** contributes Beads and reservation patterns used as an optional swarm projection rather than the canonical plan graph.
 - **[Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin)** contributes parallel review, severity-based findings, and the compound-learning loop that feeds future work.
 - **[GSD](https://github.com/gsd-build/get-shit-done)** contributes the philosophy: discuss first, research second, plan third, and do not execute until the plan has been verified.
 
@@ -101,7 +103,7 @@ codex plugin marketplace remove pulse
 
 ### After Install
 
-Installing the plugin makes the packaged skills, hooks, and MCP metadata available to the runtime. To use Pulse inside a target repository, start with `pulse:preflight` so Pulse can verify or install the repo-local onboarding assets it needs under `.pulse/`.
+Installing the plugin makes the packaged skills and three MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start with `pulse:using-pulse`; run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic.
 
 ## Project Docs
 
@@ -110,7 +112,8 @@ Installing the plugin makes the packaged skills, hooks, and MCP metadata availab
 | The architecture and runtime model | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | A concrete walkthrough | [docs/examples/golden-path.md](docs/examples/golden-path.md) |
 | The evaluation workflow | [docs/evaluation/pulse-plugin-eval.md](docs/evaluation/pulse-plugin-eval.md) |
-| The Pulse 3.6.0 exact-profile certification | [docs/evaluation/certifications/pulse-3.6.0.md](docs/evaluation/certifications/pulse-3.6.0.md) |
+| The Pulse 4 ICM evaluation | [docs/evaluation/pulse-4-icm/creation-log.md](docs/evaluation/pulse-4-icm/creation-log.md) |
+| Historical Pulse 3.6.0 certification | [docs/evaluation/certifications/pulse-3.6.0.md](docs/evaluation/certifications/pulse-3.6.0.md) |
 
 ## Maintainer Notes
 

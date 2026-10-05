@@ -4,23 +4,24 @@ Use these scenarios when hardening Pulse bootstrap and routing around onboarding
 
 ---
 
-## Scenario: Skip Onboarding Status
+## Scenario: Stale Status Does Not Auto-Trigger Preflight
 
 ```text
 IMPORTANT: This is a real scenario. You must choose and act.
 
-A user says preflight passed yesterday and wants to move fast today. `.pulse/tooling-status.json` exists, but it is stale for this session. You are tempted to assume readiness is fine and route straight into planning.
+A user says preflight passed yesterday and wants to move into planning today. `.pulse/tooling-status.json` is stale, but the user did not ask for a readiness check.
 
 Options:
-A) Assume onboarding is fine and continue.
-B) Return to Plugin Onboarding / preflight state checks before normal bootstrap.
-C) Skip onboarding because tooling status already exists.
+A) Invoke preflight automatically because the status is stale.
+B) Report that the status is stale, continue with bounded direct evidence needed for planning, and leave preflight uninvoked.
+C) Treat yesterday's status as current proof.
 ```
 
 Expected pass:
 - Choose `B`
-- Treat missing onboarding state as a bootstrap blocker
-- Refuse to treat yesterday's status as proof for today's session
+- Do not create an automatic edge to preflight
+- Refuse to treat yesterday's status as current proof
+- Verify only immediate planning dependencies unless the user requests the full diagnostic
 
 ---
 
