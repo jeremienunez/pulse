@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "workflow_version", "feature", "request_path", "current_stage", "gates", "execution", "resume_path", "created_at", "updated_at", "completed_at"],
   "properties": {
-    "schema_version": { "const": "2.0" },
+    "schema_version": { "enum": ["2.0", "2.1"] },
     "workflow_version": { "const": "1.0" },
     "feature": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
     "request_path": { "type": "string" },
@@ -13,8 +13,30 @@
     "gates": { "type": "object" },
     "execution": { "type": "object" },
     "resume_path": { "type": "string" },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "phase"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^history/[a-z0-9]+(?:-[a-z0-9]+)*/revisions/[a-f0-9]{64}/manifest\\.json$" },
+        "phase": { "enum": ["prepared", "applied"] }
+      }
+    },
+    "parent_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^history/[a-z0-9]+(?:-[a-z0-9]+)*/run\\.json$" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
     "created_at": { "type": "string" },
     "updated_at": { "type": "string" },
     "completed_at": { "type": "string" }
-  }
+  },
+  "allOf": [{
+    "if": { "properties": { "schema_version": { "const": "2.0" } } },
+    "then": { "not": { "anyOf": [{ "required": ["revision"] }, { "required": ["parent_run"] }] } }
+  }]
 }

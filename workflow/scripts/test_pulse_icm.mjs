@@ -5,8 +5,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import * as icm from "./pulse_icm.mjs";
 
 import {
   analyzeWorkGraph,
@@ -20,6 +21,242 @@ import {
 import { applyRepo } from "../../skills/using-pulse/scripts/onboard_pulse.mjs";
 
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
+
+function approvedFixture(stage = "05_review") {
+  const root = makeRepo(), feature = "revision-case";
+  const result = initIcmRun(root, feature, "Bounded correction fixture.");
+  const output = (s, file) => path.join(root, "history", feature, "stages", s, "output", file);
+  fs.writeFileSync(output("01_explore", "decisions.md"), "# Decisions\n");
+  approveGate(root, "GATE_1");
+  fs.writeFileSync(output("02_plan", "plan.md"), "# Plan\n");
+  writeJson(output("02_plan", "work-graph.json"), graph([
+    node("A", [], ["src/a.ts"]), node("B", ["A"], ["src/b.ts"]), node("C", [], ["src/c.ts"]),
+  ]));
+  approveGate(root, "GATE_2");
+  writeJson(output("03_validate", "validation.json"), { schema_version: "1.0", status: "ready" });
+  approveGate(root, "GATE_3", { strategy: "single-worker" });
+  writeJson(output("04_execute", "execution-state.json"), { schema_version: "1.0", nodes: { A: "complete", B: "complete", C: "complete" } });
+  fs.writeFileSync(output("04_execute", "execution-report.md"), "# Execution\n");
+  fs.mkdirSync(output("04_execute", "verification"), { recursive: true });
+  fs.writeFileSync(output("04_execute", "verification/prior.txt"), "prior proof\n");
+  if (stage !== "04_execute") completeStage(root, "04_execute");
+  if (stage === "06_compound" || stage === "complete") {
+    writeJson(output("05_review", "review.json"), { schema_version: "1.0", status: "ready", findings: [] });
+    fs.writeFileSync(output("05_review", "uat.md"), "# UAT\n");
+    approveGate(root, "GATE_4");
+  }
+  if (stage === "complete") {
+    fs.writeFileSync(output("06_compound", "compounding.md"), "# Learning\n");
+    completeStage(root, "06_compound");
+  }
+  return { root, output, runPath: path.join(root, result.run_path) };
+}
+
+test("R1: resume status returns its handoff without changing partial progress", () => {
+  const f = approvedFixture("04_execute");
+  try {
+    const run = JSON.parse(fs.readFileSync(f.runPath));
+    run.resume_path = "history/revision-case/stages/04_execute/output/handoff.md";
+    fs.writeFileSync(path.join(f.root, run.resume_path), "# Resume B\n");
+    writeJson(f.runPath, run);
+    const state = f.output("04_execute", "execution-state.json");
+    writeJson(state, { schema_version: "1.0", nodes: { A: "complete", B: "pending", C: "complete" } });
+    const before = [fs.readFileSync(f.runPath, "utf8"), fs.readFileSync(state, "utf8")];
+    assert.equal(readIcmStatus(f.root).resume_path, run.resume_path);
+    assert.equal(readIcmStatus(f.root).current_stage, "04_execute");
+    assert.deepEqual([fs.readFileSync(f.runPath, "utf8"), fs.readFileSync(state, "utf8")], before);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R2: review correction reopens only the requested dependency closure and keeps approved scope", () => {
+  const f = approvedFixture();
+  try {
+    const before = JSON.parse(fs.readFileSync(f.runPath));
+    const graphBytes = fs.readFileSync(f.output("02_plan", "work-graph.json"), "utf8");
+    const revised = icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Correct checkbox styling", nodes: ["A"] });
+    assert.equal(revised.run.current_stage, "04_execute");
+    assert.equal(revised.run.schema_version, "2.1");
+    assert.equal(revised.run.revision.phase, "applied");
+    assert.deepEqual(revised.run.execution, before.execution);
+    for (const gate of ["GATE_1", "GATE_2", "GATE_3"]) assert.deepEqual(revised.run.gates[gate], before.gates[gate]);
+    assert.equal(revised.run.gates.GATE_4.status, "pending");
+    assert.deepEqual(JSON.parse(fs.readFileSync(f.output("04_execute", "execution-state.json"))).nodes, { A: "pending", B: "pending", C: "complete" });
+    assert.equal(fs.readFileSync(f.output("02_plan", "work-graph.json"), "utf8"), graphBytes);
+    const manifestPath = path.join(f.root, revised.run.revision.path);
+    const manifest = JSON.parse(fs.readFileSync(manifestPath));
+    const prior = manifest.files.find(file => file.source.endsWith("verification/prior.txt"));
+    assert.equal(fs.readFileSync(path.join(path.dirname(manifestPath), prior.snapshot), "utf8"), "prior proof\n");
+    assert.equal(readIcmStatus(f.root).resume_path, revised.run.resume_path);
+    assert.throws(() => completeStage(f.root, "04_execute"), /complete/i);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R3/R4: revising a stale plan clears its downstream authority and archived execution state", () => {
+  const f = approvedFixture();
+  try {
+    fs.appendFileSync(f.output("02_plan", "plan.md"), "A changed requirement\n");
+    const before = fs.readFileSync(f.runPath, "utf8");
+    assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Fix", nodes: ["A"] }), /GATE_2.*stale|stale.*GATE_2/i);
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+    const revised = icm.reviseIcmRun(f.root, { stage: "02_plan", reason: "Renew changed plan" });
+    assert.equal(revised.run.gates.GATE_1.status, "approved");
+    for (const gate of ["GATE_2", "GATE_3", "GATE_4"]) assert.equal(revised.run.gates[gate].status, "pending");
+    assert.equal(revised.run.execution.approved_strategy, "");
+    assert.equal(fs.existsSync(f.output("04_execute", "execution-state.json")), false);
+    assert.equal(readIcmStatus(f.root).status, "ready");
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R4: invalid transition and node requests do not change the run", () => {
+  const f = approvedFixture();
+  try {
+    assert.equal(typeof icm.reviseIcmRun, "function");
+    const before = fs.readFileSync(f.runPath, "utf8");
+    for (const options of [
+      { stage: "05_review", reason: "same" }, { stage: "06_compound", reason: "future" },
+      { stage: "bad", reason: "bad" }, { stage: "02_plan", reason: " " },
+      { stage: "04_execute", reason: "missing nodes" },
+      { stage: "04_execute", reason: "unknown", nodes: ["FOREIGN"] },
+      { stage: "04_execute", reason: "duplicate", nodes: ["A", "A"] },
+    ]) assert.throws(() => icm.reviseIcmRun(f.root, options));
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+    assert.equal(fs.existsSync(path.join(f.root, "history/revision-case/revisions")), false);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+function interruptRevision(f) {
+  const rename = fs.renameSync;
+  fs.renameSync = (source, target) => {
+    if (target === f.runPath && JSON.parse(fs.readFileSync(source)).revision?.phase === "applied") throw new Error("injected final commit failure");
+    return rename(source, target);
+  };
+  try {
+    assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Review correction", nodes: ["A"] }), /injected final commit failure/);
+  } finally { fs.renameSync = rename; }
+  return JSON.parse(fs.readFileSync(f.runPath)).revision.path.split("/").at(-2);
+}
+
+test("R5: interrupted commit blocks advancement and explicit recovery completes only that revision", () => {
+  const f = approvedFixture();
+  try {
+    const id = interruptRevision(f);
+    assert.equal(readIcmStatus(f.root).blocker_code, "revision_prepared");
+    assert.throws(() => approveGate(f.root, "GATE_4"), /prepared/i);
+    assert.throws(() => completeStage(f.root, "04_execute"), /prepared/i);
+    assert.throws(() => initIcmRun(f.root, "another", "New work"), /prepared/i);
+    assert.throws(() => icm.recoverIcmRevision(f.root, "wrong"), /revision/i);
+    const recovered = icm.recoverIcmRevision(f.root, id);
+    assert.equal(recovered.run.current_stage, "04_execute");
+    assert.equal(recovered.run.revision.phase, "applied");
+    const after = fs.readFileSync(f.runPath, "utf8");
+    assert.throws(() => icm.recoverIcmRevision(f.root, id), /prepared/i);
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), after);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R5: recovery refuses changed execution state or modified manifest without overwrite", () => {
+  for (const tamper of ["state", "manifest"]) {
+    const f = approvedFixture();
+    try {
+      const id = interruptRevision(f), run = JSON.parse(fs.readFileSync(f.runPath));
+      const target = tamper === "state" ? f.output("04_execute", "execution-state.json") : path.join(f.root, run.revision.path);
+      fs.appendFileSync(target, tamper === "state" ? "external edit" : "\n");
+      const before = fs.readFileSync(target, "utf8");
+      assert.throws(() => icm.recoverIcmRevision(f.root, id), /changed|binding|digest|diverg/i);
+      assert.equal(fs.readFileSync(target, "utf8"), before);
+      assert.equal(JSON.parse(fs.readFileSync(f.runPath)).revision.phase, "prepared");
+    } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+  }
+});
+
+test("R6/R7: a completed pointer starts a fresh linked successor and preserves parent bytes", () => {
+  const f = approvedFixture("complete");
+  try {
+    const before = fs.readFileSync(f.runPath, "utf8");
+    const next = initIcmRun(f.root, "successor", "Apply the next improvement");
+    assert.equal(next.run.current_stage, "01_explore");
+    assert.equal(next.run.schema_version, "2.1");
+    assert.equal(next.run.parent_run.path, "history/revision-case/run.json");
+    assert.equal(next.run.parent_run.sha256, icm.hashFile(f.runPath));
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+    for (const gate of Object.values(next.run.gates)) assert.deepEqual(gate, { status: "pending", artifacts: [], decided_at: "" });
+    assert.match(fs.readFileSync(path.join(f.root, next.run.request_path), "utf8"), /history\/revision-case\/run\.json/);
+    assert.throws(() => initIcmRun(f.root, "third", "An unfinished run owns this repository"), /active|unfinished/i);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R6: explicit parents must be completed, valid and inside the owner", () => {
+  const f = approvedFixture();
+  try {
+    const before = fs.readFileSync(f.runPath, "utf8");
+    assert.throws(() => initIcmRun(f.root, "next", "Work", { fromRun: "history/revision-case/run.json" }), /active|unfinished|complete/i);
+    assert.throws(() => initIcmRun(f.root, "next", "Work", { fromRun: "../outside/run.json" }), /path|relative|escape|active/i);
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+    assert.equal(fs.existsSync(path.join(f.root, "history/next")), false);
+    fs.unlinkSync(path.join(f.root, ".pulse", "active-run"));
+    assert.throws(() => initIcmRun(f.root, "next", "Work", { fromRun: "history/revision-case/run.json" }), /complete/i);
+    assert.throws(() => initIcmRun(f.root, "next", "Work", { fromRun: "../outside/run.json" }), /path|relative|escape/i);
+    assert.equal(fs.existsSync(path.join(f.root, "history/next")), false);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R7: malformed continuity metadata and future schemas cannot route", () => {
+  const f = approvedFixture();
+  try {
+    const initial = JSON.parse(fs.readFileSync(f.runPath));
+    for (const patch of [
+      { schema_version: "9.0" },
+      { schema_version: "2.0", revision: { path: "outside", phase: "prepared" } },
+      { schema_version: "2.1", revision: { path: "../outside", phase: "prepared" } },
+      { schema_version: "2.1", parent_run: { path: "history/parent/run.json", sha256: "wrong" } },
+    ]) {
+      writeJson(f.runPath, { ...initial, ...patch });
+      assert.equal(readIcmStatus(f.root).status, "conflict");
+    }
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R8: missing and foreign graph-state keys cannot certify execution", () => {
+  for (const states of [{ A: "complete" }, { A: "complete", B: "complete", C: "complete", FOREIGN: "complete" }]) {
+    const f = approvedFixture("04_execute");
+    try {
+      writeJson(f.output("04_execute", "execution-state.json"), { schema_version: "1.0", nodes: states });
+      assert.throws(() => completeStage(f.root, "04_execute"), /graph|membership|node/i);
+      assert.equal(readIcmStatus(f.root).current_stage, "04_execute");
+    } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+  }
+});
+
+test("R8: blocked or in-progress corrections require settlement before reopening", () => {
+  for (const state of ["blocked", "in_progress"]) {
+    const f = approvedFixture();
+    try {
+      writeJson(f.output("04_execute", "execution-state.json"), { schema_version: "1.0", nodes: { A: state, B: "complete", C: "complete" } });
+      const before = fs.readFileSync(f.runPath, "utf8");
+      assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Do not replay unknown effects", nodes: ["A"] }), /settle|blocked|progress/i);
+      assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+    } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+  }
+});
+
+test("R9: symlink escapes and competing writers are refused without outside writes", () => {
+  const f = approvedFixture(), outside = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-outside-"));
+  try {
+    const sentinel = path.join(outside, "sentinel.txt");
+    fs.writeFileSync(sentinel, "untouched");
+    fs.symlinkSync(outside, f.output("04_execute", "verification/escape"));
+    const before = fs.readFileSync(f.runPath, "utf8");
+    assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Fix", nodes: ["A"] }), /symlink|symbolic/i);
+    assert.equal(fs.readFileSync(sentinel, "utf8"), "untouched");
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+    fs.unlinkSync(f.output("04_execute", "verification/escape"));
+    const lock = path.join(f.root, ".pulse", "lifecycle.lock");
+    writeJson(lock, { pid: process.pid, token: "competing-owner", revision_id: null });
+    assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Fix", nodes: ["A"] }), /writer|lock|owner/i);
+    assert.equal(JSON.parse(fs.readFileSync(lock)).token, "competing-owner");
+    assert.equal(fs.readFileSync(f.runPath, "utf8"), before);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); fs.rmSync(outside, { recursive: true, force: true }); }
+});
 
 function makeRepo() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-icm-"));
@@ -45,6 +282,120 @@ function node(id, dependsOn, files) {
     verification: [`verify ${id}`],
   };
 }
+
+test("R3: feasibility revalidation retains completion when its approved graph has not changed", () => {
+  const f = approvedFixture();
+  try {
+    const bytes = fs.readFileSync(f.output("04_execute", "execution-state.json"), "utf8");
+    const result = icm.reviseIcmRun(f.root, { stage: "03_validate", reason: "Recheck feasibility" });
+    assert.equal(result.run.gates.GATE_2.status, "approved");
+    assert.equal(result.run.gates.GATE_3.status, "pending");
+    assert.equal(result.run.execution.approved_strategy, "");
+    assert.equal(fs.readFileSync(f.output("04_execute", "execution-state.json"), "utf8"), bytes);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R5/R9: a killed writer leaves a bound lock; recovery refuses a live owner then handles the dead owner", () => {
+  const f = approvedFixture();
+  try {
+    const moduleUrl = new URL("../../skills/using-pulse/scripts/pulse_icm.mjs", import.meta.url).href;
+    const program = `import fs from 'node:fs'; import {reviseIcmRun} from ${JSON.stringify(moduleUrl)};
+      const rename=fs.renameSync;
+      fs.renameSync=(from,to)=>{if(to===${JSON.stringify(f.runPath)} && JSON.parse(fs.readFileSync(from)).revision?.phase==='applied')process.exit(86); return rename(from,to);};
+      reviseIcmRun(${JSON.stringify(f.root)},{stage:'04_execute',reason:'Crash fixture',nodes:['A']});`;
+    const child = spawnSync(process.execPath, ["--input-type=module", "-e", program], { encoding: "utf8" });
+    assert.equal(child.status, 86, child.stderr);
+    const run = JSON.parse(fs.readFileSync(f.runPath)), id = run.revision.path.split("/").at(-2);
+    const lockPath = path.join(f.root, ".pulse", "lifecycle.lock");
+    const deadLock = JSON.parse(fs.readFileSync(lockPath));
+    assert.equal(deadLock.revision_id, id);
+    writeJson(lockPath, { ...deadLock, pid: process.pid });
+    assert.throws(() => icm.recoverIcmRevision(f.root, id), /live|owner/i);
+    assert.equal(JSON.parse(fs.readFileSync(f.runPath)).revision.phase, "prepared");
+    writeJson(lockPath, deadLock);
+    assert.equal(icm.recoverIcmRevision(f.root, id).run.revision.phase, "applied");
+    assert.equal(fs.existsSync(lockPath), false);
+    assert.deepEqual(JSON.parse(fs.readFileSync(f.output("04_execute", "execution-state.json"))).nodes, { A: "pending", B: "pending", C: "complete" });
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R9: snapshot collision preserves the existing archive and current run", () => {
+  const f = approvedFixture();
+  try {
+    const before = fs.readFileSync(f.runPath), state = f.output("04_execute", "execution-state.json"), stateBytes = fs.readFileSync(state);
+    const options = { stage: "04_execute", reason: "Same frozen revision", nodes: ["A"], now: "2026-10-08T16:30:00.000Z" };
+    const first = icm.reviseIcmRun(f.root, options), manifestFile = path.join(f.root, first.run.revision.path);
+    const archive = fs.readFileSync(manifestFile);
+    fs.writeFileSync(f.runPath, before); fs.writeFileSync(state, stateBytes);
+    assert.throws(() => icm.reviseIcmRun(f.root, options), /already exists/i);
+    assert.deepEqual(fs.readFileSync(f.runPath), before);
+    assert.deepEqual(fs.readFileSync(manifestFile), archive);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("CLI: revise flags and the human status renderer expose the recorded correction", () => {
+  const f = approvedFixture();
+  try {
+    const cli = path.join(REPO_ROOT, "workflow/scripts/pulse_icm.mjs");
+    const result = JSON.parse(execFileSync(process.execPath, [cli, "revise", "--repo-root", f.root, "--stage", "04_execute", "--nodes", "A", "--reason", "CLI correction"], { encoding: "utf8" }));
+    assert.equal(result.current_stage, "04_execute");
+    const status = execFileSync(process.execPath, [path.join(REPO_ROOT, "skills/using-pulse/scripts/pulse_status.mjs"), "--repo-root", f.root], { encoding: "utf8" });
+    assert.match(status, /Resume context:/);
+    assert.match(status, /Revision: applied/);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+
+test("R9: revision refuses a run edit made after snapshot publication", () => {
+  const f = approvedFixture(), rename = fs.renameSync;
+  try {
+    let injected = false;
+    fs.renameSync = (from, to) => {
+      const result = rename(from, to);
+      if (!injected && path.basename(from).startsWith(".prepared-")) {
+        injected = true;
+        const run = JSON.parse(fs.readFileSync(f.runPath));
+        run.updated_at = "2099-01-01T00:00:00.000Z";
+        writeJson(f.runPath, run);
+      }
+      return result;
+    };
+    assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Concurrent edit", nodes: ["A"] }), /run changed/i);
+    assert.equal(JSON.parse(fs.readFileSync(f.runPath)).updated_at, "2099-01-01T00:00:00.000Z");
+  } finally { fs.renameSync = rename; fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R9: successor refuses an active pointer changed during creation", () => {
+  const f = approvedFixture("complete"), rename = fs.renameSync;
+  try {
+    const pointer = path.join(f.root, ".pulse", "active-run");
+    const other = { ...JSON.parse(fs.readFileSync(f.runPath)), feature: "other", request_path: "history/other/request.md", current_stage: "01_explore", completed_at: "" };
+    writeJson(path.join(f.root, "history/other/run.json"), other);
+    fs.renameSync = (from, to) => {
+      const result = rename(from, to);
+      if (to === path.join(f.root, "history/next/run.json")) fs.writeFileSync(pointer, "history/other/run.json\n");
+      return result;
+    };
+    assert.throws(() => initIcmRun(f.root, "next", "Concurrent pointer edit"), /pointer changed/i);
+    assert.equal(fs.readFileSync(pointer, "utf8"), "history/other/run.json\n");
+  } finally { fs.renameSync = rename; fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test("R1: advancing stages retires the old handoff and keeps revision history", () => {
+  const f = approvedFixture();
+  try {
+    const revised = icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Correction", nodes: ["A"] });
+    writeJson(f.output("04_execute", "execution-state.json"), { schema_version: "1.0", nodes: { A: "complete", B: "complete", C: "complete" } });
+    const reviewed = completeStage(f.root, "04_execute").run;
+    assert.equal(reviewed.resume_path, "");
+    assert.deepEqual(reviewed.revision, revised.run.revision);
+    writeJson(f.output("05_review", "review.json"), { schema_version: "1.0", status: "ready", findings: [] });
+    fs.writeFileSync(f.output("05_review", "uat.md"), "# UAT\n");
+    reviewed.resume_path = "history/revision-case/stages/05_review/output/uat.md";
+    writeJson(f.runPath, reviewed);
+    assert.equal(approveGate(f.root, "GATE_4").run.resume_path, "");
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
 
 test("initIcmRun creates only the v2 run pointer and six-stage artifact layout", () => {
   const root = makeRepo();
@@ -229,6 +580,7 @@ test("execution and compounding completion advance only after required outputs e
     writeJson(runPath, run);
 
     assert.throws(() => completeStage(root, "04_execute"), /execution-state/i);
+    writeJson(path.join(featureRoot, "stages", "02_plan", "output", "work-graph.json"), graph([node("A", [], ["src/a.ts"])]));
     writeJson(
       path.join(featureRoot, "stages", "04_execute", "output", "execution-state.json"),
       { schema_version: "1.0", nodes: { A: "complete" } },
@@ -419,6 +771,7 @@ test("BDD B9: Given lifecycle transitions, when the CLI responds, then hashes pe
 
     persisted.current_stage = "04_execute";
     writeJson(path.join(root, "history", "quiet-hash", "run.json"), persisted);
+    writeJson(path.join(root, "history", "quiet-hash", "stages", "02_plan", "output", "work-graph.json"), graph([node("A", [], ["src/a.ts"])]));
     writeJson(
       path.join(root, "history", "quiet-hash", "stages", "04_execute", "output", "execution-state.json"),
       { schema_version: "1.0", nodes: { A: "complete" } },

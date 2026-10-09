@@ -228,6 +228,8 @@ function renderIcmStatus(status) {
       `Stage: ${status.current_stage || "(unknown)"}`,
       `Blocker: ${status.blocker_code || "(unknown)"}`,
       `Stale gate: ${status.stale_gate || "(none)"}`,
+      ...(status.resume_path ? [`Resume context: ${status.resume_path}`] : []),
+      ...(status.recovery ? [`Recovery: pulse_icm.mjs revise --recover ${status.recovery.revision_id}`] : []),
     ].join("\n");
   }
   return [
@@ -236,6 +238,9 @@ function renderIcmStatus(status) {
     `Stage: ${status.current_stage || "(none)"}`,
     `Next skill: ${status.next_skill || "(none)"}`,
     `Execution strategy: ${status.execution?.approved_strategy || "(not approved)"}`,
+    ...(status.resume_path ? [`Resume context: ${status.resume_path}`] : []),
+    ...(status.revision ? [`Revision: ${status.revision.phase} — ${status.revision.path}`] : []),
+    ...(status.parent_run ? [`Parent run: ${status.parent_run.path}`] : []),
   ].join("\n");
 }
 
