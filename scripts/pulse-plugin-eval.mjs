@@ -1059,6 +1059,10 @@ function runStaticChecks(results) {
   const mcp = readJson(mcpPath);
 
   const manifestVersion = manifest?.plugins?.[0]?.version ?? manifest?.version;
+  // Only the local Codex cache may append its documented timestamp build tag.
+  const codexReleaseVersion = typeof manifestVersion === "string"
+    ? manifestVersion.match(/^(\d+\.\d+\.\d+)(?:\+codex\.\d{14})?$/u)?.[1]
+    : undefined;
   const pluginVersion = claudePlugin?.version;
   const marketplaceVersion = marketplace?.plugins?.find((entry) => entry.name === "pulse")?.version;
   const claudeMarketplaceVersion = claudeMarketplace?.plugins?.find((entry) => entry.name === "pulse")?.version;
@@ -1079,7 +1083,7 @@ function runStaticChecks(results) {
       pluginVersion &&
       marketplaceVersion &&
       claudeMarketplaceVersion &&
-      manifestVersion === pluginVersion &&
+      codexReleaseVersion === pluginVersion &&
       pluginVersion === marketplaceVersion &&
       marketplaceVersion === claudeMarketplaceVersion
       ? "PASS"

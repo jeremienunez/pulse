@@ -7,10 +7,37 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { buildPluginDist } from "./build-plugin-dist.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const evaluatorPath = path.join(scriptDir, "pulse-plugin-eval.mjs");
+
+test("packaged evaluator accepts only same-release Codex cache metadata", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-version-sync-"));
+  try {
+    const dist = path.join(root, "plugin");
+    buildPluginDist(repoRoot, dist);
+    const manifestPath = path.join(dist, ".codex-plugin/plugin.json");
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    const release = manifest.version;
+    for (const [version, expected] of [
+      [release, "PASS"],
+      [`${release}+codex.20261009114442`, "PASS"],
+      [`${release}+codex.invalid`, "WARN"],
+      ["999.0.0+codex.20261009114442", "WARN"],
+    ]) {
+      fs.writeFileSync(manifestPath, JSON.stringify({ ...manifest, version }));
+      const out = spawnSync(process.execPath, [path.join(dist, "scripts/pulse-plugin-eval.mjs"), "analyze", "--json"], { cwd: dist, encoding: "utf8" });
+      const report = JSON.parse(out.stdout);
+      const check = report.checks.find(entry => entry.name === "version-sync");
+      assert.ok(check, out.stdout);
+      assert.equal(check.status, expected, version);
+    }
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
 
 test("creative command rejects incomplete input with its own typed error and no legacy outputs", () => {
   const out = spawnSync(process.execPath, [evaluatorPath, "creative", "--phase", "prepare", "--json"], { cwd: os.tmpdir(), encoding: "utf8" });

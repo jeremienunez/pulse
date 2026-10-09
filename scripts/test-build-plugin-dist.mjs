@@ -85,7 +85,7 @@ test("plugin distribution contains only reviewed runtime surfaces and a replayab
     }
 
     const mcp = JSON.parse(fs.readFileSync(path.join(output, ".mcp.json"), "utf8"));
-    assert.deepEqual(Object.keys(mcp.mcpServers).sort(), ["MCP_DOCKER", "gitnexus", "morph-mcp"]);
+    assert.deepEqual(Object.keys(mcp.mcpServers).sort(), ["MCP_DOCKER", "gitnexus", "morph-mcp", "opencode-models"]);
     assert.deepEqual(comparePluginDist(output, output), { ok: true, differences: [] });
   } finally {
     fs.rmSync(outputRoot, { recursive: true, force: true });

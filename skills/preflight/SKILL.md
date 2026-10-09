@@ -2,7 +2,7 @@
 name: preflight
 description: Use only when the user explicitly asks to run Pulse preflight or requests a Pulse readiness/onboarding check.
 metadata:
-  version: '1.3'
+  version: '1.4'
   ecosystem: pulse
   position: 'operator-invoked diagnostic outside the default delivery chain'
   type: diagnostic
@@ -11,286 +11,84 @@ metadata:
 
 # Preflight
 
-Run an explicit operator-requested runtime readiness check.
-This skill is the sole authority for writing Pulse onboarding, tool-health, and readiness decisions.
-`pulse:using-pulse` may consume a current result, but it never invokes or refreshes this skill automatically.
-Never infer a preflight request from starting, resuming, planning, validating, or executing Pulse work.
+Run the requested readiness diagnostic for the actual work and execution strategy. A simple change or prototype stays in ICM; reduce the checks to its real dependencies.
 
-## When to Use
+## Invocation and runtime
 
-- User explicitly says: "run Pulse preflight" or "run preflight"
-- User explicitly requests a Pulse readiness, onboarding, or full tool-health check
-- User explicitly asks to refresh an existing `.pulse/tooling-status.json`
+1. Run only on an explicit preflight, flightcheck, readiness, or onboarding request. Never infer a preflight request from starting, resuming, planning, validating, or executing Pulse work.
+2. Resolve the plugin root from this skill and the project root from the task.
+3. Run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`. If Node.js 18+ is unavailable, report that concrete ICM blocker without creating legacy state.
+4. For `legacy-v1`, follow [the frozen legacy diagnostic](references/legacy-v1.md) only for an explicitly resumed legacy run. A new project task uses the ICM entry router.
+5. For `none`, initialize the requested project work through `pulse:using-pulse` before continuing the diagnostic. Preserve existing feature history. Initialization itself does not approve execution.
+6. For `icm-v2`, use the contract below. For a runtime conflict or blocked/stale run, report the blocker and preserve its state.
 
-Do not use this skill merely because Pulse work starts or resumes, an environment changed, a readiness artifact is missing or stale, or another skill encounters a missing dependency. Surface that local fact and continue or stop according to the active skill's own contract unless the user asks for preflight.
+Preflight diagnoses readiness. It does not approve gates, choose a different active run, reset the stage, or authorize execution.
 
-## What This Skill Produces
+## ICM v2 diagnostic
 
-- `.pulse/tooling-status.json`
-- `.pulse/state.json`
-- `.pulse/STATE.md` update with the latest preflight result
-- One of three outcomes: `PASS`, `DEGRADED`, or `FAIL`
+### 1. Identify what must work
 
-Load `references/tool-readiness-matrix.md` before Phase 3.
+Read the request, active run and relevant plan when one exists. Use the requested or approved execution strategy; otherwise assess the cost-first `single-worker` path. Record what is being checked.
 
-## Hard Rules
+A local HTML prototype needs a callable ICM runtime and a way to exercise its UI. It does not inherently need an issue tracker, Beads, swarm, GitNexus, a package install or a remote service.
 
-1. Do not run unless the user explicitly requested this diagnostic.
-2. Never assume a tool exists because a repo or prior session mentioned it.
-3. Never report `PASS` without running a real minimal check for each required tool.
-4. If a tool is optional, record it as unavailable but do not fail the run.
-5. If a tool is required for the requested mode, block that mode explicitly.
-6. If the result is `FAIL`, do not continue into planning or execution in the checked mode.
-7. If the result is `DEGRADED`, present the downgrade clearly before proceeding.
+Use [the readiness matrix](references/tool-readiness-matrix.md) to distinguish required capabilities from optional or irrelevant ones.
 
-## Phase 1: Establish Pulse State
+### 2. Check only applicable dependencies
 
-1. Resolve the project root.
-2. Ensure `.pulse/` exists. Create it if missing.
-3. Ensure `.pulse/handoffs/` exists. Create it if missing.
-4. Ensure `.pulse/STATE.md` exists. If missing, create:
+- **ICM runtime:** Node.js 18+ and a successful plugin-local ICM status call.
+- **Project runtime:** the language runtime, build/test command, browser or other capability actually required by the task. Reuse the project's tooling.
+- **Git:** required when the planned work uses Git operations, worktree isolation or version-control checks. Report a missing repository honestly; do not invent a Git check or initialize a repository as a side effect of the diagnostic.
+- **Beads `br`:** required only when the selected work actually uses a Beads projection.
+- **`bv`:** required only for a selected adapter operation that uses it. ICM's JSON graph analyzer does not depend on it.
+- **Swarm and reservations:** required only for a requested/approved swarm path. Their absence does not degrade or block a single-worker task.
+- **Optional accelerators:** check GitNexus, PR tooling or research connectors only when relevant. Do not declare them callable from configuration alone.
 
-```markdown
-# STATE
-focus: (none)
-phase: preflight
-last_updated: <timestamp>
-```
+Every `ready` result names an actual observed check. Leave an unchecked capability `unknown`, or omit it when irrelevant; do not report a fictitious pass.
 
-5. Ensure `.pulse/handoffs/manifest.json` exists. If missing, create:
+### 3. Check setup without forcing legacy onboarding
 
-```json
-{
-  "schema_version": "1.0",
-  "updated_at": "<ISO-8601>",
-  "active": []
-}
-```
+V2 can use the plugin-local helpers directly. Missing `.pulse/scripts`, legacy mirrors, or legacy handoff manifests is not a v2 readiness failure.
 
-6. Detect whether `.pulse/handoffs/manifest.json` contains active resume entries. Record that resume data exists, but do not auto-resume.
-7. Infer the requested mode:
-   - `full-pipeline`
-   - `planning-only`
-   - `execution-only`
-   - `resume`
+When the operator explicitly requested onboarding or an applicable adapter needs repo-local helpers, use `onboard_pulse.mjs` in check mode first. Apply only the setup already authorized by the operator; preserve existing configuration and compaction settings. Do not run `--apply` merely to make a prototype pass preflight.
 
-## Phase 2: Check Onboarding
+### 4. Decide the scoped result
 
-Verify that the Pulse plugin is properly onboarded in the current repo.
+- **PASS:** every capability required for the assessed work is verified.
+- **DEGRADED:** the work is still feasible, but a relevant optional capability is unavailable or the operator is considering a fallback from a requested capability.
+- **FAIL:** a required capability is missing or broken; name the affected operation and the concrete remedy.
 
-Run `node --version` first.
+Missing `br`, `bv`, swarm or unused accelerators cannot turn a v2 single-worker prototype into `FAIL` or `DEGRADED` by themselves.
 
-- If `node` is missing or reports a version below 18: set `onboarding` to `NEEDS_SETUP` and include a blocker entry: "Node.js 18+ required for onboarding — install or upgrade before continuing." Do not proceed to the onboarding script.
+A failure blocks the operation that needs the failed capability. Do not propose leaving Pulse to avoid a failure. Repair that dependency or present a scoped change of approach within the same run. A mandatory requested capability cannot be silently downgraded.
 
-If Node.js 18+ is available, run the onboarding status check from this skill's directory. `needs_onboarding` is a remediation path for stale installs, not the normal Pulse bootstrap result:
+### 5. Persist tool health, preserve workflow authority
 
-```bash
-node skills/using-pulse/scripts/onboard_pulse.mjs --repo-root <project_root>
-```
+Write `.pulse/tooling-status.json` with lowercase machine status `pass | degraded | fail`, the requested scope, assessed strategy, verified checks, blockers, relevant degradations and the next action.
 
-Interpret the result:
-
-- `status = "up_to_date"` — Pulse onboarding is current. Set `onboarding = PASS`.
-- `status = "needs_onboarding"` — the repo needs Pulse onboarding or remediation updates before normal bootstrap can continue. Use `actions` plus any relevant `details` to explain whether this is missing repo-local assets, stale `.codex/hooks.json` Pulse entries, legacy `.codex/hooks/*` or `.codex/pulse_*.mjs` cleanup, legacy Python hook files, legacy verification/memory layout, or a partial Pulse install.
-- `status = "missing_runtime"` — Node.js 18+ is not available, so onboarding cannot run. Set `onboarding = NEEDS_SETUP`.
-
-For `needs_onboarding`:
-
-1. Summarize what the script wants to create or update from `actions`.
-2. If `requires_confirmation = true`, explain that an existing `compact_prompt` was found and Pulse will preserve it unless the user explicitly approves replacement.
-3. Ask the user before making any repo changes.
-4. After approval, run: `node skills/using-pulse/scripts/onboard_pulse.mjs --repo-root <project_root> --apply`
-   - Only pass `--allow-compact-prompt-replace` when the user explicitly approved replacing the existing compaction prompt.
-5. If the apply run succeeds, update `onboarding` to `PASS` and continue.
-6. If the apply run fails, keep `onboarding` blocked and add a blocker entry.
-
-An unresolved onboarding issue or missing runtime sets preflight result to `FAIL`.
-
-## Phase 3: Validate Core Tooling
-
-Check the tools that Pulse depends on structurally:
-
-- `git`
-- `br`
-- `bv`
-
-Use the smallest real checks that prove the tool is callable. Recommended checks:
-
-```bash
-command -v git
-command -v br
-command -v bv
-git rev-parse --show-toplevel
-br --help
-bv --help
-```
-
-Rules:
-
-- If `git` is missing or the project is not a git repo, result is `FAIL`
-- If `br` is missing, result is `FAIL`
-- If `bv` is missing, result is `FAIL`
-- If a command exists but the minimal call errors, mark it unavailable
-- If `br` or `bv` is unavailable, include the install references from `references/tool-readiness-matrix.md` in the failure report
-
-## Phase 4: Validate Execution Runtime
-
-If the requested mode can lead to execution, validate the active runtime path.
-
-Primary concerns:
-
-- native swarm capability for the current CLI runtime
-- shared reservation helper readiness for swarm execution
-
-Run the smallest real health check available in the current environment.
-Examples vary by runtime:
-
-- Claude Code: confirm teammate primitives needed for swarming are available in this session
-- Codex: confirm native subagent flow is available in this session
-- reservation helper: confirm onboarding installed `.pulse/scripts/pulse_reservations.mjs`
-
-If no real health-check primitive exists, mark swarm capability as unavailable.
-Do not infer readiness from environment variables alone.
-
-Decision rules:
-
-- If requested mode is `full-pipeline` and swarm execution is expected:
-  - native swarm + reservations ready -> keep `swarm`
-  - unavailable -> set result to `DEGRADED` and recommend `single-worker`
-- If requested mode is `execution-only` and the user explicitly asked for swarm mode:
-  - unavailable -> stop and present the downgrade decision
-
-## Phase 5: Validate Optional Accelerators
-
-Check optional helpers if relevant:
-
-- `gitnexus`
-- PR tooling such as `gh`
-- docs or web research MCPs
-
-Optional tools never fail preflight on their own.
-Record impact instead:
-
-- `gitnexus` missing -> discovery falls back to grep/find/manual reads
-- `gh` missing -> no automated PR creation
-- docs or web MCP missing -> research becomes manual or local-only
-
-## Phase 6: Decide Outcome
-
-Choose exactly one result label:
-
-- `PASS`
-  - all required tools for the requested mode are ready
-- `DEGRADED`
-  - core tools are ready
-  - at least one optional capability is missing, or swarm must downgrade to single-worker
-- `FAIL`
-  - any required tool for the requested mode is unavailable
-  - onboarding is `NEEDS_SETUP` or `NEEDS_ONBOARDING` and could not be resolved in Phase 2
-
-Normalize status casing explicitly:
-- `.pulse/tooling-status.json` uses lowercase machine values: `pass | degraded | fail`
-- `.pulse/state.json`, `.pulse/STATE.md`, and user-facing summaries may use uppercase labels: `PASS | DEGRADED | FAIL`
-
-Also choose `recommended_mode`:
-
-- `swarm`
-- `single-worker`
-- `planning-only`
-- `blocked`
-
-## Phase 7: Write Artifacts
-
-Write `.pulse/tooling-status.json` with this shape:
+Example for a successfully checked single-worker HTML prototype:
 
 ```json
 {
-  "timestamp": "<ISO-8601>",
-  "project_root": "<absolute path>",
-  "requested_mode": "full-pipeline",
+  "requested_mode": "prototype",
   "recommended_mode": "single-worker",
-  "status": "degraded",
-  "onboarding": "PASS",
+  "status": "pass",
+  "onboarding": "NOT_REQUIRED",
   "tools": {
-    "git": { "status": "ready", "check": "git rev-parse --show-toplevel" },
-    "br": { "status": "ready", "check": "br --help" },
-    "bv": { "status": "ready", "check": "bv --help" },
-    "swarm_runtime": { "status": "unavailable", "check": "<actual runtime capability probe or 'none available'>" },
-    "reservations": { "status": "ready", "check": "test -f .pulse/scripts/pulse_reservations.mjs" }
+    "node": { "status": "ready", "check": "node --version: <observed version>" },
+    "icm": { "status": "ready", "check": "<observed plugin-local ICM status call>" },
+    "browser": { "status": "ready", "check": "<observed local page opening>" }
   },
   "blockers": [],
-  "degradations": [
-    "Native swarm path unavailable; execution downgraded to single-worker"
-  ],
+  "degradations": [],
   "next_skill": "pulse:using-pulse"
 }
 ```
 
-Also refresh `.pulse/state.json` as the lightweight routing mirror:
+Replace example values with evidence; the example itself proves nothing. Include a timestamp and project root in the actual artifact. Keep the current run, gates and execution strategy unchanged. Do not write `.pulse/state.json`, `.pulse/STATE.md` or a legacy handoff manifest in v2.
 
-```json
-{
-  "phase": "preflight",
-  "status": "PASS | DEGRADED | FAIL",
-  "requested_mode": "<mode>",
-  "recommended_mode": "<mode>",
-  "tooling_status": ".pulse/tooling-status.json"
-}
-```
+### 6. Return to the same run
 
-Update `.pulse/STATE.md` with:
+Report the result, assessed scope, real blockers and next action concisely. On PASS or a usable, disclosed DEGRADED path, return through `pulse:using-pulse` to the existing `current_stage`. Existing approvals remain authoritative; a diagnostic pass is not Gate 3 approval.
 
-```markdown
-phase: preflight
-preflight_status: PASS | DEGRADED | FAIL
-requested_mode: <mode>
-recommended_mode: <mode>
-tooling_status: .pulse/tooling-status.json
-resume_manifest: .pulse/handoffs/manifest.json
-last_updated: <timestamp>
-```
-
-## Phase 8: Present Result
-
-Use this response shape:
-
-```text
-PREFLIGHT COMPLETE
-
-Status: PASS | DEGRADED | FAIL
-Requested mode: <mode>
-Recommended mode: <mode>
-Onboarding: PASS | NEEDS_SETUP | NEEDS_ONBOARDING
-
-Ready:
-- <tool>
-- <tool>
-
-Missing or degraded:
-- <tool> -> <impact>
-
-Next:
-- If PASS or DEGRADED: invoke pulse:using-pulse
-- If FAIL: fix blockers before continuing
-```
-
-## Handoff
-
-- `PASS` -> "Preflight complete. Pulse is ready. Invoke `pulse:using-pulse`."
-- `DEGRADED` -> "Preflight complete with downgrade. Confirm the downgraded mode, then invoke `pulse:using-pulse`."
-- `FAIL` -> "Preflight failed. Do not continue into Pulse flow until blockers are cleared."
-
-## Red Flags
-
-- Marking `PASS` without running actual checks
-- Treating swarm runtime as optional in swarm mode
-- Continuing after `FAIL`
-- Hiding degraded mode from the user
-- Reusing stale `.pulse/tooling-status.json` without refreshing it
-- Using environment hints instead of real tool invocations
-- Running because another Pulse phase started rather than because the user explicitly requested preflight
-
-## References
-
-- `references/tool-readiness-matrix.md`
-- `../using-pulse/references/handoff-contract.md`
+On FAIL, keep the run resumable at its current stage and identify the smallest remedy. No hidden exit from the delivery cycle is needed for prototyping.

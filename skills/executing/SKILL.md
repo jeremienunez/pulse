@@ -2,7 +2,7 @@
 name: executing
 description: "Use when an approved Pulse work graph is ready for single-worker or swarm execution."
 metadata:
-  version: '4.0'
+  version: '4.1'
   ecosystem: pulse
   generated_from: 'workflow/stages/04_execute/CONTEXT.md'
   dependencies: []
@@ -35,12 +35,13 @@ One job: complete the approved work graph and record verification without changi
 
 ## Process
 
-1. Read the immutable graph and create `execution-state.json`; node states are `pending`, `in_progress`, `complete`, or `blocked`.
+1. Read the immutable graph. Create `execution-state.json` only if absent; on resume, preserve recorded progress and require its node IDs to match the graph exactly. Node states are `pending`, `in_progress`, `complete`, or `blocked`.
 2. For `single-worker`, do not spawn execution agents; the root executes ready nodes sequentially and updates execution state after direct verification.
 3. For `swarm`, invoke `pulse:swarming` with the approved component partition and `max_workers`. Beads and reservations are coordination projections only; reconcile completion back into `execution-state.json` centrally.
 4. Never exceed declared file scopes. Stop on a scope conflict, failed verification, or stale approval.
 5. When a node is investigative debugging, `pulse:systematic-debug-fix` is the authoritative owner for reproduction, root-cause tracing, the minimal repair, and regression proof.
 6. Record node-specific evidence under `output/verification/` and summarize the implementation in `execution-report.md`.
+7. For a repair returning from review, route through `pulse:using-pulse` and `revise --stage 04_execute --nodes <affected IDs> --reason '<finding>'`. Keep independent completed nodes. If the repair changes approved scope or graph, revise `02_plan` instead and renew G2/G3 before execution.
 
 ## Outputs
 

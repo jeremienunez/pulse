@@ -1,7 +1,7 @@
 <!-- PULSE:START -->
 # Pulse Workflow
 
-Use `pulse:using-pulse` first for new or resumed Pulse work.
+Use `pulse:using-pulse` first for every new or resumed project task, including small changes and prototypes. Initialize ICM before producing task artifacts when no run exists; reuse the matching active run. Apply this entry rule regardless of the model or task size.
 
 ## Architecture
 
@@ -24,6 +24,7 @@ Preflight is a manual diagnostic outside the delivery graph. Run `pulse:prefligh
 3. For ICM v2, read `.pulse/active-run`, the referenced `run.json`, the current stage contract, and only its declared inputs.
 4. For legacy v1, surface the active handoff/state and wait for explicit resume confirmation.
 5. If v2 and legacy surfaces conflict, stop without writing either.
+6. If no run exists, initialize one through `pulse:using-pulse` before brainstorming, prototyping or implementation. Keep simple/prototype decisions, plans and checks proportionate inside that same cycle.
 
 ## Delivery Graph
 
@@ -49,6 +50,12 @@ pulse:using-pulse
 - Gate 4 approves merge after review and UAT; open P1 findings block it.
 
 Approvals bind artifact SHA-256 hashes. Any approved artifact edit makes the gate stale and blocks downstream routing until reapproval.
+
+## Resume and Revision
+
+Resume unchanged work from `current_stage`, its inputs, execution state and stage-local handoff. To reopen finished work, use `pulse:using-pulse` and `pulse_icm.mjs revise --stage <stage> --reason '<correction>'`; execution repairs also require `--nodes <affected IDs>`. Scope/graph changes return to `02_plan` and reset G2/G3/G4; in-scope execution repairs retain G1/G2/G3, reset G4 and preserve independent completed nodes. Never reopen a stage by editing lifecycle JSON manually.
+
+For `revision_prepared`, use `revise --recover <exact revision ID>` and respect ownership/binding failures. A new request after completion uses a distinct `init --from-run history/<parent>/run.json` successor with fresh approvals and unchanged parent artifacts.
 
 ## Execution Strategy
 

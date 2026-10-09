@@ -1,0 +1,9 @@
+{
+  "exit_code": 0,
+  "tools": [
+    "ask_model",
+    "compare_models",
+    "list_models"
+  ],
+  "provider_calls": 0
+}

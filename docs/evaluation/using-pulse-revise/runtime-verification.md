@@ -81,3 +81,7 @@ changed. Tests dispatched no model replay.
 This is a local runtime candidate awaiting Gate 4. The canonical source
 checkout and global installed plugin have not been updated. No commit
 or push was performed.
+
+## Subsequent usable release — 4.1.0
+
+The candidate status above describes the original runtime snapshot. Runtime commit `1ae69ba` was subsequently approved, committed, pushed and installed. Release 4.1.0 reconciles that runtime with recovered installed source `f98b6f6`, documents revise/recovery in generated skills and managed instructions, and restores the complete package. See [the successor guidance evidence](CREATION-LOG.md); final installation and Git receipts live in `history/pulse-source-install-reconcile/`.

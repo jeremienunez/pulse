@@ -2043,7 +2043,7 @@ test("packaged Pulse inventory has full dependency coverage", () => {
   assert.match(skillText, /kind: command/);
   assert.equal(mcpServers.gitnexus.type, "stdio");
   assert.equal(mcpServers.gitnexus.command, "npx");
-  assert.deepEqual(mcpServers.gitnexus.args, ["-y", "gitnexus@1.6.3", "mcp"]);
+  assert.deepEqual(mcpServers.gitnexus.args, ["-y", "gitnexus@1.6.10", "mcp"]);
   assert.deepEqual(mcpServers.gitnexus.includeTools, [
     "list_repos",
     "query",

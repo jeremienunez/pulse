@@ -1,0 +1,25 @@
+{
+  "scenario": "Fresh disposable prototype folder without Git or legacy onboarding",
+  "before": {
+    "status": "idle",
+    "runtime": "none"
+  },
+  "after": {
+    "status": "ready",
+    "runtime": "icm-v2",
+    "current_stage": "01_explore",
+    "next_skill": "pulse:exploring",
+    "run_path": "history/small-prototype/run.json",
+    "execution": {
+      "recommendation": "",
+      "approved_strategy": "",
+      "component_count": 0,
+      "max_workers": 1
+    },
+    "completed_at": ""
+  },
+  "legacy_mirrors_created": false,
+  "status_reuses_pointer": true,
+  "br_bv_or_swarm_invoked": false,
+  "scope": "ICM bootstrap only, not UI validation or completed delivery"
+}

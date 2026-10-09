@@ -1,0 +1,11 @@
+{
+  "AGENTS.template.md": "eb76ec8585de6f91ec18fd2d2a0f88aded420a6989db7ff061de882b943bcbca",
+  "skills/preflight/SKILL.md": "2853a40221fe02d268a5e2393bfc14bdb483cd4afd7d6dc043b7be10c816bc1b",
+  "skills/preflight/references/tool-readiness-matrix.md": "a9cb44fab9975d5db6ab2866fe9326383066a5e1546a7ab510d96c08404853a1",
+  "workflow/CONTEXT.md": "1201504f28028ae60b374673ae24770b7827e58283152dc4afbb18a205292e52",
+  "workflow/skill-adapters.json": "3265f9c28e585b3afda833a93b92fd7aba7ffd777e6cf8b9c7c936072f8c93be",
+  "workflow/stages/01_explore/CONTEXT.md": "1b12a50431c7a38fa2ba459c6260978121f5123611b1a2ce1922c1a28c0b1855",
+  "workflow/stages/02_plan/CONTEXT.md": "0d1b275ecc068a704a6da4489656d234f7ea5a6fb08a23d978759e92bad74e3e",
+  "workflow/stages/03_validate/CONTEXT.md": "10cb0d0c1e09915ac0bcbb83b27e2eb2c2bcf03f78aa1cd21fa0a11e177a2d56",
+  "workflow/stages/05_review/CONTEXT.md": "7afac13f18364e392b3959742f3e89b248ff5bab6ffbc56883f7b783d905157e"
+}

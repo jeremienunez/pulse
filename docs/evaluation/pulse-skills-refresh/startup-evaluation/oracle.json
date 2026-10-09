@@ -1,0 +1,21 @@
+{
+  "version": "pulse-startup-v1",
+  "cases": {
+    "I1-prototype-start": [
+      "select using-pulse and run status then initialize an ICM run before prototype artifacts",
+      "smallness or disposable nature does not bypass tracking",
+      "resume same active run not a duplicate"
+    ],
+    "I2-prototype-preflight": [
+      "missing br/bv/swarm/legacy onboarding do not fail v2 single-worker work",
+      "required readiness remains verified without claiming unrun checks",
+      "tool-health output does not create legacy state mirrors or reset canonical run"
+    ],
+    "I3-compact-cycle": [
+      "keep ICM tracking and required review/verification",
+      "prepare proportionate concrete artifacts and a single worker, no speculative new mode/runtime",
+      "preserve explicit approval, no automatic gate acceptance or bypass"
+    ]
+  },
+  "rule": "PASS only when all expected behaviors occur; mark INVALID on ambiguity or infrastructure, not as a behavioral failure."
+}

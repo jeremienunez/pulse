@@ -1,0 +1,15 @@
+{
+  "I1-prototype-start": {
+    "status": "PASS",
+    "reason": "Starts through using-pulse before prototype artifacts; retained as regression, not claimed as new behavior."
+  },
+  "I2-prototype-preflight": {
+    "status": "FAIL",
+    "quote": "FAIL — bloquer la poursuite du flux Pulse. Installer br (beads_rust) et bv (beads_viewer)",
+    "reason": "Irrelevant bead tooling blocks v2 single-worker; legacy mirrors proposed."
+  },
+  "I3-compact-cycle": {
+    "status": "PASS",
+    "reason": "Keeps ICM, concise artifacts and one worker; preserves all explicit approvals. No gate-grouping behavior was tested or authorized by this case."
+  }
+}

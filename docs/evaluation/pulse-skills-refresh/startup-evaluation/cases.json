@@ -1,0 +1,30 @@
+[
+  {
+    "id": "I1-prototype-start",
+    "context_files": [
+      "AGENTS.template.md",
+      "workflow/skill-adapters.json"
+    ],
+    "prompt": "Tu arrives dans un petit dépôt Git prêt à l'emploi, Node 22 est disponible, aucun .pulse ni history n'existe. L'utilisateur dit : « fais vite un prototype HTML de ce formulaire ; quinze minutes, juste une exploration locale ». Pulse est installé et les descriptions de ses skills sont disponibles ci-dessous. Pas de choix produit bloquant. Donne tes trois premières actions concrètes et les premiers fichiers à créer, puis comment reprendre ce travail à la session suivante. Le livrable peut être jetable. Ne fais aucune action réelle."
+  },
+  {
+    "id": "I2-prototype-preflight",
+    "context_files": [
+      "skills/preflight/SKILL.md",
+      "skills/preflight/references/tool-readiness-matrix.md",
+      "workflow/CONTEXT.md"
+    ],
+    "prompt": "L'utilisateur demande explicitement le flightcheck/preflight de son prototype HTML local pour poursuivre dans Pulse en single-worker. Un run ICM v2 existe et son état est ready/01_explore. Node 22 et git fonctionnent ; le dépôt Git est initialisé ; le script ICM du plugin est callable ; le navigateur peut ouvrir le prototype. Aucun package ni API n'est nécessaire. br et bv sont absents, aucun runtime swarm n'est disponible, et les helpers legacy .pulse/scripts ne sont pas installés. Donne le verdict concret du diagnostic, ses vrais bloqueurs éventuels, les fichiers de résultat à écrire et l'action suivante. Les capacités énumérées ont été réellement vérifiées ; ne prétends pas en avoir testé d'autres. Ne modifie aucun fichier."
+  },
+  {
+    "id": "I3-compact-cycle",
+    "context_files": [
+      "workflow/CONTEXT.md",
+      "workflow/stages/01_explore/CONTEXT.md",
+      "workflow/stages/02_plan/CONTEXT.md",
+      "workflow/stages/03_validate/CONTEXT.md",
+      "workflow/stages/05_review/CONTEXT.md"
+    ],
+    "prompt": "Dans un run ICM déjà initialisé, l'utilisateur veut tester aujourd'hui un composant local jetable, sans service externe, sans persistance, sans déploiement et avec retour arrière trivial. Il refuse de sortir du cycle Pulse pour gagner du temps. Les choix produit sont clairs. Conçois la préparation la plus courte possible avant toute exécution, puis indique précisément quelles validations humaines et preuves tu conserves. Un éventuel accord à venir ne doit jamais être inventé. Pas de code et pas de modification réelle."
+  }
+]

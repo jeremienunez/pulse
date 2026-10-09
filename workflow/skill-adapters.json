@@ -3,8 +3,8 @@
   "skills": [
     {
       "name": "using-pulse",
-      "description": "Use when bootstrapping or resuming work in a Pulse project, or when a request needs Pulse stage routing.",
-      "version": "4.0",
+      "description": "Use at the start of any project task, including small changes, prototypes and unclear ideas, or when resuming an existing Pulse run.",
+      "version": "4.1",
       "contract": "workflow/CONTEXT.md",
       "dependencies": [
         {
@@ -48,14 +48,14 @@
     {
       "name": "executing",
       "description": "Use when an approved Pulse work graph is ready for single-worker or swarm execution.",
-      "version": "4.0",
+      "version": "4.1",
       "contract": "workflow/stages/04_execute/CONTEXT.md",
       "dependencies": []
     },
     {
       "name": "reviewing",
       "description": "Use after Pulse execution to produce final findings and UAT evidence before merge approval.",
-      "version": "4.0",
+      "version": "4.1",
       "contract": "workflow/stages/05_review/CONTEXT.md",
       "dependencies": []
     },

@@ -8,11 +8,11 @@
 
 <p>
   <a href=".codex-plugin/plugin.json">
-    <img alt="Version" src="https://img.shields.io/badge/version-4.0.0-0F766E?style=flat-square" />
+    <img alt="Version" src="https://img.shields.io/badge/version-4.1.0-0F766E?style=flat-square" />
   </a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
   <a href="skills">
-    <img alt="Skills" src="https://img.shields.io/badge/skills-22-8B5CF6?style=flat-square" />
+    <img alt="Skills" src="https://img.shields.io/badge/skills-23-8B5CF6?style=flat-square" />
   </a>
 </p>
 
@@ -103,7 +103,7 @@ codex plugin marketplace remove pulse
 
 ### After Install
 
-Installing the plugin makes the packaged skills and three MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start with `pulse:using-pulse`; run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic.
+Installing the plugin makes the packaged skills and four MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start every project task with `pulse:using-pulse`, including small changes and disposable prototypes: initialize ICM first or resume the matching run. Keep preparation and verification proportionate within the cycle. Run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic; its v2 checks depend on the selected work, so unrelated Beads or swarm tooling does not block a single-worker prototype.
 
 ## Project Docs
 

@@ -1,0 +1,14 @@
+{
+  "I1-prototype-start": {
+    "status": "PASS",
+    "reason": "Required behavior retained against the unchanged oracle."
+  },
+  "I2-prototype-preflight": {
+    "status": "PASS",
+    "reason": "Scoped preflight passes without irrelevant tooling and writes only tool-health output."
+  },
+  "I3-compact-cycle": {
+    "status": "PASS",
+    "reason": "Required behavior retained against the unchanged oracle."
+  }
+}

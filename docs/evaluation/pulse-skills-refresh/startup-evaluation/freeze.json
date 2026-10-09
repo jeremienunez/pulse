@@ -1,0 +1,17 @@
+{
+  "version": "pulse-startup-v1",
+  "files": {
+    "oracle.json": "c9f76c6129ffdee35c344c49ec9a060a60bc75d370813b130049bc5f6e85eed0",
+    "cases.json": "e6d48a2d8dff93691e0d5945ac0438f03cb56ccd04e826a99676980dd751b175",
+    "response.schema.json": "de880c73c3b9a0e08150140dcb44db1a8100ceee8f3dd1e9858c457fa2db56c0",
+    "control/AGENTS.template.md": "0113dddb4646fb8d1e5cbb599ba424fe7acafea62eff80eabae39ac40f30db4c",
+    "control/workflow/CONTEXT.md": "5c3621a256e33a2e99a8124be538b076c7780cee98309e21cf528d652ea507df",
+    "control/workflow/skill-adapters.json": "6105e1fa53c9d5490bd2850fb29893421b3a350d7bc6bdd1f5cd5c9220d9b0ef",
+    "control/workflow/stages/02_plan/CONTEXT.md": "0d1b275ecc068a704a6da4489656d234f7ea5a6fb08a23d978759e92bad74e3e",
+    "control/workflow/stages/01_explore/CONTEXT.md": "1b12a50431c7a38fa2ba459c6260978121f5123611b1a2ce1922c1a28c0b1855",
+    "control/workflow/stages/05_review/CONTEXT.md": "7afac13f18364e392b3959742f3e89b248ff5bab6ffbc56883f7b783d905157e",
+    "control/workflow/stages/03_validate/CONTEXT.md": "10cb0d0c1e09915ac0bcbb83b27e2eb2c2bcf03f78aa1cd21fa0a11e177a2d56",
+    "control/skills/preflight/SKILL.md": "64a634ece593d24545b9fdf87d62279fbe97223ec256dcb79b092a8ea53d05d6",
+    "control/skills/preflight/references/tool-readiness-matrix.md": "47f25302c10e787b12ea0bcb9bf75f3890e0b955922cfce18564fbb63386f48b"
+  }
+}

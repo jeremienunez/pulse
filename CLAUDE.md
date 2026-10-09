@@ -97,3 +97,7 @@ This project is indexed by GitNexus as **pulse-tuned** (2155 symbols, 3755 relat
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+## Recorded Run Revisions
+
+Use `pulse:using-pulse` to resume from the active stage or record `revise --stage <stage> --reason <correction>`. Execution repairs require `--nodes`; changed scope returns to `02_plan` with renewed G2/G3/G4. Recover prepared revisions only with `revise --recover <exact ID>`. New requests after completion use distinct `init --from-run` successors with fresh gates. See [the canonical routing contract](workflow/CONTEXT.md).

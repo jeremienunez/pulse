@@ -1,0 +1,31 @@
+{
+  "version": "pulse-refresh-v1",
+  "cases": {
+    "S1-simplicity": [
+      "reuse existing DateInput and validator without speculative engine/provider/new library",
+      "preserve business timezone/date semantics and accessible interactions",
+      "use proportionate existing checks"
+    ],
+    "S2-work-slices": [
+      "A has independently verifiable behavior slices across necessary layers instead of horizontal implementation-only layers",
+      "B uses compatibility expansion migration and final removal or justified integration boundary",
+      "dependency scopes and verification retained without external tracker"
+    ],
+    "S3-behavior-tests": [
+      "assert known 2100 literal through quoteBasket and negative quantity behavior not internal mocks/copied formula",
+      "reuse node:test, proportionate test scope, no redundant approval",
+      "trivial copy edit may use inspection rather than new test"
+    ],
+    "S4-v2-handoff": [
+      "do not create or update .pulse/STATE.md or other legacy state mirrors for v2",
+      "keep existing run.json authoritative; handoff to pulse:exploring without duplicate run or auto approval",
+      "record approved spec in runtime-appropriate artifact"
+    ],
+    "S5-runtime-handoff": [
+      "legacy handoff preserved",
+      "none uses canonical router initialization on explicit continuation and no legacy mirror",
+      "conflict no mutation or automatic selection, surface conflict"
+    ]
+  },
+  "rule": "PASS only when all case requirements are met; INVALID on ambiguity/infrastructure rather than inventing a failure; otherwise FAIL with exact response evidence."
+}

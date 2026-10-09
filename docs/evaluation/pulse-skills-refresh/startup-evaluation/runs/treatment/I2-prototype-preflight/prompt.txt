@@ -1,0 +1,196 @@
+L'utilisateur demande explicitement le flightcheck/preflight de son prototype HTML local pour poursuivre dans Pulse en single-worker. Un run ICM v2 existe et son état est ready/01_explore. Node 22 et git fonctionnent ; le dépôt Git est initialisé ; le script ICM du plugin est callable ; le navigateur peut ouvrir le prototype. Aucun package ni API n'est nécessaire. br et bv sont absents, aucun runtime swarm n'est disponible, et les helpers legacy .pulse/scripts ne sont pas installés. Donne le verdict concret du diagnostic, ses vrais bloqueurs éventuels, les fichiers de résultat à écrire et l'action suivante. Les capacités énumérées ont été réellement vérifiées ; ne prétends pas en avoir testé d'autres. Ne modifie aucun fichier.
+
+Available local guidance:
+
+--- skills/preflight/SKILL.md ---
+---
+name: preflight
+description: Use only when the user explicitly asks to run Pulse preflight or requests a Pulse readiness/onboarding check.
+metadata:
+  version: '1.4'
+  ecosystem: pulse
+  position: 'operator-invoked diagnostic outside the default delivery chain'
+  type: diagnostic
+  dependencies: []
+---
+
+# Preflight
+
+Run the requested readiness diagnostic for the actual work and execution strategy. A simple change or prototype stays in ICM; reduce the checks to its real dependencies.
+
+## Invocation and runtime
+
+1. Run only on an explicit preflight, flightcheck, readiness, or onboarding request. Never infer a preflight request from starting, resuming, planning, validating, or executing Pulse work.
+2. Resolve the plugin root from this skill and the project root from the task.
+3. Run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`. If Node.js 18+ is unavailable, report that concrete ICM blocker without creating legacy state.
+4. For `legacy-v1`, follow [the frozen legacy diagnostic](references/legacy-v1.md) only for an explicitly resumed legacy run. A new project task uses the ICM entry router.
+5. For `none`, initialize the requested project work through `pulse:using-pulse` before continuing the diagnostic. Preserve existing feature history. Initialization itself does not approve execution.
+6. For `icm-v2`, use the contract below. For a runtime conflict or blocked/stale run, report the blocker and preserve its state.
+
+Preflight diagnoses readiness. It does not approve gates, choose a different active run, reset the stage, or authorize execution.
+
+## ICM v2 diagnostic
+
+### 1. Identify what must work
+
+Read the request, active run and relevant plan when one exists. Use the requested or approved execution strategy; otherwise assess the cost-first `single-worker` path. Record what is being checked.
+
+A local HTML prototype needs a callable ICM runtime and a way to exercise its UI. It does not inherently need an issue tracker, Beads, swarm, GitNexus, a package install or a remote service.
+
+Use [the readiness matrix](references/tool-readiness-matrix.md) to distinguish required capabilities from optional or irrelevant ones.
+
+### 2. Check only applicable dependencies
+
+- **ICM runtime:** Node.js 18+ and a successful plugin-local ICM status call.
+- **Project runtime:** the language runtime, build/test command, browser or other capability actually required by the task. Reuse the project's tooling.
+- **Git:** required when the planned work uses Git operations, worktree isolation or version-control checks. Report a missing repository honestly; do not invent a Git check or initialize a repository as a side effect of the diagnostic.
+- **Beads `br`:** required only when the selected work actually uses a Beads projection.
+- **`bv`:** required only for a selected adapter operation that uses it. ICM's JSON graph analyzer does not depend on it.
+- **Swarm and reservations:** required only for a requested/approved swarm path. Their absence does not degrade or block a single-worker task.
+- **Optional accelerators:** check GitNexus, PR tooling or research connectors only when relevant. Do not declare them callable from configuration alone.
+
+Every `ready` result names an actual observed check. Leave an unchecked capability `unknown`, or omit it when irrelevant; do not report a fictitious pass.
+
+### 3. Check setup without forcing legacy onboarding
+
+V2 can use the plugin-local helpers directly. Missing `.pulse/scripts`, legacy mirrors, or legacy handoff manifests is not a v2 readiness failure.
+
+When the operator explicitly requested onboarding or an applicable adapter needs repo-local helpers, use `onboard_pulse.mjs` in check mode first. Apply only the setup already authorized by the operator; preserve existing configuration and compaction settings. Do not run `--apply` merely to make a prototype pass preflight.
+
+### 4. Decide the scoped result
+
+- **PASS:** every capability required for the assessed work is verified.
+- **DEGRADED:** the work is still feasible, but a relevant optional capability is unavailable or the operator is considering a fallback from a requested capability.
+- **FAIL:** a required capability is missing or broken; name the affected operation and the concrete remedy.
+
+Missing `br`, `bv`, swarm or unused accelerators cannot turn a v2 single-worker prototype into `FAIL` or `DEGRADED` by themselves.
+
+A failure blocks the operation that needs the failed capability. Do not propose leaving Pulse to avoid a failure. Repair that dependency or present a scoped change of approach within the same run. A mandatory requested capability cannot be silently downgraded.
+
+### 5. Persist tool health, preserve workflow authority
+
+Write `.pulse/tooling-status.json` with lowercase machine status `pass | degraded | fail`, the requested scope, assessed strategy, verified checks, blockers, relevant degradations and the next action.
+
+Example for a successfully checked single-worker HTML prototype:
+
+```json
+{
+  "requested_mode": "prototype",
+  "recommended_mode": "single-worker",
+  "status": "pass",
+  "onboarding": "NOT_REQUIRED",
+  "tools": {
+    "node": { "status": "ready", "check": "node --version: <observed version>" },
+    "icm": { "status": "ready", "check": "<observed plugin-local ICM status call>" },
+    "browser": { "status": "ready", "check": "<observed local page opening>" }
+  },
+  "blockers": [],
+  "degradations": [],
+  "next_skill": "pulse:using-pulse"
+}
+```
+
+Replace example values with evidence; the example itself proves nothing. Include a timestamp and project root in the actual artifact. Keep the current run, gates and execution strategy unchanged. Do not write `.pulse/state.json`, `.pulse/STATE.md` or a legacy handoff manifest in v2.
+
+### 6. Return to the same run
+
+Report the result, assessed scope, real blockers and next action concisely. On PASS or a usable, disclosed DEGRADED path, return through `pulse:using-pulse` to the existing `current_stage`. Existing approvals remain authoritative; a diagnostic pass is not Gate 3 approval.
+
+On FAIL, keep the run resumable at its current stage and identify the smallest remedy. No hidden exit from the delivery cycle is needed for prototyping.
+
+--- skills/preflight/references/tool-readiness-matrix.md ---
+# Pulse Tool Readiness Matrix
+
+Use this matrix for the ICM v2 diagnostic. An explicitly resumed legacy run follows its frozen [legacy contract](legacy-v1.md).
+
+## Required capabilities follow the selected work
+
+| Capability | Required for | Minimal evidence | If missing |
+|---|---|---|---|
+| Node.js 18+ and plugin-local ICM helper | ICM initialization, status and graph checks | `node --version` and the actual ICM status call | FAIL for ICM operations |
+| Project runtime/build/test tools | The operations declared by the task or plan | Existing narrow build/test command or version probe as appropriate | FAIL only for the operation that needs the missing capability |
+| Browser or equivalent UI inspection | A prototype/UI task whose acceptance needs runtime interaction | Open the real local page and exercise the relevant interaction | Report the UI validation blocker; do not claim runtime UAT |
+| Git | Planned Git operations, isolation or version-control verification | `git rev-parse --show-toplevel` or the applicable Git check | Block those operations; do not initialize Git implicitly as a diagnostic side effect |
+| `br` | A selected Beads projection | `br --help` | Block that adapter; irrelevant to plain ICM JSON planning |
+| `bv` | A selected operation that uses the Beads viewer | `bv --help` | Block that operation; irrelevant to the native ICM analyzer |
+| Native swarm capability | Requested/approved swarm execution | Actual runtime capability probe | Offer single-worker if acceptable; do not silently downgrade a required swarm |
+| Reservation helper | Swarm paths using shared file reservations | Actual helper availability/probe | Same scope as swarm; irrelevant to single-worker |
+| GitNexus | Requested accelerated code discovery | Successful callable MCP probe | Use local discovery and disclose the relevant limitation |
+| PR tooling | Requested PR operations | Applicable authenticated capability check | Block the PR operation, not local prototype work |
+| External research connector | Research that actually needs it | Callable source/tool probe | Use an available source or disclose the missing evidence |
+
+Missing unrelated tools do not reduce the diagnostic result. In particular, a v2 single-worker prototype does not require `br`, `bv`, swarm, reservations or legacy `.pulse/scripts` merely because Pulse is installed.
+
+## Outcomes
+
+- **PASS:** all capabilities required by the assessed scope are verified.
+- **DEGRADED:** a relevant optional capability is unavailable, while the stated scope remains feasible.
+- **FAIL:** a required capability is unavailable or broken. Name its dependent operation and the remedy.
+
+A configured tool is not necessarily callable. Report `unknown` when a relevant capability cannot be probed; do not invent a successful check. A required unverified capability cannot support PASS.
+
+## Output
+
+Persist the scoped result in `.pulse/tooling-status.json` with lowercase `pass | degraded | fail`, the requested scope, assessed strategy, checks, blockers, relevant degradations and next action.
+
+Do not create legacy state mirrors or handoff manifests for v2. Preserve the current run and gate decisions; preflight never authorizes execution.
+
+## Adapter install references
+
+Only offer these when the selected operation really needs the missing adapter:
+
+- [beads_rust](https://github.com/Dicklesworthstone/beads_rust)
+- [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer)
+
+For existing legacy runs, retain the frozen diagnostic's tooling contract. Starting new project work uses ICM v2 through the entry router.
+
+--- workflow/CONTEXT.md ---
+# Pulse ICM Router
+
+Pulse 4 uses the filesystem as its primary orchestration surface. The canonical delivery graph has six numbered stages. The active `run.json`, declared stage inputs, output files, and content-bound human gates determine what happens next.
+
+Start every new project task through this router, including a small edit, a disposable prototype or an unclear idea. Detect and initialize ICM before producing project, prototype or brainstorming artifacts. Reuse the matching active run instead of creating one per session. The model, task size and intended lifetime do not change this entry rule.
+
+Do not invoke `pulse:preflight` unless the user explicitly requests it. Preflight is a manual diagnostic outside the delivery graph.
+
+## Inputs
+
+- User request and repository instructions.
+- `.pulse/active-run` when present.
+- The referenced `history/<feature>/run.json` for an active ICM v2 run.
+- Legacy `.pulse` state and handoffs only when no v2 run is active or the user explicitly resumes legacy work.
+
+## Process
+
+1. Resolve the plugin root from this installed skill and run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+2. On `icm-v2`, route strictly from `current_stage`; do not infer another skill from prose or stale mirrors.
+3. On `legacy-v1`, surface the saved work. Resume through `references/legacy-v1.md` when the user chooses resume. For a clearly new feature, initialize a distinct v2 run instead of rewriting legacy history.
+4. On `conflict`, stop and present both active surfaces. Never choose or rewrite one automatically.
+5. On `none`, shape a lowercase feature slug and initialize the run with `node <plugin-root>/workflow/scripts/pulse_icm.mjs init --repo-root <repo-root> --feature <slug> --request '<request>'`.
+6. Load only the contract and artifacts for the selected stage. Stable project rules are references; run outputs are working artifacts.
+7. Human gates remain explicit. A recommendation or output file never counts as approval.
+
+## Proportionate preparation
+
+Simple work and prototypes stay inside the same ICM cycle. Keep decisions short, use one graph node when sufficient, and verify the actual behavior with the project's existing tools. Record the prototype's purpose, limits and disposal path. Do not require a new framework, a large specification, Beads, swarm or legacy onboarding merely to make it count as Pulse work.
+
+Use the existing human approvals; do not add new confirmation rounds for choices already authorized. Readiness checks apply to the capabilities the selected work actually needs. A prototype is neither an exemption from ICM nor an automatic reason to run the optional full preflight diagnostic.
+
+Support routing remains explicit and outside the six-stage delivery graph:
+
+- "Note this learning from this conversation" → `pulse:dev-note`.
+- "Distill accumulated dev notes for reading" → `pulse:dev-note-distil`.
+- "Consolidate runtime artifacts into machine memory" → `pulse:dream`.
+- "Capture post-cycle machine learnings" → `pulse:compounding`.
+
+## Outputs
+
+- A new `history/<feature>/run.json` and six-stage output layout, or a precise resume/status brief.
+- Exactly one next stage selected from the canonical graph.
+- No v2 writes to legacy state mirrors, global handoffs, or checkpoints.
+
+## Exit
+
+- Route to `pulse:exploring` for `01_explore`, `pulse:planning` for `02_plan`, `pulse:validating` for `03_validate`, `pulse:executing` for `04_execute`, `pulse:reviewing` for `05_review`, or `pulse:compounding` for `06_compound`.
+- For `complete`, report completion and the final `run.json` path.
+- For conflict or stale approval, stop without mutation.

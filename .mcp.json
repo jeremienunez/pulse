@@ -1,34 +1,63 @@
 {
   "mcpServers": {
     "gitnexus": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "gitnexus@1.6.3", "mcp"],
-    "includeTools": [
-      "list_repos",
-      "query",
-      "context",
-      "impact",
-      "api_impact",
-      "route_map",
-      "shape_check",
-      "detect_changes"
-    ]
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "gitnexus@1.6.10",
+        "mcp"
+      ],
+      "includeTools": [
+        "list_repos",
+        "query",
+        "context",
+        "impact",
+        "api_impact",
+        "route_map",
+        "shape_check",
+        "detect_changes"
+      ]
     },
     "MCP_DOCKER": {
-    "type": "stdio",
-    "command": "docker",
-    "args": ["mcp", "gateway", "run"],
-    "includeTools": ["resolve-library-id", "get-library-docs", "web_search_exa"]
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "mcp",
+        "gateway",
+        "run"
+      ],
+      "includeTools": [
+        "resolve-library-id",
+        "get-library-docs",
+        "web_search_exa"
+      ]
     },
     "morph-mcp": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "@morphllm/morphmcp"],
-    "env": {
-      "ENABLED_TOOLS": "warpgrep_codebase_search"
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@morphllm/morphmcp"
+      ],
+      "env": {
+        "ENABLED_TOOLS": "warpgrep_codebase_search"
+      },
+      "includeTools": [
+        "warpgrep_codebase_search"
+      ]
     },
-    "includeTools": ["warpgrep_codebase_search"]
+    "opencode-models": {
+      "type": "stdio",
+      "command": "/usr/bin/node",
+      "args": [
+        "/home/jerem/plugins/pulse/scripts/opencode-models-mcp.mjs"
+      ],
+      "includeTools": [
+        "list_models",
+        "ask_model",
+        "compare_models"
+      ]
     }
   }
 }

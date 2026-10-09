@@ -1,0 +1,27 @@
+✔ plugin distribution contains only reviewed runtime surfaces and a replayable manifest (54.753978ms)
+✔ initIcmRun creates only the v2 run pointer and six-stage artifact layout (4.950821ms)
+✔ work graph validation rejects malformed dependencies, unsafe files, and cycles (1.624876ms)
+✔ BDD B2-B4: Given graph boundaries, when analyzed, then cost-first defaults preserve safe eligibility (0.762799ms)
+✔ BDD B10: Given an approved artifact changes, when status is read, then routing blocks as stale (9.824443ms)
+✔ BDD B6-B7: Gate 3 preserves explicit eligible swarm and rejects ineligible swarm (4.445288ms)
+✔ execution and compounding completion advance only after required outputs exist (2.820087ms)
+✔ v2 takes precedence over inactive mirrors while active legacy handoffs produce a conflict (1.775687ms)
+✔ packaged pulse_status dispatches v2 without writing legacy mirrors (55.614451ms)
+✔ explicit onboarding of an active v2 run installs helpers without legacy state (23.36325ms)
+✔ BDD B1: Given invalid graphs, when analyzed, then they are blocked and swarm-ineligible (0.444181ms)
+✔ BDD B5: Given five independent components, when analyzed, then swarm stays capped at four (0.236758ms)
+✔ BDD B8: Given independent work, when single-worker is approved, then the root remains the sole worker (1.938739ms)
+✔ BDD B9: Given lifecycle transitions, when the CLI responds, then hashes persist but leave routine stdout (102.258102ms)
+✔ canonical workflow declares exactly six numbered stages and four gates (1.891608ms)
+✔ every canonical stage contract exposes Inputs, Process, Outputs, and Exit (1.769201ms)
+✔ generated core skills dispatch v2 without loading frozen legacy guidance (42.436965ms)
+✔ workflow schemas and graph JSON parse cleanly (0.727604ms)
+✔ BDD B11-B13: v2 contracts keep execution root-owned and reject unjustified machinery (1.359999ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 303.937722

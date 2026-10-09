@@ -1,8 +1,8 @@
 ---
 name: using-pulse
-description: "Use when bootstrapping or resuming work in a Pulse project, or when a request needs Pulse stage routing."
+description: "Use at the start of any project task, including small changes, prototypes and unclear ideas, or when resuming an existing Pulse run."
 metadata:
-  version: '4.0'
+  version: '4.1'
   ecosystem: pulse
   generated_from: 'workflow/CONTEXT.md'
   dependencies:
@@ -32,6 +32,8 @@ metadata:
 
 Pulse 4 uses the filesystem as its primary orchestration surface. The canonical delivery graph has six numbered stages. The active `run.json`, declared stage inputs, output files, and content-bound human gates determine what happens next.
 
+Start every new project task through this router, including a small edit, a disposable prototype or an unclear idea. Detect and initialize ICM before producing project, prototype or brainstorming artifacts. Reuse the matching active run instead of creating one per session. The model, task size and intended lifetime do not change this entry rule.
+
 Do not invoke `pulse:preflight` unless the user explicitly requests it. Preflight is a manual diagnostic outside the delivery graph.
 
 ## Inputs
@@ -51,6 +53,42 @@ Do not invoke `pulse:preflight` unless the user explicitly requests it. Prefligh
 6. Load only the contract and artifacts for the selected stage. Stable project rules are references; run outputs are working artifacts.
 7. Human gates remain explicit. A recommendation or output file never counts as approval.
 
+## Recorded revisions
+
+Resume unchanged work from its current stage and recorded handoff. When a requested correction reopens finished work, use the ICM helper's `revise` command before editing artifacts; there is no `rewind` or `recover-revision` command. Resolve the plugin and repository roots as above.
+
+```bash
+node <plugin-root>/workflow/scripts/pulse_icm.mjs revise --repo-root <repo-root> --stage <target-stage> --reason '<requested correction>'
+```
+
+Choose the earliest stage whose approved content must change:
+
+| Target | Retained approvals | Reset approvals |
+| --- | --- | --- |
+| `01_explore` (intent or decisions) | none | G1, G2, G3, G4 |
+| `02_plan` (scope or graph) | G1 | G2, G3, G4 |
+| `03_validate` (feasibility or strategy) | G1, G2 | G3, G4 |
+| `04_execute` (repair inside the approved scope) | G1, G2, G3 | G4 |
+| `05_review` (review evidence only) | G1, G2, G3 | G4 |
+
+For `04_execute`, add `--nodes <id,id>` naming the affected approved nodes. Their dependent nodes reopen too; independent completed nodes stay complete. The helper archives the superseded outputs with hashes before changing the run. Plan/decision revisions discard the old active execution state. A stale gate is not approval: revise its owning stage and obtain the required content-bound approvals again. Existing user authorization remains usable only for the content and scope it actually covers.
+
+If status is blocked with `revision_prepared`, read the recorded revision manifest and use its exact 64-character revision ID:
+
+```bash
+node <plugin-root>/workflow/scripts/pulse_icm.mjs revise --repo-root <repo-root> --recover <revision-id>
+```
+
+Recovery verifies archive and live-file bindings and refuses a live owner or mismatched files. Do not force it, edit lifecycle state by hand, or replay product/provider effects. Re-read status after revision or recovery and load the newly selected stage.
+
+A completed run remains immutable. For a new request that builds on it, initialize a distinct feature with `init ... --from-run history/<parent>/run.json`; a completed active run is also the default parent. The successor references verified parent artifacts and starts with fresh gates. Parent approval never approves successor content.
+
+## Proportionate preparation
+
+Simple work and prototypes stay inside the same ICM cycle. Keep decisions short, use one graph node when sufficient, and verify the actual behavior with the project's existing tools. Record the prototype's purpose, limits and disposal path. Do not require a new framework, a large specification, Beads, swarm or legacy onboarding merely to make it count as Pulse work.
+
+Use the existing human approvals; do not add new confirmation rounds for choices already authorized. Readiness checks apply to the capabilities the selected work actually needs. A prototype is neither an exemption from ICM nor an automatic reason to run the optional full preflight diagnostic.
+
 Support routing remains explicit and outside the six-stage delivery graph:
 
 - "Note this learning from this conversation" → `pulse:dev-note`.
@@ -68,4 +106,4 @@ Support routing remains explicit and outside the six-stage delivery graph:
 
 - Route to `pulse:exploring` for `01_explore`, `pulse:planning` for `02_plan`, `pulse:validating` for `03_validate`, `pulse:executing` for `04_execute`, `pulse:reviewing` for `05_review`, or `pulse:compounding` for `06_compound`.
 - For `complete`, report completion and the final `run.json` path.
-- For conflict or stale approval, stop without mutation.
+- For conflict or failed revision bindings, stop without mutation. For stale approval, route through a recorded revision of the owning stage and the required approvals.

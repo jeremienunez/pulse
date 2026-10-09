@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "skills": [
+    {
+      "name": "using-pulse",
+      "description": "Use when bootstrapping or resuming work in a Pulse project, or when a request needs Pulse stage routing.",
+      "version": "4.0",
+      "contract": "workflow/CONTEXT.md",
+      "dependencies": [
+        {
+          "id": "node-runtime",
+          "kind": "command",
+          "command": "node",
+          "missing_effect": "unavailable",
+          "reason": "Pulse ICM run and graph helpers require Node.js 18+."
+        }
+      ]
+    },
+    {
+      "name": "exploring",
+      "description": "Use when a new Pulse run needs product and architecture decisions locked before planning.",
+      "version": "4.0",
+      "contract": "workflow/stages/01_explore/CONTEXT.md",
+      "dependencies": []
+    },
+    {
+      "name": "planning",
+      "description": "Use after Pulse exploration when approved decisions need one plan and a work graph.",
+      "version": "4.0",
+      "contract": "workflow/stages/02_plan/CONTEXT.md",
+      "dependencies": []
+    },
+    {
+      "name": "validating",
+      "description": "Use after Pulse planning to verify the plan and work graph before execution approval.",
+      "version": "4.0",
+      "contract": "workflow/stages/03_validate/CONTEXT.md",
+      "dependencies": [
+        {
+          "id": "node-runtime",
+          "kind": "command",
+          "command": "node",
+          "missing_effect": "unavailable",
+          "reason": "Pulse graph validation and connectivity analysis require Node.js 18+."
+        }
+      ]
+    },
+    {
+      "name": "executing",
+      "description": "Use when an approved Pulse work graph is ready for single-worker or swarm execution.",
+      "version": "4.0",
+      "contract": "workflow/stages/04_execute/CONTEXT.md",
+      "dependencies": []
+    },
+    {
+      "name": "reviewing",
+      "description": "Use after Pulse execution to produce final findings and UAT evidence before merge approval.",
+      "version": "4.0",
+      "contract": "workflow/stages/05_review/CONTEXT.md",
+      "dependencies": []
+    },
+    {
+      "name": "compounding",
+      "description": "Use after approved Pulse review to capture durable post-cycle learnings.",
+      "version": "4.0",
+      "contract": "workflow/stages/06_compound/CONTEXT.md",
+      "dependencies": []
+    }
+  ]
+}

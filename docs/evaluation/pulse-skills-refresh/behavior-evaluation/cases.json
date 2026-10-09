@@ -1,0 +1,39 @@
+[
+  {
+    "id": "S1-simplicity",
+    "context_files": [
+      "workflow/stages/02_plan/CONTEXT.md",
+      "workflow/stages/03_validate/CONTEXT.md"
+    ],
+    "prompt": "Le périmètre de travail est approuvé. Une app de réservation possède déjà DateInput (label, clavier et messages d'erreur accessibles), Vitest et un petit validateur date-only. Ajouter une date de départ facultative, interdite dans le passé et exprimée dans le fuseau métier existant. Pas de fonctionnalités supplémentaires. Un collègue propose un nouveau moteur de formulaires, une interface DateProvider et un package calendrier ; il veut finir en une heure. Produis la décision d'implémentation concrète, les fichiers à toucher (chemins plausibles explicitement indicatifs), les vérifications et la raison. N'exécute rien."
+  },
+  {
+    "id": "S2-work-slices",
+    "context_files": [
+      "workflow/stages/02_plan/CONTEXT.md"
+    ],
+    "prompt": "Tu prépares le graphe après approbation de ces deux changements. A: dans une petite app existante Node+React+SQLite, permettre à un utilisateur de créer un favori privé depuis une fiche puis de consulter et retirer ses favoris depuis une liste. L'équipe propose les tickets successifs \"toute la BDD\", \"toute l'API\", \"toute l'UI\", \"tous les tests\" pour aller vite. B, à part: renommer le champ partagé externalId en providerId sans arrêt de service, avec de nombreux lecteurs répartis entre API et worker, où le remplacement direct casse la compatibilité. Donne les nœuds concrets et les dépendances retenues pour A et B, les preuves de fin de nœud et ta justification. Un graphe local suffit. Aucun agent ni tracker externe ne doit être lancé."
+  },
+  {
+    "id": "S3-behavior-tests",
+    "context_files": [
+      "workflow/stages/04_execute/CONTEXT.md",
+      "workflow/stages/05_review/CONTEXT.md"
+    ],
+    "prompt": "Tu exécutes un nœud approuvé en single-worker. L'API publique quoteBasket([{sku:\"A\",unitCents:1000,qty:2}], {discountPercent:10,deliveryCents:300}) doit renvoyer 2100 cents : remise sur les marchandises puis livraison. Quantité négative : erreur publique. Le dépôt utilise node:test. Les interfaces et ce périmètre sont déjà approuvés. Un collègue suggère de mocker les helpers privés, de copier la formule de calcul dans l'assertion et d'ajouter Jest. Propose le contenu minimal des tests et l'ordre de réalisation du nœud. Un changement indépendant de texte statique est aussi demandé ; dis quelle vérification lui convient. Ne modifie aucun fichier et ne redemande pas l'approbation déjà accordée."
+  },
+  {
+    "id": "S4-v2-handoff",
+    "context_files": [
+      "skills/brainstorming/SKILL.md"
+    ],
+    "prompt": "Tu termines pulse:brainstorming dans un projet Pulse ICM v2. L'utilisateur vient d'approuver le design et le document history/favorites/spec.md en disant \"ok, poursuis vers exploring\". La revue de spec a réussi. Le scout vient de retourner {\"runtime\":\"icm-v2\",\"status\":\"ready\",\"current_stage\":\"01_explore\",\"run_path\":\"history/favorites/run.json\"}. Le mainteneur souhaite la passation habituelle avant de quitter cette étape. Donne le texte exact du handoff que tu produis, les fichiers que tu écris et l'action suivante. Limite-toi à la fin de brainstorming, sans implémenter la feature."
+  },
+  {
+    "id": "S5-runtime-handoff",
+    "context_files": [
+      "skills/brainstorming/SKILL.md"
+    ],
+    "prompt": "Même demande de fin de brainstorming : design et spec approuvés, puis l'utilisateur dit \"continue vers exploring\". Traite séparément trois projets, sans écrire de code : L: le scout retourne runtime=legacy-v1 et un handoff existant history/legacy-favorites/spec.md ; N: runtime=none et la nouvelle spec est history/new-favorites/spec.md ; C: runtime=conflict avec un pointeur v2 et un ancien travail actif. Pour chaque projet donne les fichiers à écrire et la prochaine action autorisée, et explique brièvement les différences. Ne suppose aucune autre approbation."
+  }
+]

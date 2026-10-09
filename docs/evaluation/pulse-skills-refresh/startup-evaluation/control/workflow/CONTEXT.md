@@ -1,0 +1,41 @@
+# Pulse ICM Router
+
+Pulse 4 uses the filesystem as its primary orchestration surface. The canonical delivery graph has six numbered stages. The active `run.json`, declared stage inputs, output files, and content-bound human gates determine what happens next.
+
+Do not invoke `pulse:preflight` unless the user explicitly requests it. Preflight is a manual diagnostic outside the delivery graph.
+
+## Inputs
+
+- User request and repository instructions.
+- `.pulse/active-run` when present.
+- The referenced `history/<feature>/run.json` for an active ICM v2 run.
+- Legacy `.pulse` state and handoffs only when no v2 run is active or the user explicitly resumes legacy work.
+
+## Process
+
+1. Resolve the plugin root from this installed skill and run `node <plugin-root>/workflow/scripts/pulse_icm.mjs status --repo-root <repo-root>`.
+2. On `icm-v2`, route strictly from `current_stage`; do not infer another skill from prose or stale mirrors.
+3. On `legacy-v1`, surface the saved work. Resume through `references/legacy-v1.md` when the user chooses resume. For a clearly new feature, initialize a distinct v2 run instead of rewriting legacy history.
+4. On `conflict`, stop and present both active surfaces. Never choose or rewrite one automatically.
+5. On `none`, shape a lowercase feature slug and initialize the run with `node <plugin-root>/workflow/scripts/pulse_icm.mjs init --repo-root <repo-root> --feature <slug> --request '<request>'`.
+6. Load only the contract and artifacts for the selected stage. Stable project rules are references; run outputs are working artifacts.
+7. Human gates remain explicit. A recommendation or output file never counts as approval.
+
+Support routing remains explicit and outside the six-stage delivery graph:
+
+- "Note this learning from this conversation" → `pulse:dev-note`.
+- "Distill accumulated dev notes for reading" → `pulse:dev-note-distil`.
+- "Consolidate runtime artifacts into machine memory" → `pulse:dream`.
+- "Capture post-cycle machine learnings" → `pulse:compounding`.
+
+## Outputs
+
+- A new `history/<feature>/run.json` and six-stage output layout, or a precise resume/status brief.
+- Exactly one next stage selected from the canonical graph.
+- No v2 writes to legacy state mirrors, global handoffs, or checkpoints.
+
+## Exit
+
+- Route to `pulse:exploring` for `01_explore`, `pulse:planning` for `02_plan`, `pulse:validating` for `03_validate`, `pulse:executing` for `04_execute`, `pulse:reviewing` for `05_review`, or `pulse:compounding` for `06_compound`.
+- For `complete`, report completion and the final `run.json` path.
+- For conflict or stale approval, stop without mutation.

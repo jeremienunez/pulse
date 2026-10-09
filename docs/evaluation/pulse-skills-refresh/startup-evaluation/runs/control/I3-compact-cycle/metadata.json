@@ -1,0 +1,49 @@
+{
+  "case_id": "I3-compact-cycle",
+  "condition": "control",
+  "model_selector": "gpt-5.6-sol",
+  "version_identifier": "gpt-5.6-sol",
+  "dated_snapshot_exposed": false,
+  "reasoning": "high",
+  "runtime": "codex-cli 0.155.0-alpha.2.6",
+  "argv": [
+    "/usr/lib/chatgpt/resources/codex",
+    "exec",
+    "--ignore-user-config",
+    "--ephemeral",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--model",
+    "gpt-5.6-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "-c",
+    "project_doc_max_bytes=0",
+    "-c",
+    "developer_instructions=\"Return only the requested structured decision based on the supplied scenario and guidance. Do not use tools, inspect other files, call other agents, or perform real actions. You are producing the action artifact for this bounded scenario. Do not invent facts absent from the scenario.\"",
+    "--output-schema",
+    "/home/jerem/Documents/Codex/2026-09-21/pulse-skills-study/startup-evaluation/response.schema.json",
+    "--json",
+    "--output-last-message",
+    "/home/jerem/Documents/Codex/2026-09-21/pulse-skills-study/startup-evaluation/runs/control/I3-compact-cycle/response.json",
+    "-"
+  ],
+  "prompt_sha256": "73a016255d99e1f064bafbae5e63a82962855a2e12b7f3495c864dfda6958008",
+  "exit_code": 0,
+  "elapsed_seconds": 34.437,
+  "tool_event_count": 0,
+  "usage_events": [
+    {
+      "type": "turn.completed",
+      "usage": {
+        "input_tokens": 16572,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1404,
+        "reasoning_output_tokens": 712
+      }
+    }
+  ],
+  "scope": "text-only action decisions; not end-to-end agent execution or a dated-model certification"
+}
