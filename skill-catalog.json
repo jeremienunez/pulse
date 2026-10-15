@@ -4,7 +4,7 @@
   "generatedFiles": [
     "skill-catalog.json"
   ],
-  "skillCount": 23,
+  "skillCount": 25,
   "skills": [
     {
       "directory": "architecture-rescue",
@@ -57,6 +57,19 @@
       "hasScriptsDir": false,
       "hasAgentsDir": false,
       "skillPath": "skills/compounding/SKILL.md"
+    },
+    {
+      "directory": "design",
+      "name": "design",
+      "description": "Use when shaping, building or reviewing web interfaces with material design choices, interaction changes or visual defects.",
+      "metadata": {
+        "version": "1.0",
+        "position": "support skill — loaded by activity on demand"
+      },
+      "hasReferencesDir": true,
+      "hasScriptsDir": false,
+      "hasAgentsDir": false,
+      "skillPath": "skills/design/SKILL.md"
     },
     {
       "directory": "dev-note",
@@ -278,6 +291,19 @@
       "hasScriptsDir": false,
       "hasAgentsDir": false,
       "skillPath": "skills/validating/SKILL.md"
+    },
+    {
+      "directory": "visual-assets",
+      "name": "visual-assets",
+      "description": "Use when selecting or producing visual assets with a specialized algorithm, image input, vector export or an accepted brand asset brief.",
+      "metadata": {
+        "version": "1.0",
+        "position": "support skill — loaded by capability need"
+      },
+      "hasReferencesDir": true,
+      "hasScriptsDir": false,
+      "hasAgentsDir": false,
+      "skillPath": "skills/visual-assets/SKILL.md"
     },
     {
       "directory": "worktree-isolation",

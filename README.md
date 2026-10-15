@@ -12,7 +12,7 @@
   </a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
   <a href="skills">
-    <img alt="Skills" src="https://img.shields.io/badge/skills-23-8B5CF6?style=flat-square" />
+    <img alt="Skills" src="https://img.shields.io/badge/skills-24-8B5CF6?style=flat-square" />
   </a>
 </p>
 
@@ -37,6 +37,10 @@ using-pulse → explore → plan → validate → execute → review → compoun
 ```
 
 `pulse:preflight` is an explicit operator diagnostic. Brainstorming is optional. Swarming is an approved execution strategy, not a delivery stage.
+
+[`pulse:design`](skills/design/SKILL.md) brings selected Impeccable methods, cultural enquiry and domain-specific motion guidance into the existing chain. An open expressive direction develops inspected works into research branches and concrete brief decisions. [`pulse:visual-assets`](skills/visual-assets/SKILL.md) selects specialized methods by effect, input and output: the optional local Threading adapter produces native string-art SVG; Primitive keeps its geometric SVG path. Brand asset families use the same accepted brief and admission.
+
+Guides load on demand; Pulse retains the task, gates and evidence. Backend work, exact copy corrections and covered extensions keep their proportional scope. Skillry, Book of Shapes and Nonflowers have explicit [provenance and distribution boundaries](docs/design/design-expression-provenance.md). See the [design/assets evaluation](docs/evaluation/design-expression-assets.md) for actual local results, incomplete pressure diagnostics and human-adoption limits.
 
 Pulse turns a vague request into a reviewed delivery trail:
 
@@ -75,6 +79,7 @@ Pulse is downstream of several strong agentic-development systems and distills t
 - **[Flywheel](https://agent-flywheel.com/complete-guide)** contributes Beads and reservation patterns used as an optional swarm projection rather than the canonical plan graph.
 - **[Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin)** contributes parallel review, severity-based findings, and the compound-learning loop that feeds future work.
 - **[GSD](https://github.com/gsd-build/get-shit-done)** contributes the philosophy: discuss first, research second, plan third, and do not execute until the plan has been verified.
+- **[Impeccable](https://github.com/pbakaus/impeccable)** 4.5.2 contributes selected web design methods through `pulse:design`, adapted under Apache-2.0 with [source hashes and adaptation boundaries](docs/design/impeccable-provenance.md).
 
 See the [lineage record](references/lineage/README.md) for the exact adaptation boundaries and source licenses.
 

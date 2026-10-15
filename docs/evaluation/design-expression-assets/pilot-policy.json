@@ -1,0 +1,188 @@
+{
+  "kind": "pulse-creative-pilot-policy",
+  "schema_version": "1.1",
+  "feature": "design-expression-assets",
+  "status": "proposed-for-gate2; not runtime admission",
+  "paid_tools": false,
+  "promotion_eligible": false,
+  "budget": {
+    "research_active_ms_per_brief": 1800000,
+    "global_active_ms": 10800000,
+    "max_candidates_per_brief": 15,
+    "max_deep_refs_per_brief": 8,
+    "min_deep_refs_per_ensemble": 2,
+    "max_directions_per_brief": 3,
+    "max_correction_rounds_per_brief": 2,
+    "max_native_tasks": 16,
+    "max_tool_actions": 160,
+    "additional_external_spend_eur": 0
+  },
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "coverage": {
+    "visual_briefs": [
+      "PV1"
+    ],
+    "nonactivation_briefs": [
+      "PV2"
+    ],
+    "research_ensembles": [
+      "peers",
+      "contemporary",
+      "culture"
+    ],
+    "min_observation_induced_chains": 2,
+    "counterpoint_required": true,
+    "culture_field": "cultural_tree",
+    "culture_version_source": "verified frozen manifest, not package-latest inference",
+    "root_substance_review_required": true,
+    "initial_directions_planned": 2,
+    "native_threading_export_required": true,
+    "actual_user_choice_required_for_visual": true,
+    "nonactivation_research": "empty not-applicable"
+  },
+  "allocation": {
+    "authority": "Root-owned overall execution ledger; creative session.json is only the pilot journal and must not reset or replace overall counters.",
+    "units": "Logical admitted tasks/actions, not internal inference, tokens, billing, or every browser RPC. A bounded batch lists subactions; failed or partial reserved units remain consumed.",
+    "global": {
+      "models": 16,
+      "tools": 160,
+      "active_minutes": 180
+    },
+    "rows": [
+      {
+        "id": "implementation-setup-close",
+        "models": 0,
+        "tools": 32,
+        "active_minutes": 20,
+        "scope": "Isolation/condition freezing, implementation, targeted contracts/package checks, journal preparation and final root rollup."
+      },
+      {
+        "id": "BASELINE5",
+        "models": 5,
+        "tools": 10,
+        "active_minutes": 20,
+        "scope": "One fresh isolated decision task per frozen case on control guidance."
+      },
+      {
+        "id": "RETEST5",
+        "models": 5,
+        "tools": 10,
+        "active_minutes": 20,
+        "scope": "One fresh isolated decision task per identical case on the frozen candidate guidance."
+      },
+      {
+        "id": "native-code-support",
+        "models": 2,
+        "tools": 6,
+        "active_minutes": 10,
+        "scope": "Deux tâches natives bornées de proposition/revue de code, autorisées par la demande utilisateur ; root reste seul à écrire/appliquer les changements produit. Aucun slot de retry ou meta-test."
+      },
+      {
+        "id": "PV1",
+        "models": 4,
+        "tools": 82,
+        "active_minutes": 100,
+        "scope": "Real research, Threading export, two directions, actual inspection/choice and bounded selected correction or final critique."
+      },
+      {
+        "id": "PV2",
+        "models": 0,
+        "tools": 20,
+        "active_minutes": 10,
+        "scope": "Root exact-label control and byte proof; no model or creative activity needed."
+      }
+    ],
+    "pilot_ceiling": {
+      "models": 4,
+      "tools": 102,
+      "active_minutes": 110
+    },
+    "PV1_phase_tools": {
+      "research": 30,
+      "generation_and_materialization": 18,
+      "inspection_and_critique": 18,
+      "optional_selected_correction": 12,
+      "pilot_artifacts_and_finish": 4
+    },
+    "PV1_phase_minutes": {
+      "research": 30,
+      "generation_and_materialization": 30,
+      "inspection_and_critique": 20,
+      "optional_selected_correction": 15,
+      "pilot_artifacts_and_finish": 5
+    },
+    "PV1_model_tasks": [
+      {
+        "id": "PV1-M1",
+        "purpose": "Research synthesis from actually inspected supports and cultural rebounds."
+      },
+      {
+        "id": "PV1-M2",
+        "purpose": "Realize direction PV1-D1 after research acceptance and native asset availability."
+      },
+      {
+        "id": "PV1-M3",
+        "purpose": "Realize structurally distinct direction PV1-D2 under the same approved brief."
+      },
+      {
+        "id": "PV1-M4",
+        "purpose": "At most one selected model-assisted correction, or final bounded critique if no correction is requested."
+      }
+    ],
+    "correction_limit_note": "Two rounds is a protocol ceiling, not an entitlement. This allocation supports at most one extra model-assisted correction task. Further model tasks or a full third five-case cohort require a revised plan and fresh required approvals.",
+    "admission_rule": "Before every operation, root checks remaining overall allocation, the phase/pilot allocation and the creative journal ceiling; admission requires all three to permit the operation. The pilot journal alone never proves global compliance.",
+    "unspent_units": "Remain unused unless a root-recorded reallocation stays within approved scopes and all original global/per-resource ceilings; no automatic expansion.",
+    "native_code_support_tasks": [
+      {
+        "id": "CODE-M1",
+        "purpose": "Proposition ciblée de driver/adaptation Threading à partir des seuls extraits nécessaires ; aucun outil média, effet produit ou écriture produit par le sous-agent."
+      },
+      {
+        "id": "CODE-M2",
+        "purpose": "Proposition ou revue ciblée du contrat culturel/protocole 1.1 à partir des extraits nécessaires ; root vérifie et applique."
+      }
+    ],
+    "retry_slots": 0,
+    "replay_failure_rule": "Aucun retry automatique ni slot de meta-test. Une preuve manquante, INVALID ou régression qui exige de nouvelles tâches/full replay arrête la qualification et impose révision du plan et approvals requis avant tout appel supplémentaire."
+  },
+  "profile_qualification": {
+    "declared_profile": {
+      "provider": null,
+      "model": null,
+      "immutable_executed_version": null,
+      "reasoning_profile": null,
+      "harness_runtime": null
+    },
+    "status": "pending-validation; automatic-certification-blocked",
+    "paired_pressure_profile": "One exact declared tuple for all five BASELINE and all five RETEST tasks. Any new model/version/reasoning profile needs its own complete paired corpus and a revised allocation.",
+    "unknown_fields": "Keep null; never fill from a family name, alias, requested model, parent session or guessed version.",
+    "diagnostic_exception": "No exception inherited. If immutable identity remains unavailable, root must propose a fresh hash-bound diagnostic-only exception in this run for explicit Gate 3 approval; results stay diagnostic and promotion_eligible false.",
+    "required_run_evidence": [
+      "exact request and guidance-condition bytes/digests",
+      "full response",
+      "choice and concrete action",
+      "exact rationalization",
+      "provider/model/version/reasoning metadata with nulls preserved",
+      "root verdict from unchanged oracle"
+    ]
+  },
+  "ownership_and_errors": {
+    "operations_owner": "root",
+    "overall_ledger": "Prepared at Stage 04 start before any execution model/tool task; root records all execution consumption, including implementation, cohorts and pilot.",
+    "creative_journal": "Prepare only after candidate condition is frozen and all this run’s Gate 1/2/3 bindings hold; session.json owns pilot reservations/receipts, with brief state files as projections.",
+    "pending": "At most one creative reservation pending; save exact request before admission and seal returned artifacts in its receipt.",
+    "uncertain": "Preserve operation/attempt identity and actual outcome; never replay uncertain request bytes automatically.",
+    "blocked_or_budget_exhausted": "Preserve partial/non-observed state and receipts; do not invent culture, user choice, export or render to finalize.",
+    "amendments": "No parent amendments apply and no budget increase is approved by this policy.",
+    "determinism": "No universal claim; fixed-environment repeatability only if actually observed, otherwise preserve output and hash."
+  }
+}

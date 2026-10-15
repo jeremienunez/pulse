@@ -176,6 +176,8 @@ pulse:exploring -> pulse:planning -> pulse:validating -> pulse:executing -> puls
 
 Support routing may also invoke `pulse:systematic-debug-fix`, `pulse:worktree-isolation`, `pulse:governed-feature`, `pulse:gitnexus`, or `pulse:dream`. `governed-feature` remains an overlay owned by the Pulse lifecycle, while `worktree-isolation` protects user state and establishes a clean implementation baseline.
 
+`pulse:design` owns design/cultural/motion methods; `pulse:visual-assets` owns capability selection and the brand-family recipe. Keep each entry below 600 words and first-level guide below 1,000. Share one cultural method and task research, and preserve conditional activation. A catalogue record does not prove a local engine/export. Keep native SVG grammars separate and external runtime/private catalogues outside the package. Update [provenance](docs/design/design-expression-provenance.md) and the [evaluation record](docs/evaluation/design-expression-assets.md), preserving frozen scenarios, omissions, unknown metadata and passing regression constraints. New native creative sessions use approved1.1 inputs; historical1.0 evidence is read without migration.
+
 ### Hard Contract Rules
 
 - Never execute without `pulse:validating`

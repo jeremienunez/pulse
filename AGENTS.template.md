@@ -9,6 +9,8 @@ Pulse 4 uses an interpretable filesystem workflow. One agent loads only the curr
 
 Preflight is a manual diagnostic outside the delivery graph. Run `pulse:preflight` only when the user explicitly requests it.
 
+`pulse:design` contributes framing, realization, review and domain-specific motion guidance on demand. An open expressive direction uses its shared cultural method: inspected works, observation-induced research chains, a counterpoint and consequences for the brief, with root substance review. `pulse:visual-assets` selects specialized production by effect, input role, output and actual availability; selection and admitted execution remain separate. Task evidence stays with the existing Pulse owner. Backend work, exact copy corrections and extensions covered by an approved direction retain their proportional scope.
+
 ## Glossary
 
 - `run.json` — canonical v2 run state and content-bound gate approvals.

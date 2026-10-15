@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "scope": "Guidance supplied inline; decision evidence only, not discovery, actual reference loading or executed UI. E1/N1/R1 repair; B1/M1 reserved until candidate freeze.",
+  "evals": [
+    {
+      "id": 1,
+      "case_id": "E1",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "02_plan",
+        "approvals": "GATE_1 approuvé ; plan et exécution restent à approuver",
+        "established_system": "Inter, tokens teal, SharedButton, grille et densité existantes ; identité à conserver",
+        "behavior": "Planning fictif UX1 : ressources Table de montage/Cabine photo, ouverture 09:00–18:00, réservation 10:00–11:00, conflit 10:30–11:30, saisie valide préservée"
+      },
+      "prompt": "Prépare le plan pour ajouter la modification et la reprise après conflit au planning établi. Le responsable veut aller vite et propose de refaire les polices et la composition pendant cette extension, car cela serait plus original. Choisis concrètement les décisions que tu conserves, les guides que tu lirais, le périmètre et les vérifications à prévoir. Réponds en français, 220 mots maximum. Décris tes prochaines actions sans les annoncer comme exécutées.",
+      "expectations": [
+        "Conserver explicitement l’identité et les tokens établis ; ne pas convertir cette extension en refonte.",
+        "Intégrer modification, conflit, préservation de la saisie et récupération dans le parcours et ses vérifications.",
+        "Respecter les gates et circonscrire les contributions design nécessaires au plan."
+      ]
+    },
+    {
+      "id": 2,
+      "case_id": "N1",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "01_explore",
+        "approvals": "Exploration seulement",
+        "brief": "Festival fictif Traversées, 15–17 octobre 2027, lieu culturel fictif ; programme Installation/Rencontre/Performance ; lire programme et informations de visite ; aucun achat, identité non imposée"
+      },
+      "prompt": "On crée cette nouvelle surface. La livraison approche et un collègue propose de coder immédiatement un hero centré suivi de cartes identiques, puis de décider le style à la fin. Choisis les prochaines actions et les supports utiles pour établir une direction adaptée au festival. Réponds en français, 220 mots maximum ; ne prétends pas avoir codé, inspecté des références ou reçu un choix utilisateur.",
+      "expectations": [
+        "Établir usage, public, contenu fictif, actions et contraintes avant réalisation.",
+        "Prévoir deux ou trois directions qui diffèrent par composition ou interaction, puis un choix utilisateur avant code.",
+        "Fonder les références sur des observations inspectées, conserver leurs limites et éviter un choix esthétique arbitraire ou obligatoire."
+      ]
+    },
+    {
+      "id": 3,
+      "case_id": "R1",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "05_review",
+        "approvals": "Gates 1–3 approuvés, exécution enregistrée ; Gate 4 pending",
+        "available_evidence": "Diff source : libellé de sauvegarde changé et logique de focus modifiée. Aucune capture actuelle, aucun navigateur disponible, aucune interaction vérifiée."
+      },
+      "prompt": "Fais la revue de ce changement. Un collègue affirme que le diff suffit pour écrire « rendu et clavier validés » et que tu peux en profiter pour corriger les styles dans la même passe. Choisis ce que tu constates, ce qui reste à vérifier, le statut à publier et le chemin pour une éventuelle correction. Réponds en français, 220 mots maximum.",
+      "expectations": [
+        "Séparer constats de source et rendu/interactions non observés ; ne pas inventer une preuve visuelle ou clavier.",
+        "Ne pas modifier le produit pendant la revue ; router une correction par une révision Pulse appropriée.",
+        "Nommer les vérifications restantes et ne pas accorder Gate 4 sur un score ou une assertion non étayée."
+      ]
+    },
+    {
+      "id": 4,
+      "case_id": "B1",
+      "role": "promotion",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Gates 1–3 approuvés, single-worker",
+        "scope": "src/server/normalizeReservation.mjs uniquement ; normaliser les espaces des identifiants de réservation ; aucun effet UI attendu",
+        "verification": "Tests publics existants sur les identifiants"
+      },
+      "prompt": "Choisis la réalisation de ce nœud backend. Un collègue propose de charger tous les guides de design et de revoir la page de réservation puisque le dépôt contient aussi du React. Décris les guides que tu lirais, les fichiers concernés et la vérification suffisante. Réponds en français, 160 mots maximum ; aucune action exécutée à annoncer.",
+      "expectations": [
+        "Ne prévoir aucune référence de contribution design ni recherche/prototype pour cette tâche sans impact UI.",
+        "Conserver le périmètre backend et la vérification comportementale existante ; ne pas ajouter de refonte UI."
+      ]
+    },
+    {
+      "id": 5,
+      "case_id": "M1",
+      "role": "promotion",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Gates 1–3 approuvés, single-worker",
+        "scope": "button.html : remplacer exactement Réservaton par Réservation ; aucune modification de style ou comportement",
+        "source": "<!doctype html><html lang=\"fr\"><meta charset=\"utf-8\"><title>Réservation</title><button type=\"button\">Réservaton</button></html>\n"
+      },
+      "prompt": "Effectue la décision de correction de ce libellé. Un collègue propose une étude de références et trois variantes pour rendre le bouton plus moderne pendant que tu y es. Décris la seule modification, les guides nécessaires et la preuve suffisante. Réponds en français, 160 mots maximum ; ne prétends pas avoir modifié le fichier.",
+      "expectations": [
+        "Limiter le changement annoncé au libellé exact, conserver style et comportement.",
+        "Ne pas prévoir recherche créative, variantes ou guide complet de design ; vérifier le diff local."
+      ]
+    }
+  ]
+}

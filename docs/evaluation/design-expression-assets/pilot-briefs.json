@@ -1,0 +1,131 @@
+{
+  "kind": "pulse-creative-pilot-briefs",
+  "schema_version": "1.1",
+  "feature": "design-expression-assets",
+  "status": "prepared-not-executed",
+  "cases": [
+    {
+      "id": "PV1",
+      "terrain": "visual",
+      "title": "Identité ouverte pour une exposition fictive autour des fils et des images",
+      "fictional": true,
+      "audience": "Visiteurs curieux qui découvrent une exposition et préparent une visite.",
+      "goal": "Rendre le propos singulier, le programme et les informations pratiques lisibles ; montrer un asset de string art image-vers-SVG réellement produit.",
+      "required_content": {
+        "name": "Entre les fils",
+        "dates": "15–17 octobre 2027",
+        "place": "Atelier culturel fictif",
+        "programme": [
+          "Exposition — Images tendues",
+          "Rencontre — Procédés et détours",
+          "Atelier — Faire avec des fils"
+        ],
+        "visit": "Horaires, accès et informations pratiques ; aucun achat ni service réel."
+      },
+      "required_actions": [
+        "Lire le programme",
+        "Atteindre les informations de visite"
+      ],
+      "constraints": [
+        "Direction expressive ouverte : aucune esthétique, famille culturelle, palette, typographie ou composition n’est imposée par le brief.",
+        "Recherche réelle avant recommandation/matérialisation ; cultural_tree suit la version issue du manifest effectivement vérifié.",
+        "Sélectionner pendant la recherche une entrée originale ou explicitement permise ; conserver bytes, hash et base de permission. Les images des références culturelles ne sont pas automatiquement des entrées autorisées.",
+        "SVA et autres index sont des pistes de découverte ; aucun droit de réutilisation de leurs images n’est implicite.",
+        "Produire au moins un SVG vectoriel natif avec Threading, depuis l’image sélectionnée et le driver/profile qualifié en validation ; aucune substitution par raster, Primitive ou géométrie dessinée par LLM.",
+        "Présenter exactement deux directions initiales, structurellement distinctes par composition ou interaction, utilisant l’asset natif ; partager le même export est permis si la divergence de composition est réelle.",
+        "Ne pas traiter anti-perfect ou règles de film comme un style universel ; guidance UI/motion seulement lorsqu’elle sert les actions du brief.",
+        "Aucun achat, appel média payant, publication, commit, push ou mise à jour du plugin installé."
+      ],
+      "criteria": [
+        {
+          "id": "PV1-BRIEF",
+          "required": true,
+          "expectation": "Contenu et actions respectent le brief ; aucune identité prédéfinie ne remplace l’enquête."
+        },
+        {
+          "id": "PV1-RESEARCH",
+          "required": true,
+          "expectation": "Œuvres/projets réellement inspectés avec supports locaux hashés et receipts admis ; pairs, contemporain et culture : deux origines distinctes par ensemble, six à huit références deep, aucune référence comptée deux fois."
+        },
+        {
+          "id": "PV1-CULTURAL-TREE",
+          "required": true,
+          "expectation": "Arbre avec contexte, scènes/sous-cultures, genres/pratiques, œuvres et procédés ; liens qualifiés, au moins deux chaînes où une observation induit une nouvelle recherche, contrepoint inspecté et conséquences confirmées/changées/écartées pour le brief. Root juge la substance séparément de la validation de forme."
+        },
+        {
+          "id": "PV1-RIGHTS",
+          "required": true,
+          "expectation": "Entrée native identifiée avec hash et permission ou création originale attestée ; les limites d’accès et de droits des références restent explicites."
+        },
+        {
+          "id": "PV1-NATIVE-EXPORT",
+          "required": true,
+          "expectation": "Essai réel Threading sous admission : source/version, driver/profile, environnement, entrée, paramètres, opération, SVG natif et hash conservés ; validateur spécifique et inspection du rendu effectif. Une fiche catalogue ou un SVG contenant un raster ne suffit pas."
+        },
+        {
+          "id": "PV1-DIVERGENCE",
+          "required": true,
+          "expectation": "Deux directions initiales matérialisées avec structure et transformations de références explicites ; divergence root confirmée au-delà d’un recolor."
+        },
+        {
+          "id": "PV1-VIEWPORTS",
+          "required": true,
+          "expectation": "Chaque direction réellement inspectée en CSS 1280×900 et 390×844 avec capture non redimensionnée, dimensions raster et viewport distincts et observation liée au même receipt."
+        },
+        {
+          "id": "PV1-USE",
+          "required": true,
+          "expectation": "Programme et visite utilisables au clavier, focus visible, pas de débordement horizontal ; information accessible avec mouvement réduit. Les états et limites observés sont conservés."
+        },
+        {
+          "id": "PV1-CHOICE",
+          "required": true,
+          "expectation": "Choix humain réel retain/combine/reject-all avec réponse verbatim et provenance de conversation ; absence de réponse reste awaiting-user. Une combinaison doit être matérialisée avec lineage avant d’être annoncée."
+        },
+        {
+          "id": "PV1-PROOF",
+          "required": true,
+          "expectation": "Critiques visuelle et usage séparées, verdicts et limites reliés aux artifacts/receipts réels ; aucun succès de fixture n’est présenté comme un chemin live."
+        },
+        {
+          "id": "PV1-IDENTITY",
+          "required": false,
+          "expectation": "Cohérence et singularité expliquées relativement au corpus inspecté ; aucun score mécanique n’est une certification esthétique."
+        }
+      ]
+    },
+    {
+      "id": "PV2",
+      "terrain": "nonactivation",
+      "title": "Contrôle du libellé mécanique exact",
+      "prompt": "Remplacer uniquement « Réservaton » par « Réservation » dans le bouton du fixture fourni. Tous les autres octets, y compris styles, structure et fin de ligne, restent identiques.",
+      "constraints": [
+        "Pas de digging culturel, directions, prototypes, moteurs d’assets ou génération créative."
+      ],
+      "criteria": [
+        {
+          "id": "PV2-EXACT-BYTES",
+          "required": true,
+          "expectation": "Le résultat égale exactement le baseline après l’unique remplacement UTF-8 autorisé, avec hash attendu et tous les autres octets conservés."
+        },
+        {
+          "id": "PV2-NONACTIVATION",
+          "required": true,
+          "expectation": "research.json not-applicable, references vides, directions vides et aucune reservation research/generation/critique/correction ; justification de portée et preuve du diff exact."
+        }
+      ],
+      "baseline_fixture": {
+        "path": "button.html",
+        "content": "<!doctype html><html lang=\"fr\"><meta charset=\"utf-8\"><title>Réservation</title><button type=\"button\">Réservaton</button></html>\n",
+        "sha256": "sha256:1538d2a49b2b3d514e29d8f666ce12797bcaddf173a1d81096f1ab140c8ef198",
+        "allowed_change": {
+          "before": "Réservaton",
+          "after": "Réservation",
+          "occurrences": 1
+        },
+        "expected_output_sha256": "sha256:594a5285038a0d3b06bd2537ad6d612a41a6ed7f8b02aa4a330419860180472f",
+        "preserve_all_remaining_bytes": true
+      }
+    }
+  ]
+}

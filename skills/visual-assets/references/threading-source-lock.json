@@ -1,0 +1,206 @@
+{
+  "kind": "pulse-threading-source-lock",
+  "schema_version": "1.0",
+  "upstream": {
+    "repository": "https://github.com/piellardj/image-stylization-threading",
+    "commit": "ef93733b28248340958c5843b5d882e6f4f5fef1",
+    "license": {
+      "label": "GNU General Public License version 3",
+      "path": "LICENSE.md",
+      "sha256": "sha256:3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    "entrypoint": "docs/index.html"
+  },
+  "verification": {
+    "date": "2026-10-14",
+    "method": "HTTPS GitHub recursive tree API and raw files at the exact commit; SHA-256 over received bytes",
+    "tree_truncated": false,
+    "bytes_observed": true,
+    "packages_installed": false,
+    "browser_execution_performed": false,
+    "render_observed": false,
+    "determinism_established": false
+  },
+  "distribution": {
+    "engine_location": "operator-supplied external local directory",
+    "automatic_fetch": false,
+    "upstream_runtime_in_pulse_package": false,
+    "local_job_source_snapshots": "evidence only; excluded from the Pulse package"
+  },
+  "required_files": [
+    {
+      "path": "LICENSE.md",
+      "bytes": 35149,
+      "sha256": "sha256:3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "role": "license",
+      "served": false
+    },
+    {
+      "path": "README.md",
+      "bytes": 896,
+      "sha256": "sha256:7760d5d98bd403e7803a367d2662786ca2f2df07c1728b9b8272d55bd04f6cb2",
+      "role": "attribution",
+      "served": false
+    },
+    {
+      "path": "docs/index.html",
+      "bytes": 18448,
+      "sha256": "sha256:857243d55e6cbc952953e218b013ab882c98f592a42a886516f165cdbaf3c66f",
+      "role": "entrypoint",
+      "served": true
+    },
+    {
+      "path": "docs/css/page.css",
+      "bytes": 20950,
+      "sha256": "sha256:cae9606bbf0bb9d1867948e2f94771b9da4656b058bcf1c12aa40505c787ab53",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/script/main.min.js",
+      "bytes": 31847,
+      "sha256": "sha256:e976baef63cdffdf84b21fc1733ca37d122b3b87b7938d58b50637d53bf385a5",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/script/page.min.js",
+      "bytes": 19449,
+      "sha256": "sha256:b866dd33f50daba9d0abb8e1b8070fdfc9115b14196997f2076126e44e5361e5",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/resources/cat.jpg",
+      "bytes": 8843,
+      "sha256": "sha256:a259747b41fde25f4070721fac966ee01e503d76c14b6646925c27f3620be44e",
+      "role": "bootstrap-image",
+      "served": true
+    },
+    {
+      "path": "docs/images/gear.svg",
+      "bytes": 805,
+      "sha256": "sha256:45d87c943831a8dfb0c7b9085155e020c78495828153c11d527b8c01ecca47e8",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/images/resize.svg",
+      "bytes": 1302,
+      "sha256": "sha256:08fe4b444f8f64ed77bd5156a476c6aaf19c0c2ba1b6fa7fb1eba1808986f5dd",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/images/noise-dark.png",
+      "bytes": 821,
+      "sha256": "sha256:20ab96aa01f83d865ba532b69819b11222b69029560a74c28a979ca99b6feb2b",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/images/noise-light.png",
+      "bytes": 933,
+      "sha256": "sha256:2352bfbae30b48bd710971533ba1a9c6301da05e4d856555eadc80257470dcaf",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/apple-touch-icon-120x120-precomposed.png",
+      "bytes": 2327,
+      "sha256": "sha256:6de0500bfb59c2baf1902a2384f26928d3dd2759f97abf48a4caf87d118b3b17",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/apple-touch-icon-152x152-precomposed.png",
+      "bytes": 3030,
+      "sha256": "sha256:1bac0d8fdbd7ae1c70913fdbe2c9f622c489f3758754503d0f759fecd01abdd5",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-16x16.png",
+      "bytes": 299,
+      "sha256": "sha256:3ec479a633a32477de9af982dd9a3ed8196efb9d8e7842a4c62d3e90f26dd3ac",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-32x32.png",
+      "bytes": 561,
+      "sha256": "sha256:701acae863d839aa36ce4daea84d855901913e6f8667b1ef2f515d4bbf9d17ef",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-48x48.png",
+      "bytes": 927,
+      "sha256": "sha256:dbfa55412c25c07602ff2d92b38e1d776e8be244b2531dc7d3086a4d0e17f74b",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-60x60.png",
+      "bytes": 1109,
+      "sha256": "sha256:5c76f692adfce28f12d8e6f6c14f13933cf058a849ba0b8862f8a698ddad68e7",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-96x96.png",
+      "bytes": 1532,
+      "sha256": "sha256:4e15482143610aefc663020d5c6b59de42a8fbaa27af6ccd7e0e6e4f079f9810",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-180x180.png",
+      "bytes": 3519,
+      "sha256": "sha256:a6920de0f3acc010f6c473215603e9a2486eeac3a9fc2350a467a053db21d23c",
+      "role": "runtime",
+      "served": true
+    },
+    {
+      "path": "docs/favicons/favicon-192x192.png",
+      "bytes": 3845,
+      "sha256": "sha256:48d8c87beeb7f4d50ee27b5a6c6cf91326faa7e388eb72b8f2654a34e594b4ff",
+      "role": "runtime",
+      "served": true
+    }
+  ],
+  "inspection_files": [
+    {
+      "path": "docs/script/page.js",
+      "bytes": 59005,
+      "sha256": "sha256:9b237c20c19d694ea7f1eb7da7098366bdc6a2949cd16314c3b35b3fa1280dfa",
+      "role": "readable support API evidence; not loaded by the entrypoint",
+      "served": false
+    }
+  ],
+  "total_required_bytes": 156592,
+  "served_version_query": "v=2024-02-22T09%3A31%3A32.088Z",
+  "native_export": {
+    "suggested_filename": "image-as-threading.svg",
+    "xml_declaration": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
+    "svg_namespace": "http://www.w3.org/2000/svg",
+    "version": "1.1",
+    "viewBox": "0 0 1000 1000",
+    "blur": 0,
+    "mode": 0,
+    "invert_colors": false,
+    "advanced_compositing_required": true,
+    "fixed_style": "line { mix-blend-mode: difference; }",
+    "fixed_style_wrapper": "single defs/style type=text/css with one CDATA",
+    "general_css_allowed": false,
+    "raster_embedding_allowed": false
+  },
+  "runtime_qualification": {
+    "node": "v24.15.0",
+    "chrome": "Google Chrome 155.0.8059.79",
+    "platform": "linux",
+    "arch": "x64",
+    "status": "host metadata only; local profile and CDP/export readiness probe required before Gate 3",
+    "runtime_binary_hashes": "operator profile and probe receipts; not claimed by this source lock"
+  }
+}

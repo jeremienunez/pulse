@@ -1,6 +1,8 @@
 import { objectDigest, sha256 } from './pulse-skill-evidence.mjs';
+import { validateCulturalTree, validateCulturalDirections } from './pulse-culture-tree.mjs';
 
-export const CREATIVE_VERSION = '1.0';
+export const CREATIVE_VERSION = '1.1';
+export const CREATIVE_READABLE_VERSIONS = ['1.0','1.1'];
 export const ENSEMBLES = ['peers', 'contemporary', 'culture'];
 const text = value => typeof value === 'string' && value.trim().length > 0;
 const list = value => Array.isArray(value) && value.length > 0;
@@ -8,16 +10,18 @@ export const safeId = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z
 export const safePath = value => text(value) && !value.startsWith('/') && !value.includes('\\') && value.split('/').every(p => p && p !== '.' && p !== '..');
 const result = errors => ({ ok: errors.length === 0, errors });
 const identity = (value, kind, ctx, errors) => {
-  if (value?.kind !== kind || value.schema_version !== CREATIVE_VERSION || value.brief_id !== ctx.brief.id || value.manifest_digest !== ctx.manifest_digest) errors.push('identity: kind, version, brief or manifest differs');
+  if (!CREATIVE_READABLE_VERSIONS.includes(ctx.creative_version) || value?.kind !== kind || value.schema_version !== ctx.creative_version || value.brief_id !== ctx.brief.id || value.manifest_digest !== ctx.manifest_digest) errors.push('identity: kind, version, brief or manifest differs');
 };
 
-export function validatePolicy(policy) {
+export function validatePolicy(policy, expectedVersion) {
   const limits = { research_active_ms_per_brief: 1800000, global_active_ms: 10800000, max_candidates_per_brief: 15, max_deep_refs_per_brief: 8, max_directions_per_brief: 3, max_correction_rounds_per_brief: 2, max_native_tasks: 16, max_tool_actions: 160 };
   const errors = [];
-  if (policy?.kind !== 'pulse-creative-pilot-policy' || policy.schema_version !== CREATIVE_VERSION) errors.push('policy identity invalid');
+  if (!CREATIVE_READABLE_VERSIONS.includes(expectedVersion) || policy?.kind !== 'pulse-creative-pilot-policy' || policy.schema_version !== expectedVersion) errors.push('policy identity invalid');
   for (const [key, ceiling] of Object.entries(limits)) if (!Number.isInteger(policy?.budget?.[key]) || policy.budget[key] < 1 || policy.budget[key] > ceiling) errors.push(`policy limit invalid: ${key}`);
   if (policy?.budget?.min_deep_refs_per_ensemble !== 2 || policy?.budget?.additional_external_spend_eur !== 0 || policy?.paid_tools !== false) errors.push('policy coverage or spending differs');
   if (policy?.budget?.max_deep_refs_per_brief < 6) errors.push('policy cannot meet three-ensemble coverage');
+  const pilot=expectedVersion==='1.1'?policy?.allocation?.pilot_ceiling:null;
+  if(pilot&&(!['models','tools','active_minutes'].every(k=>Number.isInteger(pilot[k])&&pilot[k]>0)||pilot.models>policy.budget.max_native_tasks||pilot.tools>policy.budget.max_tool_actions||pilot.active_minutes*60000>policy.budget.global_active_ms))errors.push('pilot allocation exceeds approved budget');
   if (!list(policy?.viewports) || policy.viewports.some(v => !Number.isInteger(v.width) || v.width < 1 || !Number.isInteger(v.height) || v.height < 1)) errors.push('viewports invalid');
   return result(errors);
 }
@@ -57,6 +61,7 @@ export function validateResearch(data, review, ctx) {
   identity(data, 'pulse-creative-research', ctx, errors);
   if (ctx.brief.terrain === 'nonactivation') {
     if (data?.status !== 'not-applicable' || !text(data.reason) || (data.references || []).length) errors.push('mechanical scope needs empty not-applicable research');
+    if(ctx.creative_version==='1.1'&&(!Array.isArray(data?.references)||data.cultural_tree!=null))errors.push('mechanical scope cannot contain a cultural tree');
     return result(errors);
   }
   if (data?.status !== 'complete') errors.push('research is not complete');
@@ -102,7 +107,9 @@ export function validateResearch(data, review, ctx) {
   if (deep > ctx.policy.budget.max_deep_refs_per_brief) errors.push('deep reference limit exceeded');
   for (const k of ENSEMBLES) if (coverage[k] < ctx.policy.budget.min_deep_refs_per_ensemble) errors.push(`coverage missing: ${k}`);
   if (review?.kind !== 'pulse-creative-research-review' || review.brief_id !== ctx.brief.id || review.research_digest !== objectDigest(data) || review.actor !== 'root' || review.verdict !== 'pass' || !list(review.reasons) || review.reasons.some(x => !text(x))) errors.push('independent owner research review missing/stale');
-  return { ...result(errors), coverage, deep, candidate_count: refs.length };
+  const culture=ctx.creative_version==='1.1'?validateCulturalTree(data,review,ctx):null;
+  if(culture)errors.push(...culture.errors);
+  return { ...result(errors), coverage, deep, candidate_count: refs.length, ...(culture?{culture}:{} ) };
 }
 
 export function validateDirections(data, research, ctx) {
@@ -130,12 +137,13 @@ export function validateDirections(data, research, ctx) {
   }
   for (const d of dirs) if ((d?.parent_ids || []).some(id => !ids.has(id) || id === d.id)) errors.push('correction parent unresolved');
   if (data?.review?.actor !== 'root' || data?.review?.verdict !== 'pass' || !list(data?.review?.reasons) || data.review.reasons.some(x => !text(x))) errors.push('owner divergence review missing');
+  if(ctx.creative_version==='1.1')errors.push(...validateCulturalDirections(data,research));
   return result(errors);
 }
 
 export function validateEvaluation(data, directions, ctx) {
   const errors = []; identity(data, 'pulse-creative-evaluation', ctx, errors);
-  const expected = ctx.brief.criteria, dirs = ctx.brief.terrain === 'nonactivation' ? [{ id: 'NA1' }] : directions?.directions || [];
+  const expected = ctx.brief.criteria, dirs = ctx.brief.terrain === 'nonactivation' ? [{ id: ctx.creative_version==='1.1'?ctx.brief.id:'NA1' }] : directions?.directions || [];
   const seen = new Set(); let failures = 0;
   for (const row of data?.directions || []) {
     if(!row||typeof row!=='object'){errors.push('evaluation row invalid');continue;}
@@ -161,7 +169,7 @@ export function validateEvaluation(data, directions, ctx) {
         if(evidence) {
           try {
             const v=JSON.parse(evidence.toString('utf8'));
-            if(v.kind!=='pulse-creative-viewport-observation'||v.schema_version!==CREATIVE_VERSION||v.brief_id!==ctx.brief.id||v.actor!=='root'||!text(v.observed_at)||!Number.isFinite(Date.parse(v.observed_at))||v.source_url!==c.source_url||v.capture?.path!==c.path||v.capture?.sha256!==c.sha256||v.viewport?.width!==viewport?.width||v.viewport?.height!==viewport?.height) errors.push('viewport observation stale or unbound');
+            if(v.kind!=='pulse-creative-viewport-observation'||v.schema_version!==ctx.creative_version||v.brief_id!==ctx.brief.id||v.actor!=='root'||!text(v.observed_at)||!Number.isFinite(Date.parse(v.observed_at))||v.source_url!==c.source_url||v.capture?.path!==c.path||v.capture?.sha256!==c.sha256||v.viewport?.width!==viewport?.width||v.viewport?.height!==viewport?.height) errors.push('viewport observation stale or unbound');
           } catch { errors.push('viewport observation is not JSON'); }
         }
         if (bytes) {

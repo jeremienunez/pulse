@@ -50,16 +50,50 @@ fs.writeFileSync(path.join(owner,'input.json'),JSON.stringify({owner,run_file:ru
     const built=spawnSync(process.execPath,['--input-type=module','-',packaged,owner],{input:bootstrap,cwd:root,encoding:'utf8'});assert.equal(built.status,0,built.stderr);
     const run=(phase,input)=>spawnSync(process.execPath,[path.join(packaged,'scripts/pulse-plugin-eval.mjs'),'creative','--phase',phase,'--input',input,'--json'],{cwd:root,encoding:'utf8'});
     const prepared=run('prepare',path.join(owner,'input.json'));assert.equal(prepared.status,0,prepared.stdout+prepared.stderr);const session=JSON.parse(prepared.stdout);assert.equal(session.promotion_eligible,false);
+    const frozenSession=JSON.parse(fs.readFileSync(path.join(session.root,'session.json')));assert.equal(frozenSession.manifest.schema_version,'1.0');
+    const frozenInput=fs.readFileSync(path.join(owner,'history/fixture/stages/02_plan/output/pilot-policy.json'));
     const request=path.join(session.root,'request.json');fs.writeFileSync(request,'Package admission only');
     const digest=cryptoHash(fs.readFileSync(request));const input=path.join(owner,'record.json');fs.writeFileSync(input,JSON.stringify({root:session.root,event:{event:'reserve',operation_id:'package-probe',brief_id:'CV1',phase:'inspection',resource:'tool',units:1,request:{path:'request.json',sha256:digest}}}));
     const admitted=run('record',input);assert.equal(admitted.status,0,admitted.stdout);const reservation=JSON.parse(admitted.stdout);assert.equal(reservation.used.tool,1);
     fs.writeFileSync(input,JSON.stringify({root:session.root,event:{event:'finish',reservation_id:reservation.reservation_id,outcome:'success',artifacts:[]}}));assert.equal(run('record',input).status,0);
     fs.writeFileSync(input,JSON.stringify({root:session.root,brief_id:'CV1',target:'research'}));const check=run('check',input);assert.equal(check.status,1);assert.equal(JSON.parse(check.stdout).kind,'pulse-creative-check');
+    assert.equal(JSON.parse(check.stdout).schema_version,'1.0');assert.ok(fs.readFileSync(path.join(owner,'history/fixture/stages/02_plan/output/pilot-policy.json')).equals(frozenInput));
     assert.equal(fs.existsSync(path.join(root,'pulse-eval-review.html')),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 function cryptoHash(bytes){return 'sha256:'+createHash('sha256').update(bytes).digest('hex');}
+
+test('extracted design/assets package carries contracts and adapters, without external engines or profiles',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'pulse-package-design-assets-'));
+  try{
+    const packaged=path.join(root,'package');buildPluginDist(REPO_ROOT,packaged);
+    for(const file of ['skills/design/references/cultural-digging.md','skills/design/references/motion.md','skills/visual-assets/SKILL.md','skills/visual-assets/references/capabilities.json','skills/visual-assets/references/threading.md','skills/visual-assets/references/threading-source-lock.json','scripts/lib/pulse-culture-tree.mjs','scripts/pulse-threading-svg.mjs','scripts/lib/pulse-threading-svg.mjs','scripts/lib/pulse-threading-cdp.mjs','scripts/lib/pulse-threading-svg-check.py','docs/design/design-expression-provenance.md','docs/evaluation/design-expression-assets.md','docs/evaluation/frontend-threading-svg.md'])assert.ok(fs.existsSync(path.join(packaged,file)),file);
+    const catalog=JSON.parse(fs.readFileSync(path.join(packaged,'skill-catalog.json')));assert.equal(catalog.skillCount,25);assert.ok(catalog.skills.some(s=>s.name==='visual-assets'));
+    for(const file of ['pressure-corpus.json','pilot-briefs.json','pilot-policy.json'])assert.ok(fs.readFileSync(path.join(packaged,'docs/evaluation/design-expression-assets',file)).equals(fs.readFileSync(path.join(REPO_ROOT,'docs/evaluation/design-expression-assets',file))));
+    const lock=JSON.parse(fs.readFileSync(path.join(packaged,'skills/visual-assets/references/threading-source-lock.json')));assert.equal(lock.required_files.length,20);for(const file of lock.required_files.filter(f=>f.served))assert.equal(fs.existsSync(path.join(packaged,file.path)),false,'external engine '+file.path);
+    const manifest=JSON.parse(fs.readFileSync(path.join(packaged,'dist-manifest.json')));assert.equal(manifest.files.some(f=>/browser-work|local-profile|__pycache__|\.pyc$|met-work\.jpg|skills\/skillry\//.test(f.path)),false);assert.equal(fs.existsSync(path.join(packaged,'history')),false);
+    const r=spawnSync(process.execPath,[path.join(packaged,'scripts/pulse-threading-svg.mjs'),'inspect','--profile',path.join(root,'missing-profile.json')],{cwd:root,encoding:'utf8'});assert.equal(r.status,1,r.stderr);const result=JSON.parse(r.stdout);assert.equal(result.status,'unavailable');assert.equal(result.execution_performed,false);assert.equal(fs.existsSync(path.join(root,'global')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('extracted package prepares native1.1 and refuses native1.0 before any session directory',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'pulse-package-native-creative-'));
+  try{
+    const packaged=path.join(root,'package');buildPluginDist(REPO_ROOT,packaged);
+    const script=`
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {pathToFileURL} from 'node:url';
+const [pkg,root]=process.argv.slice(2),load=p=>import(pathToFileURL(path.join(pkg,p)));
+const {initIcmRun}=await load('skills/using-pulse/scripts/pulse_icm.mjs'),{sha256,conditionFromFiles}=await load('scripts/lib/pulse-skill-evidence.mjs'),{prepareCreativeSession,creativeStatus,checkCreativeSession}=await load('scripts/lib/pulse-creative-session.mjs');
+function owner(version){const dir=path.join(root,'owner-'+version);fs.mkdirSync(dir);initIcmRun(dir,'fixture','Synthetic approval/package test only; no model or browser.');const base=path.join(dir,'history/fixture/stages/02_plan/output');let plan='Package assets\\n';
+ for(const name of ['pilot-briefs.json','pilot-policy.json','pressure-corpus.json']){const value=JSON.parse(fs.readFileSync(path.join(pkg,'docs/evaluation/design-expression-assets',name)));if(name!=='pressure-corpus.json')value.schema_version=version;const body=JSON.stringify(value);fs.writeFileSync(path.join(base,name),body);plan+=sha256(body).slice(7)+'\\n';}
+ fs.writeFileSync(path.join(base,'plan.md'),plan);fs.writeFileSync(path.join(dir,'gate.md'),'synthetic');const run_file='history/fixture/run.json',file=path.join(dir,run_file),run=JSON.parse(fs.readFileSync(file));run.current_stage='04_execute';run.execution.approved_strategy='single-worker';for(const gate of ['GATE_1','GATE_2','GATE_3'])run.gates[gate]={status:'approved',artifacts:[{path:gate==='GATE_2'?'history/fixture/stages/02_plan/output/plan.md':'gate.md',sha256:sha256(gate==='GATE_2'?plan:'synthetic').slice(7)}],decided_at:'2026-10-15T00:00:00Z'};fs.writeFileSync(file,JSON.stringify(run));return {owner:dir,run_file,condition:conditionFromFiles('skills/design/SKILL.md',[{path:'skills/design/SKILL.md',content:fs.readFileSync(path.join(pkg,'skills/design/SKILL.md'),'utf8')}])};}
+const legacy=owner('1.0'),expected=path.join(legacy.owner,'history/fixture/stages/04_execute/output/verification/creative');assert.throws(()=>prepareCreativeSession(legacy),/policy identity/);assert.equal(fs.existsSync(expected),false);
+const current=owner('1.1'),prepared=prepareCreativeSession(current),session=JSON.parse(fs.readFileSync(path.join(prepared.root,'session.json'))),manifest=JSON.parse(fs.readFileSync(path.join(prepared.root,'PV2/manifest.json')));assert.equal(session.manifest.schema_version,'1.1');assert.equal(session.manifest.execution_kind,'native');assert.equal(manifest.schema_version,'1.1');assert.deepEqual(creativeStatus(prepared.root).used,{tool:0,model:0});fs.writeFileSync(path.join(prepared.root,'PV2/research.json'),JSON.stringify({kind:'pulse-creative-research',schema_version:'1.1',brief_id:'PV2',manifest_digest:manifest.digest,status:'not-applicable',reason:'Exact package fixture only',references:[]}));assert.equal(checkCreativeSession(prepared.root,'PV2','research').ok,true);assert.equal(creativeStatus(prepared.root).promotion_eligible,false);console.log('native1.1 package contract; synthetic owner, no engine/model execution');
+`;
+    const r=spawnSync(process.execPath,['--input-type=module','-',packaged,root],{input:script,cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr||r.stdout);assert.match(r.stdout,/native1.1 package contract/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test("plugin distribution contains only reviewed runtime surfaces and a replayable manifest", () => {
   const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-dist-"));

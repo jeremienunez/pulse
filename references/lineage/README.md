@@ -22,6 +22,14 @@ Pulse owns the resulting skills and routing. In particular, `worktree-isolation`
 - Integration boundary: these concepts live in the optional `governed-feature` overlay. Pulse `CONTEXT.md` remains authoritative, and Pulse Gates 1–4 retain approval ownership.
 - Not imported: the source pack's 15-skill lifecycle, a second state machine, or its Python workspace/runtime.
 
+## Impeccable
+
+- Source: [pbakaus/impeccable](https://github.com/pbakaus/impeccable), skill/plugin `4.5.2`, commit `245ad82def45831dc56a21b683c7a1ff530b06cc`.
+- License: Apache-2.0, included with the modified adaptation and notices in `skills/design/`.
+- Adapted into Pulse: selected web framing, craft and observed-review methods in one on-demand support skill; Pulse keeps artifacts, gates and revisions.
+- Excluded: engine/detectors, hooks, vendor agents, state, native-platform guides and full catalogue import.
+- [Source paths/hashes, changes and diagnostic adoption boundary](../../docs/design/impeccable-provenance.md).
+
 ## Other Influences
 
 - [Khuym](https://github.com/hoangnb24/skills/tree/main) informed much of the validate-first chain and Flywheel-style bead workflow.

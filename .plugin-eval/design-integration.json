@@ -1,0 +1,30 @@
+{
+  "kind": "pulse-plugin-benchmark",
+  "schemaVersion": 4,
+  "version": 4,
+  "mode": "chat",
+  "scenarioSource": "docs/evaluation/design-integration/corpus.json",
+  "pilotScenarioIds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "requiredRunnerProfileFields": [
+    "model_id",
+    "model_version",
+    "reasoning_effort",
+    "runtime"
+  ],
+  "shared": {
+    "verifiers": []
+  },
+  "notes": [
+    "Explicit frozen conditions compare honest pre-change guidance and a candidate; supply only the declared current activity references.",
+    "Decision content only: no discovery, executed UI or loaded-reference claim follows from an inline packet.",
+    "Preserve missing profile/version/trace fields and any known setup tools; automated qualification and eligibility rules are unchanged.",
+    "The 2026-10-13 source proposal used a scoped human exception recorded in its canonical run; it grants no permanent automatic certification or profile compatibility.",
+    "Source/package checks and the locally observed render pilot are separate evidence."
+  ]
+}

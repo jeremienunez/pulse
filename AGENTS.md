@@ -59,6 +59,8 @@ Pulse is not:
 | `pulse:dev-note` | Capture one structured developer learning from the current coding-with-AI session |
 | `pulse:dev-note-distil` | Distill pending raw dev notes into stable topic knowledge and rebuild the global topic index |
 | `pulse:dream` | Manual dream consolidation over Claude Code or Codex runtime artifacts |
+| `pulse:design` | Design, cultural enquiry and motion methods, loaded by activity on demand |
+| `pulse:visual-assets` | Capability-based selection and admitted specialized asset production |
 
 ## The Chain
 
@@ -483,6 +485,8 @@ Use `pulse:using-pulse` first for every new or resumed project task, including s
 Pulse 4 uses an interpretable filesystem workflow. One agent loads only the current numbered stage contract and its declared inputs. Plain Markdown and JSON artifacts carry context between stages; deterministic local scripts validate paths, gates, hashes, and graph connectivity.
 
 Preflight is a manual diagnostic outside the delivery graph. Run `pulse:preflight` only when the user explicitly requests it.
+
+`pulse:design` contributes framing, realization, review and domain-specific motion guidance on demand. An open expressive direction uses its shared cultural method: inspected works, observation-induced research chains, a counterpoint and consequences for the brief, with root substance review. `pulse:visual-assets` selects specialized production by effect, input role, output and actual availability; selection and admitted execution remain separate. Task evidence stays with the existing Pulse owner. Backend work, exact copy corrections and extensions covered by an approved direction retain their proportional scope.
 
 ## Glossary
 

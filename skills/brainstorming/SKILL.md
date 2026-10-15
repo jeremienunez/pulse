@@ -28,6 +28,8 @@ Before writing a spec, starting visual prototypes or creating task artifacts, in
 
 ## Purpose
 
+For material web interface choices, use `pulse:design` and its framing contribution before recommending a direction. Ground the audience, factual content, constraints and inspected references in the current spec/decisions; load only the contribution needed for this activity.
+
 Turns vague intent into a documented, approved design spec through structured dialogue —
 before any codebase research or implementation planning begins.
 

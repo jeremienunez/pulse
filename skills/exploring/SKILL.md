@@ -37,6 +37,7 @@ One job: convert the request into explicit, approved decisions that planning can
 
 1. Confirm the concrete user, outcome, boundaries, constraints, and success evidence.
 2. Resolve discoverable repository facts directly; ask only for product choices that materially change the result.
+   For material web interface choices, use `pulse:design` and its framing guide to ground audience, factual content, constraints and inspected references before recommending a direction. Keep the brief in the existing decisions.
 3. Record locked decisions, rejected alternatives, and unresolved blockers in a compact durable artifact.
 4. Keep implementation planning out of this stage.
 

@@ -1,0 +1,56 @@
+{
+  "kind": "pulse-visual-capabilities",
+  "schema_version": "1.0",
+  "availability_authority": "A current inspection of the selected local profile; these records alone perform no execution.",
+  "capabilities": [
+    {
+      "id": "threading",
+      "kind": "local-algorithm",
+      "domain": "image stylization",
+      "effect": "string art using segments between pegs",
+      "input": { "role": "material", "formats": ["png", "jpeg"], "rights_basis_required": true },
+      "output": { "format": "svg", "native_vector": true, "grammar": "threading-specific rect/g/circle/line and one fixed style" },
+      "controls": ["shape", "pegs", "lines", "opacity", "thickness", "display_pegs"],
+      "initial_profile": { "quality": 1, "mode": 0, "invert_colors": false, "blur": 0 },
+      "availability": { "status": "requires-current-inspection", "command": ["node", "scripts/pulse-threading-svg.mjs", "inspect", "--profile", "<absolute-local-profile>"] },
+      "runtime": { "source": "operator-supplied external directory", "node": "v24.15.0", "chrome": "155.0.8059.79", "platform": "linux-x64", "automatic_install": false },
+      "provenance": { "repository": "https://github.com/piellardj/image-stylization-threading", "commit": "ef93733b28248340958c5843b5d882e6f4f5fef1", "license": "GPL-3.0", "runtime_bundled": false, "lock": "threading-source-lock.json" },
+      "limits": ["closed local job and profile", "admitted operation required", "60-second deadline", "no universal determinism claim", "input-image permission is separate from program licence"],
+      "reference": "threading.md"
+    },
+    {
+      "id": "primitive",
+      "kind": "local-algorithm",
+      "domain": "image approximation",
+      "effect": "geometric approximation with supported shape exporters",
+      "input": { "role": "material", "formats": ["png", "jpeg"], "rights_basis_required": true },
+      "output": { "format": "svg", "native_vector": true, "grammar": "existing Primitive-specific exporter grammar" },
+      "controls": ["mode", "shapes", "alpha", "workers", "resize", "output_size"],
+      "availability": { "status": "requires-current-inspection", "command": ["node", "scripts/pulse-primitive-svg.mjs", "inspect", "--profile", "<absolute-local-profile>"] },
+      "provenance": { "owner": "existing Pulse Primitive adapter and its build lock", "reference": "../../../docs/evaluation/frontend-primitive-svg.md" },
+      "limits": ["different effect from string art", "existing job/profile/grammar unchanged", "no new exporter admitted by this catalogue"]
+    },
+    {
+      "id": "nonflowers",
+      "kind": "external-reference",
+      "domain": "procedural organic drawing",
+      "effect": "seeded plant and floral drawing",
+      "input": { "role": "parameters", "controls": ["seed"] },
+      "output": { "format": "raster", "native_vector": false },
+      "availability": { "status": "no-pulse-local-adapter", "inspection": "Inspect the external source and actual output for a separately scoped task." },
+      "provenance": { "repository": "https://github.com/LingDong-/nonflowers", "commit": "03b653d220f16c6bed7ea9c7edc852f7e91846cb", "license": "MIT", "runtime_bundled": false },
+      "limits": ["not image-to-SVG", "Canvas/paper-background export", "upstream replaces global Math.random; a future runtime must be isolated", "no newly generated output is claimed by this reference"]
+    },
+    {
+      "id": "book-of-shapes",
+      "kind": "external-reference",
+      "domain": "parametric motifs",
+      "effect": "external shape and pattern authoring",
+      "input": { "role": "parameters", "controls": ["external motif-specific controls"] },
+      "output": { "format": "svg", "native_vector": null },
+      "availability": { "status": "external-tool-only", "inspection": "Inspect the chosen motif, current access, final exported bytes and applicable licence." },
+      "provenance": { "url": "https://bookofshapes.com/", "license_url": "https://bookofshapes.com/license", "runtime_bundled": false },
+      "limits": ["final assets only under the applicable licence", "no redistribution of motif packs, libraries, node definitions or derived generator", "excluded artwork recreations must not be published/sold", "no collection or generator imported into Pulse"]
+    }
+  ]
+}

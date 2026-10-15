@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {initIcmRun} from '../skills/using-pulse/scripts/pulse_icm.mjs';
 import {sha256,objectDigest,conditionFromFiles} from './lib/pulse-skill-evidence.mjs';
-import {prepareCreativeSession,recordCreativeEvent,creativeStatus} from './lib/pulse-creative-session.mjs';
+import {prepareCreativeSession,recordCreativeEvent,creativeStatus,checkCreativeSession,finalizeCreativeSession} from './lib/pulse-creative-session.mjs';
 
 function fixture(t,changes={}){
   const owner=fs.mkdtempSync(path.join(os.tmpdir(),'pulse-creative-test-'));t.after(()=>fs.rmSync(owner,{recursive:true,force:true}));
@@ -82,5 +82,77 @@ test('second extension rejects an unapproved gate, missing parent or a larger in
     const run=JSON.parse(fs.readFileSync(f.p));if(mode==='missing-gate')run.gates.GATE_3.artifacts.pop();
     if(mode==='missing-parent'){const file=path.join(f.owner,second.approval.path),body=JSON.parse(fs.readFileSync(file));delete body.parent_amendment_sha256;fs.writeFileSync(file,JSON.stringify(body));const hash=sha256(fs.readFileSync(file));second.approval.sha256=hash;for(const g of ['GATE_1','GATE_2','GATE_3'])run.gates[g].artifacts.at(-1).sha256=hash.slice(7);}
     fs.writeFileSync(f.p,JSON.stringify(run));assert.throws(()=>recordCreativeEvent(f.root,second,{now:1003}));assert.equal(creativeStatus(f.root).budget.max_tool_actions,32);
+  }
+});
+
+function versionedFixture(t,version='1.1',allocation=null) {
+  const f=fixture(t);fs.rmSync(f.root,{recursive:true,force:true});
+  const base=path.join(f.owner,'history/fixture/stages/02_plan/output'),policy=JSON.parse(fs.readFileSync(path.join(base,'pilot-policy.json'))),briefs=JSON.parse(fs.readFileSync(path.join(base,'pilot-briefs.json')));
+  policy.schema_version=version;policy.budget.global_active_ms=600000;
+  if(allocation)policy.allocation={pilot_ceiling:allocation};
+  briefs.cases.find(b=>b.id==='NA1').id='PV2';
+  fs.writeFileSync(path.join(base,'pilot-policy.json'),JSON.stringify(policy));fs.writeFileSync(path.join(base,'pilot-briefs.json'),JSON.stringify(briefs));
+  let plan='Versioned fixture assets\n';for(const name of ['pilot-policy.json','pilot-briefs.json','pressure-corpus.json'])plan+=sha256(fs.readFileSync(path.join(base,name))).slice(7)+'\n';fs.writeFileSync(path.join(base,'plan.md'),plan);
+  const run=JSON.parse(fs.readFileSync(f.p));run.gates.GATE_2.artifacts[0].sha256=sha256(plan).slice(7);fs.writeFileSync(f.p,JSON.stringify(run));
+  const args={owner:f.owner,run_file:'history/fixture/run.json',condition:conditionFromFiles('skills/using-pulse/SKILL.md',[{path:'skills/using-pulse/SKILL.md',content:'# Synthetic condition'}])};return {...f,args,base};
+}
+test('default native prepare requires1.1 before mkdir; explicit historical fixture1.0 remains readable',t=>{
+  const f=versionedFixture(t,'1.0');assert.throws(()=>prepareCreativeSession(f.args,{now:1000}),/policy identity/);assert.equal(fs.existsSync(f.root),false);
+  prepareCreativeSession({...f.args,execution_kind:'fixture'},{now:1000});assert.equal(JSON.parse(fs.readFileSync(path.join(f.root,'session.json'))).manifest.schema_version,'1.0');assert.equal(creativeStatus(f.root).used.tool,0);
+});
+test('native1.1 propagates version and applies the approved pilot suballocation',t=>{
+  const f=versionedFixture(t,'1.1',{models:2,tools:1,active_minutes:1});prepareCreativeSession(f.args,{now:1000});
+  assert.equal(JSON.parse(fs.readFileSync(path.join(f.root,'session.json'))).manifest.schema_version,'1.1');assert.equal(JSON.parse(fs.readFileSync(path.join(f.root,'PV2/state.json'))).schema_version,'1.1');assert.equal(creativeStatus(f.root).budget.max_native_tasks,2);assert.equal(creativeStatus(f.root).budget.max_tool_actions,1);
+  const m=JSON.parse(fs.readFileSync(path.join(f.root,'PV2/manifest.json')));fs.writeFileSync(path.join(f.root,'PV2/research.json'),JSON.stringify({kind:'pulse-creative-research',schema_version:'1.1',brief_id:'PV2',manifest_digest:m.digest,status:'not-applicable',reason:'Exact fixture only',references:[]}));
+  const r=checkCreativeSession(f.root,'PV2','research',{now:1001});assert.equal(r.ok,true);assert.equal(r.schema_version,'1.1');
+});
+test('recomputed local downgrade cannot override approved policy bytes or plan binding',t=>{
+  for(const changeRaw of [false,true]) {
+    const f=versionedFixture(t);prepareCreativeSession(f.args,{now:1000});const file=path.join(f.root,'session.json'),s=JSON.parse(fs.readFileSync(file));s.manifest.schema_version='1.0';s.manifest.assets.policy.value.schema_version='1.0';
+    if(changeRaw){const p=path.join(f.base,'pilot-policy.json');fs.writeFileSync(p,JSON.stringify(s.manifest.assets.policy.value));s.manifest.assets.policy.sha256=sha256(fs.readFileSync(p));}
+    const {digest,...body}=s.manifest;s.manifest.digest=objectDigest(body);fs.writeFileSync(file,JSON.stringify(s));assert.throws(()=>creativeStatus(f.root),changeRaw?/bound by approved plan/:/Embedded frozen input/);
+  }
+});
+
+test('a native rebound must name an already sealed inspection before admission',t=>{
+  const f=versionedFixture(t);prepareCreativeSession(f.args,{now:1000});const url='https://work.invalid/one',support={id:'S',path:'CV1/observed.txt',sha256:sha256('Observed fixture work'),source_url:url,operation_id:'inspect-start'};
+  fs.writeFileSync(path.join(f.root,'CV1/research.json'),JSON.stringify({status:'partial',references:[{id:'R1',depth:'deep',access:'inspected',url,supports:[support]}]}));
+  const q={question:'What material explains the observed structure?',source_urls:[],rebound_from:{reference_id:'R1',support_id:'S'}},qp='CV1/query.json';fs.writeFileSync(path.join(f.root,qp),JSON.stringify(q));
+  const reserve={event:'reserve',operation_id:'query',brief_id:'CV1',phase:'research',resource:'tool',units:1,request:{path:qp,sha256:sha256(JSON.stringify(q))}};
+  assert.throws(()=>recordCreativeEvent(f.root,reserve,{now:1001}),/prior admitted inspection/);assert.equal(creativeStatus(f.root).used.tool,0);
+  const ip='CV1/inspect.json',ib=JSON.stringify({source_urls:[url]});fs.writeFileSync(path.join(f.root,ip),ib);
+  const a=recordCreativeEvent(f.root,{event:'reserve',operation_id:'inspect-start',brief_id:'CV1',phase:'research',resource:'tool',units:1,request:{path:ip,sha256:sha256(ib)}},{now:1002});fs.writeFileSync(path.join(f.root,support.path),'Observed fixture work');recordCreativeEvent(f.root,{event:'finish',reservation_id:a.reservation_id,outcome:'success',artifacts:[{path:support.path,sha256:support.sha256}]},{now:1003});
+  assert.equal(recordCreativeEvent(f.root,reserve,{now:1004}).used.tool,2);
+});
+test('native1.1 refuses opaque or non-object tool requests before consuming an operation',t=>{
+  const f=versionedFixture(t);prepareCreativeSession(f.args,{now:1000});
+  for(const [i,body] of ['opaque command','null','[]','"text"'].entries()){
+    const p='CV1/request-'+i+'.json';fs.writeFileSync(path.join(f.root,p),body);
+    assert.throws(()=>recordCreativeEvent(f.root,{event:'reserve',operation_id:'opaque-'+i,brief_id:'CV1',phase:'inspection',resource:'tool',units:1,request:{path:p,sha256:sha256(body)}},{now:1001}),/JSON object/);
+    assert.equal(creativeStatus(f.root).used.tool,0);assert.equal(creativeStatus(f.root).pending,null);
+  }
+});
+
+function evaluationEditionFixture(t,version='1.1') {
+  const f=versionedFixture(t,version),briefs=JSON.parse(fs.readFileSync(path.join(f.base,'pilot-briefs.json')));briefs.cases=briefs.cases.filter(b=>b.terrain==='nonactivation');fs.writeFileSync(path.join(f.base,'pilot-briefs.json'),JSON.stringify(briefs));
+  let plan='Edition fixture assets\n';for(const name of ['pilot-policy.json','pilot-briefs.json','pressure-corpus.json'])plan+=sha256(fs.readFileSync(path.join(f.base,name))).slice(7)+'\n';fs.writeFileSync(path.join(f.base,'plan.md'),plan);const run=JSON.parse(fs.readFileSync(f.p));run.gates.GATE_2.artifacts[0].sha256=sha256(plan).slice(7);fs.writeFileSync(f.p,JSON.stringify(run));
+  prepareCreativeSession({...f.args,execution_kind:version==='1.0'?'fixture':'native'},{now:1000});const m=JSON.parse(fs.readFileSync(path.join(f.root,'PV2/manifest.json'))),identity={schema_version:version,brief_id:'PV2',manifest_digest:m.digest},write=(p,v)=>fs.writeFileSync(path.join(f.root,p),JSON.stringify(v));
+  write('PV2/research.json',{kind:'pulse-creative-research',...identity,status:'not-applicable',reason:'Exact fixture only',references:[]});write('PV2/directions.json',{kind:'pulse-creative-directions',...identity,directions:[]});fs.writeFileSync(path.join(f.root,'PV2/exact.txt'),'exact');
+  const evaluation={kind:'pulse-creative-evaluation',...identity,actor:'root',directions:[{direction_id:version==='1.0'?'NA1':'PV2',criterion_results:[{criterion_id:'C1',verdict:'pass',reason:'Exact fixture check',evidence:[{path:'PV2/exact.txt',sha256:'sha256:'+'0'.repeat(64)}]}]}]};write('PV2/evaluation.json',evaluation);evaluation.directions[0].criterion_results[0].evidence[0].sha256=sha256('exact');write('PV2/evaluation-corrected.json',evaluation);
+  const ref={path:'PV2/evaluation-corrected.json',sha256:sha256(fs.readFileSync(path.join(f.root,'PV2/evaluation-corrected.json')))};
+  return {...f,ref,seal:()=>{const a=f.reserve('editions','PV2','{}',1001);recordCreativeEvent(f.root,{event:'finish',reservation_id:a.reservation_id,outcome:'success',artifacts:['PV2/evaluation.json','PV2/exact.txt',ref.path].map(file=>({path:file,sha256:sha256(fs.readFileSync(path.join(f.root,file)))}))},{now:1002});}};
+}
+test('explicit sealed evaluation edition preserves the rejected original and is used by finalization',t=>{
+  const f=evaluationEditionFixture(t);f.seal();const original=fs.readFileSync(path.join(f.root,'PV2/evaluation.json')),session=JSON.parse(fs.readFileSync(path.join(f.root,'session.json'))),receipt=fs.readFileSync(path.join(f.root,session.state.events.find(e=>e.event==='finish').receipt_path));
+  assert.equal(checkCreativeSession(f.root,'PV2','final',{now:1003}).ok,false);
+  const options={now:1004,evaluation_editions:{PV2:f.ref}},r=checkCreativeSession(f.root,'PV2','final',options);assert.equal(r.ok,true);assert.deepEqual(r.evaluation_edition,f.ref);
+  const report=finalizeCreativeSession(f.root,{...options,now:1005});assert.equal(report.cases[0].status,'complete');assert.deepEqual(report.cases[0].evaluation_edition,f.ref);assert.equal(report.promotion_eligible,false);assert.equal(creativeStatus(f.root).used.tool,1);
+  assert(fs.readFileSync(path.join(f.root,'PV2/evaluation.json')).equals(original));assert(fs.readFileSync(path.join(f.root,session.state.events.find(e=>e.event==='finish').receipt_path)).equals(receipt));
+});
+test('evaluation editions reject unsealed foreign altered and historical references without counter changes',t=>{
+  for(const mode of ['unsealed','foreign','digest','legacy','unknown-brief','inherited-map','inherited-fields']){
+    const f=evaluationEditionFixture(t,mode==='legacy'?'1.0':'1.1');if(mode!=='unsealed')f.seal();const before=creativeStatus(f.root).used,ref={...f.ref};if(mode==='foreign')ref.path='CV1/evaluation-corrected.json';if(mode==='digest')ref.sha256='sha256:'+'0'.repeat(64);const editions=mode==='unknown-brief'?{OTHER:ref}:{PV2:ref};
+    const selected=mode==='inherited-map'?Object.create({PV2:ref}):mode==='inherited-fields'?{PV2:Object.assign(Object.create(ref),{other1:1,other2:2})}:editions;
+    assert.throws(()=>checkCreativeSession(f.root,'PV2','final',{now:1003,evaluation_editions:selected}),/edition/i);assert.deepEqual(creativeStatus(f.root).used,before);
   }
 });

@@ -96,6 +96,10 @@ An active v2 run plus an active legacy handoff is a conflict. Pulse stops and as
 
 ## Plugin Boundary
 
-Pulse 4 packages 22 skills and three MCP servers: GitNexus, Docker MCP, and Morph. It intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
+Pulse 4 packages 25 skills and four MCP servers: GitNexus, Docker MCP, Morph and OpenCode models. It intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
+
+The `design` support skill owns on-demand framing, realization, review, cultural enquiry and motion methods. `visual-assets` selects production by capability contracts and contributes a brand-family recipe; it shares the same task research and admission. The catalogue describes local Threading/Primitive paths and external references, rather than a new retrieval or orchestration service. Skillry packages and upstream engines are not bundled.
+
+Native creative sessions use the [1.1 evidence contract](evaluation/frontend-creative.md): a verified manifest selects the version, a cultural tree resolves existing inspected supports and two causal research chains, and root substance review remains distinct from structural validation. Frozen1.0 evidence follows its original rules. The optional [Threading adapter](evaluation/frontend-threading-svg.md) consumes external pinned source under an existing reservation, preserves native SVG bytes and requires actual cleanup. Primitive retains its own job and grammar. [Provenance and limits](design/design-expression-provenance.md) accompany the package. No delivery stage, mandatory project document or automatic media provider is added.
 
 Codex is the blocking release target. Claude manifests remain version-aligned and buildable but are not required to reach equivalent behavioral certification in this release.

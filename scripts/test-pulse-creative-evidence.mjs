@@ -6,7 +6,7 @@ import {validatePolicy,validateResearch,validateDirections,validateEvaluation,va
 const policy={kind:'pulse-creative-pilot-policy',schema_version:'1.0',paid_tools:false,budget:{research_active_ms_per_brief:1000,global_active_ms:10000,max_candidates_per_brief:15,max_deep_refs_per_brief:8,min_deep_refs_per_ensemble:2,max_directions_per_brief:3,max_correction_rounds_per_brief:2,max_native_tasks:16,max_tool_actions:160,additional_external_spend_eur:0},viewports:[{width:1,height:1}]};
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aH0cAAAAASUVORK5CYII=','base64');
 function fixture(){
-  const files=new Map(),ctx={brief:{id:'CV1',terrain:'visual',criteria:[{id:'C1',required:true}]},policy,manifest_digest:'fixture-digest',verifySupport:()=>true,read:p=>{assert(files.has(p),'absent support');return files.get(p);}};
+  const files=new Map(),ctx={creative_version:'1.0',brief:{id:'CV1',terrain:'visual',criteria:[{id:'C1',required:true}]},policy,manifest_digest:'fixture-digest',verifySupport:()=>true,read:p=>{assert(files.has(p),'absent support');return files.get(p);}};
   const art=(path,b)=>{files.set(path,Buffer.from(b));return {path,sha256:sha256(b)};};
   const refs=['peers','contemporary','culture'].flatMap((ensemble,j)=>[1,2].map(i=>{
     const id=`R${j}${i}`, url=`https://example.invalid/${id}`,s={id:'S',type:'text',source_url:url,observed_at:'2026-10-04T00:00:00Z',...art(`CV1/${id}.txt`,'Observed structure '+id)};
@@ -22,7 +22,7 @@ function fixture(){
   const evaluation={kind:'pulse-creative-evaluation',schema_version:'1.0',brief_id:'CV1',manifest_digest:ctx.manifest_digest,actor:'root',directions:directions.directions.map(d=>({direction_id:d.id,visual_critique:'Fixture only',ux_critique:'Fixture only',captures:[capture(d.id)],criterion_results:[{criterion_id:'C1',verdict:'pass',reason:'Observed synthetic check',evidence:[art(`CV1/${d.id}-check.txt`,'check passed')]}]}))};
   return {ctx,files,art,research,review,directions,evaluation};
 }
-test('bounded policy refuses impossible coverage and new spending',()=>{assert(validatePolicy(policy).ok);for(const change of [{additional_external_spend_eur:1},{max_deep_refs_per_brief:4},{max_native_tasks:17}])assert(!validatePolicy({...policy,budget:{...policy.budget,...change}}).ok);});
+test('bounded policy refuses impossible coverage and new spending',()=>{assert(validatePolicy(policy,'1.0').ok);for(const change of [{additional_external_spend_eur:1},{max_deep_refs_per_brief:4},{max_native_tasks:17}])assert(!validatePolicy({...policy,budget:{...policy.budget,...change}},'1.0').ok);});
 test('research needs inspected origins, anchored content and independent current review',()=>{
   const f=fixture();assert(validateResearch(f.research,f.review(),f.ctx).ok);
   f.research.references[0].observation='';assert(!validateResearch(f.research,f.review(),f.ctx).ok);
@@ -57,4 +57,18 @@ test('raster bytes still bind independently from the CSS viewport',()=>{
 });
 test('viewport claims need fresh same-capture same-operation evidence, not requested dimensions',()=>{
   for(const mutate of [f=>delete f.evaluation.directions[0].captures[0].viewport_observation,f=>{const c=f.evaluation.directions[0].captures[0];c.viewport_observation.operation_id='different';},f=>{const c=f.evaluation.directions[0].captures[0];const v=JSON.parse(f.files.get(c.viewport_observation.path));v.capture.path='CV1/other.png';Object.assign(c.viewport_observation,f.art(c.viewport_observation.path,JSON.stringify(v)));},f=>{const c=f.evaluation.directions[0].captures[0];c.viewport.width=2;}]){const f=fixture();f.ctx.verifySupport=r=>{assert(r,'context cannot verify absent references');return true;};mutate(f);assert(!validateEvaluation(f.evaluation,f.directions,f.ctx).ok);}
+});
+
+test('version is selected by explicit verified context, never by the submitted research',()=>{
+  const f=fixture();delete f.ctx.creative_version;assert.equal(validateResearch(f.research,f.review(),f.ctx).ok,false);
+  f.ctx.creative_version='1.1';assert.equal(validateResearch(f.research,f.review(),f.ctx).ok,false);
+  f.ctx.creative_version='9.0';f.research.schema_version='9.0';assert.equal(validateResearch(f.research,f.review(),f.ctx).ok,false);
+  assert.equal(validatePolicy(policy).ok,false);
+});
+test('nonactivation1.1 uses its own brief ID and rejects cultural activation',()=>{
+  const f=fixture();f.ctx.creative_version='1.1';f.ctx.brief={id:'PV2',terrain:'nonactivation',criteria:[{id:'C1',required:true}]};
+  const research={kind:'pulse-creative-research',schema_version:'1.1',brief_id:'PV2',manifest_digest:f.ctx.manifest_digest,status:'not-applicable',reason:'Exact label only',references:[]};
+  assert.equal(validateResearch(research,null,f.ctx).ok,true);research.cultural_tree={};assert.equal(validateResearch(research,null,f.ctx).ok,false);delete research.cultural_tree;
+  const e={kind:'pulse-creative-evaluation',schema_version:'1.1',brief_id:'PV2',manifest_digest:f.ctx.manifest_digest,actor:'root',directions:[{direction_id:'PV2',criterion_results:[{criterion_id:'C1',verdict:'pass',reason:'Exact fixture bytes',evidence:[f.art('PV2/exact.txt','exact')]}]}]};
+  assert.equal(validateEvaluation(e,null,f.ctx).ok,true);e.directions[0].direction_id='NA1';assert.equal(validateEvaluation(e,null,f.ctx).ok,false);
 });

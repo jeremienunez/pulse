@@ -23,6 +23,8 @@ using-pulse -> exploring -> planning -> validating -> executing -> reviewing -> 
 
 Brainstorming is optional. Preflight is explicit-only. Swarming is an approved Stage 04 strategy.
 
+`pulse:design` provides on-demand design, cultural enquiry and domain-specific motion methods. `pulse:visual-assets` selects specialized production by effect, material/reference input role, output and inspected availability; it shares the existing task evidence and creative admission. An open direction requires inspected cultural branches and root substance review; covered extensions, backend work and exact copy corrections stay proportional. See [the design skill](skills/design/SKILL.md), [visual assets](skills/visual-assets/SKILL.md) and [provenance and diagnostic limits](docs/design/design-expression-provenance.md).
+
 ## New-Run Artifacts
 
 ```text
