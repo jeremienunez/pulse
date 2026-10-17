@@ -11,7 +11,7 @@ A validate-first, filesystem-orchestrated skill ecosystem for agentic software d
 Pulse is:
 
 - a gated workflow with explicit human approvals and repo artifacts
-- a skill plugin for Claude Code and Codex, not a separate compiled runtime
+- a skill plugin for Claude Code, Codex and Antigravity CLI, not a separate compiled runtime
 - a delivery system that can run in swarm or single-worker mode
 
 Pulse is not:
@@ -127,6 +127,7 @@ Pulse keeps one swarm contract and adapts it to the active runtime.
 
 - **Claude Code** — use teammate primitives such as `TeamCreate`, `Agent`, and `SendMessage` when swarm mode is active.
 - **Codex** — use native subagents and parent-thread follow-ups.
+- **Antigravity CLI** — the single-worker chain uses the common contracts; `cli-bridge` supports bounded CLI delegation. No Antigravity native swarm adapter is shipped.
 - **Shared reservation layer** — every runtime uses `.pulse/scripts/pulse_reservations.mjs` and `.pulse/reservations.json` to prevent overlapping edits.
 
 ### Same Repository Workflow

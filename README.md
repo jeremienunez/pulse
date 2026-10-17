@@ -4,7 +4,7 @@
 
 # Pulse
 
-<p><strong>A gated delivery workflow for Claude Code and Codex</strong></p>
+<p><strong>A gated delivery workflow for Claude Code, Codex and Antigravity CLI</strong></p>
 
 <p>
   <a href=".codex-plugin/plugin.json">
@@ -12,7 +12,7 @@
   </a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
   <a href="skills">
-    <img alt="Skills" src="https://img.shields.io/badge/skills-24-8B5CF6?style=flat-square" />
+    <img alt="Skills" src="https://img.shields.io/badge/skills-26-8B5CF6?style=flat-square" />
   </a>
 </p>
 
@@ -106,9 +106,34 @@ If you previously added an older Pulse marketplace named `pulse`, remove it befo
 codex plugin marketplace remove pulse
 ```
 
+### Antigravity CLI
+
+Build a native package from the common source into a fresh directory, then validate and install it:
+
+```bash
+pulse_dist="$(mktemp -d)/pulse"
+node scripts/build-antigravity-dist.mjs --source . --output "$pulse_dist" --install-root "$HOME/.gemini/config/plugins/pulse" --exclude-mcp opencode-models
+agy plugin validate "$pulse_dist" --strict --json
+agy plugin install "$pulse_dist"
+agy plugin list --json
+```
+
+The native package retains Pulse's workflow, helpers and skill references. Its metadata records the source version, commit, content digest and explicitly excluded MCP servers. Antigravity 1.4 installs this native package in the shared location above; verify the actual path with `agy plugin list --json` and rebuild with that `--install-root` when a runtime uses another location. This installation excludes the retired OpenCode route and retains three optional MCP definitions; listing them does not establish a live connection.
+
+### Calls between coding CLIs
+
+[`cli-bridge`](skills/cli-bridge/SKILL.md) supplies bounded calls between Antigravity, Claude Code and Codex, with the direct DeepSeek MCP route retained. To expose this skill independently to the maintained CLI surfaces:
+
+```bash
+node scripts/install-cli-bridge.mjs --dry-run
+node scripts/install-cli-bridge.mjs
+```
+
+The installer links only this skill and preserves foreign destinations. The current process adapter uses Linux, Node.js and `bwrap`. See [CLI integration](docs/cli-integration.md) for requests, installed paths and verification boundaries.
+
 ### After Install
 
-Installing the plugin makes the packaged skills and four MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start every project task with `pulse:using-pulse`, including small changes and disposable prototypes: initialize ICM first or resume the matching run. Keep preparation and verification proportionate within the cycle. Run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic; its v2 checks depend on the selected work, so unrelated Beads or swarm tooling does not block a single-worker prototype.
+Installing the plugin makes the packaged skills and selected MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start every project task with `pulse:using-pulse`, including small changes and disposable prototypes: initialize ICM first or resume the matching run. Keep preparation and verification proportionate within the cycle. Run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic; its v2 checks depend on the selected work, so unrelated Beads or swarm tooling does not block a single-worker prototype.
 
 ## Project Docs
 

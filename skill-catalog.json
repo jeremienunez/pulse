@@ -4,7 +4,7 @@
   "generatedFiles": [
     "skill-catalog.json"
   ],
-  "skillCount": 25,
+  "skillCount": 26,
   "skills": [
     {
       "directory": "architecture-rescue",
@@ -44,6 +44,19 @@
       "hasScriptsDir": true,
       "hasAgentsDir": false,
       "skillPath": "skills/brainstorming/SKILL.md"
+    },
+    {
+      "directory": "cli-bridge",
+      "name": "cli-bridge",
+      "description": "Use when the user asks coding CLIs to call one another, hand a bounded task to another CLI, or retrieve a result from an inter-CLI delegation.",
+      "metadata": {
+        "version": "1.1",
+        "position": null
+      },
+      "hasReferencesDir": true,
+      "hasScriptsDir": true,
+      "hasAgentsDir": false,
+      "skillPath": "skills/cli-bridge/SKILL.md"
     },
     {
       "directory": "compounding",
