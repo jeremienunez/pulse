@@ -186,7 +186,7 @@ function withLifecycleLock(repoRoot, action, recoveryId = "") {
   ensureDirectory(path.dirname(file));
   if (fs.existsSync(file) && recoveryId) {
     const oldBytes = fs.readFileSync(file), old = readJson(file, "lifecycle lock");
-    const { run } = requireIcmRun(root, { allowPrepared: true });
+    const { run } = requireIcmRun(root, { allowPrepared: true, allowStaleApprovals: true });
     const revision = readRevision(root, run, recoveryId);
     if (old.revision_id !== recoveryId || old.run_sha256 !== revision.manifest.run_before.sha256
         || ownerIsLive(old.pid) || !fs.readFileSync(file).equals(oldBytes)) {
@@ -404,7 +404,7 @@ function finishRevision(root, runPath, run, revision) {
 
 export function reviseIcmRun(repoRoot, options = {}) {
   return withLifecycleLock(repoRoot, context => {
-    const { root, runPath, run } = requireIcmRun(context.root);
+    const { root, runPath, run } = requireIcmRun(context.root, { allowStaleApprovals: true });
     const target = revisionTarget(run, options.stage);
     if (typeof options.reason !== "string" || !options.reason.trim()) throw new Error("Revision reason must be non-empty.");
     retainedGates(root, run, target);
@@ -459,7 +459,7 @@ export function reviseIcmRun(repoRoot, options = {}) {
 
 export function recoverIcmRevision(repoRoot, id) {
   return withLifecycleLock(repoRoot, context => {
-    const { root, runPath, run } = requireIcmRun(context.root, { allowPrepared: true });
+    const { root, runPath, run } = requireIcmRun(context.root, { allowPrepared: true, allowStaleApprovals: true });
     const revision = readRevision(root, run, id);
     context.bindRevision(id, revision.manifest.run_before.sha256);
     return finishRevision(root, runPath, run, revision);
@@ -869,6 +869,12 @@ function requireIcmRun(repoRoot, options = {}) {
     throw new Error(`Expected an active ICM v2 run, found ${detected.kind}: ${detected.reason || ""}`);
   }
   if (!options.allowPrepared && detected.run.revision?.phase === "prepared") throw new Error("A prepared revision requires explicit recovery before advancement.");
+  // Revisions validate only the approvals they retain; advancement needs the full prior prefix.
+  if (!options.allowStaleApprovals) {
+    const stageIndex = detected.run.current_stage === "complete"
+      ? ICM_STAGES.length : ICM_STAGES.indexOf(detected.run.current_stage);
+    retainedGates(repoRoot, detected.run, stageIndex);
+  }
   return {
     root: path.resolve(repoRoot),
     runPath: ownedPath(repoRoot, detected.run_path, "active run"),

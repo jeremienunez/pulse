@@ -1144,8 +1144,9 @@ function runStaticChecks(results) {
     results,
     "static",
     "codex-marketplace-source",
-    marketplaceSource === "https://github.com/quanpersie2001/pulse.git" ? "PASS" : "WARN",
-    `source=${marketplaceSource ?? "n/a"}`,
+    marketplaceSource === "https://github.com/jeremienunez/pulse.git"
+      && marketplaceSourceRaw?.ref === "tuned/main" ? "PASS" : "WARN",
+    `source=${marketplaceSource ?? "n/a"}, ref=${marketplaceSourceRaw?.ref ?? "n/a"}`,
   );
 
   const skillDirs = fs.readdirSync(skillsRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory());

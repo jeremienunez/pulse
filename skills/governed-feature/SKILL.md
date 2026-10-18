@@ -15,18 +15,18 @@ metadata:
 
 Classify governance fitness and, only for a strong fit, create or update one Pulse-owned overlay at `history/<feature>/governance.md`.
 
-Keep Pulse as the lifecycle owner. Keep approved `CONTEXT.md` decisions and scenarios as the authority for intent.
+Keep Pulse as the lifecycle owner. Keep the active runtime's approved decisions and scenarios as the authority for intent.
 
 ## Read the Governing Inputs
 
 Read, in order:
 
-1. approved `history/<feature>/CONTEXT.md`;
+1. the active run's approved intent: `history/<feature>/stages/01_explore/output/decisions.md` for ICM v2, or `history/<feature>/CONTEXT.md` for legacy v1;
 2. `discovery.md`, `approach.md`, and the active Pulse shape/current-work artifact when present;
 3. current code boundaries relevant to the feature;
 4. an existing `history/<feature>/governance.md`, when present.
 
-If `CONTEXT.md` is missing or not approved, return to `pulse:exploring`. Do not create an overlay from assumptions.
+If that runtime's intent artifact is missing or not currently approved, return to `pulse:exploring`. Do not create an overlay from assumptions or copy v2 decisions into a legacy `CONTEXT.md`.
 
 ## Classify Fitness
 
@@ -45,7 +45,7 @@ Choose the route that matches the actual change:
 | Change class | Route |
 |---|---|
 | New strong-fit feature | Create and review the overlay before Gate 2. |
-| Observable intent, contract, API, or invariant change | Stop and return to `pulse:exploring`; update and reapprove `CONTEXT.md`, then refresh the overlay before code changes. |
+| Observable intent, contract, API, or invariant change | Stop and return to `pulse:exploring`; update and reapprove the active intent artifact, then refresh the overlay before code changes. |
 | Behavior-preserving refactor | Prove preservation through Pulse; after implementation, synchronize only Structure, Operations, and Norms affected by the internal change. |
 | Emergency containment | Restore service first; keep containment distinct from the root fix, then capture durable evidence through debugging, governance, and compounding. |
 | Test-only change | Reference existing decisions and operations; never invent production behavior to satisfy a test. |
@@ -56,14 +56,14 @@ For `strong`, read [references/governance-template.md](references/governance-tem
 
 Apply these ownership rules:
 
-- Reference stable decision and scenario IDs from `CONTEXT.md`; do not restate them as a competing requirements source.
+- Reference stable decision and scenario IDs from the active approved intent artifact; do not restate them as a competing requirements source.
 - Preserve stable `OP-n` operation IDs across edits. Add new IDs monotonically and mark retired operations instead of renumbering survivors.
 - Derive entities, invariants, structure, norms, and safeguards from approved intent and repository reality.
 - Map every governed decision/scenario to one or more operations and an observable verification target.
 - Record trade-offs, rejected alternatives, blockers, and review findings explicitly.
 - Keep structural status, semantic review, and human gate approval as separate fields.
 
-When updating an existing overlay, change only sections affected by approved intent or proven implementation reality. If the overlay conflicts with `CONTEXT.md`, `CONTEXT.md` wins and the conflict is a blocker until the overlay is corrected.
+When updating an existing overlay, change only sections affected by approved intent or proven implementation reality. If the overlay conflicts with the active approved intent artifact, that artifact wins and the conflict is a blocker until the overlay is corrected.
 
 ## Validate Structure
 

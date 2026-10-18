@@ -4,6 +4,17 @@ description: Use when the user asks coding CLIs to call one another, hand a boun
 metadata:
   version: '1.1'
   ecosystem: pulse
+  dependencies:
+    - id: node-runtime
+      kind: command
+      command: node
+      missing_effect: unavailable
+      reason: The bundled discovery and delegation helper requires Node.js.
+    - id: cli-filesystem-sandbox
+      kind: command
+      command: bwrap
+      missing_effect: degraded
+      reason: Linux CLI transports require Bubblewrap; the direct DeepSeek MCP route remains independent.
 ---
 
 # CLI Bridge

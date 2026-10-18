@@ -26,13 +26,16 @@ function approvedFixture(stage = "05_review") {
   const root = makeRepo(), feature = "revision-case";
   const result = initIcmRun(root, feature, "Bounded correction fixture.");
   const output = (s, file) => path.join(root, "history", feature, "stages", s, "output", file);
+  const fixture = { root, output, runPath: path.join(root, result.run_path) };
   fs.writeFileSync(output("01_explore", "decisions.md"), "# Decisions\n");
   approveGate(root, "GATE_1");
+  if (stage === "02_plan") return fixture;
   fs.writeFileSync(output("02_plan", "plan.md"), "# Plan\n");
   writeJson(output("02_plan", "work-graph.json"), graph([
     node("A", [], ["src/a.ts"]), node("B", ["A"], ["src/b.ts"]), node("C", [], ["src/c.ts"]),
   ]));
   approveGate(root, "GATE_2");
+  if (stage === "03_validate") return fixture;
   writeJson(output("03_validate", "validation.json"), { schema_version: "1.0", status: "ready" });
   approveGate(root, "GATE_3", { strategy: "single-worker" });
   writeJson(output("04_execute", "execution-state.json"), { schema_version: "1.0", nodes: { A: "complete", B: "complete", C: "complete" } });
@@ -49,8 +52,90 @@ function approvedFixture(stage = "05_review") {
     fs.writeFileSync(output("06_compound", "compounding.md"), "# Learning\n");
     completeStage(root, "06_compound");
   }
-  return { root, output, runPath: path.join(root, result.run_path) };
+  return fixture;
 }
+
+function ownerBytes(root) {
+  const files = {};
+  function walk(relative) {
+    for (const name of fs.readdirSync(path.join(root, relative)).sort()) {
+      const entry = path.join(relative, name);
+      if (fs.statSync(path.join(root, entry)).isDirectory()) walk(entry);
+      else files[entry] = fs.readFileSync(path.join(root, entry)).toString("base64");
+    }
+  }
+  walk("history");
+  walk(".pulse");
+  return files;
+}
+
+function approvePlan(root, featureRoot, workGraph) {
+  fs.writeFileSync(path.join(featureRoot, "stages/01_explore/output/decisions.md"), "# Decisions\n");
+  approveGate(root, "GATE_1");
+  fs.writeFileSync(path.join(featureRoot, "stages/02_plan/output/plan.md"), "# Plan\n");
+  writeJson(path.join(featureRoot, "stages/02_plan/output/work-graph.json"), workGraph);
+  approveGate(root, "GATE_2");
+}
+
+for (const scenario of [
+  { stage: "02_plan", stale: "01_explore", file: "decisions.md", gate: "GATE_1", next: "GATE_2" },
+  { stage: "03_validate", stale: "02_plan", file: "plan.md", gate: "GATE_2", next: "GATE_3" },
+  { stage: "04_execute", stale: "03_validate", file: "validation.json", gate: "GATE_3" },
+  { stage: "05_review", stale: "01_explore", file: "decisions.md", gate: "GATE_1", next: "GATE_4" },
+  { stage: "06_compound", stale: "05_review", file: "uat.md", gate: "GATE_4" },
+]) {
+  test(`P-01: stale ${scenario.gate} blocks advancement from ${scenario.stage} without writes`, () => {
+    const f = approvedFixture(scenario.stage);
+    try {
+      if (scenario.stage === "02_plan") {
+        fs.writeFileSync(f.output("02_plan", "plan.md"), "# Plan\n");
+        writeJson(f.output("02_plan", "work-graph.json"), graph([node("A", [], ["src/a.ts"])]));
+      }
+      if (scenario.stage === "03_validate") writeJson(f.output("03_validate", "validation.json"), { schema_version: "1.0", status: "ready" });
+      if (scenario.stage === "05_review") {
+        writeJson(f.output("05_review", "review.json"), { schema_version: "1.0", status: "ready", findings: [] });
+        fs.writeFileSync(f.output("05_review", "uat.md"), "# UAT\n");
+      }
+      if (scenario.stage === "06_compound") fs.writeFileSync(f.output("06_compound", "compounding.md"), "# Learnings\n");
+      fs.appendFileSync(f.output(scenario.stale, scenario.file), "\n");
+      assert.equal(readIcmStatus(f.root).status, "blocked");
+      const before = ownerBytes(f.root);
+      assert.throws(() => scenario.next
+        ? approveGate(f.root, scenario.next, { strategy: "single-worker" })
+        : completeStage(f.root, scenario.stage), new RegExp(`${scenario.gate}.*stale`, "i"));
+      assert.deepEqual(ownerBytes(f.root), before);
+      assert.equal(fs.existsSync(path.join(f.root, ".pulse/lifecycle.lock")), false);
+    } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+  });
+}
+
+test("P-01: missing or incomplete prior approval cannot be bypassed by editing current_stage", () => {
+  for (const tamper of ["pending", "empty", "foreign"]) {
+    const f = approvedFixture("04_execute");
+    try {
+      const run = JSON.parse(fs.readFileSync(f.runPath));
+      if (tamper === "pending") run.gates.GATE_1.status = "pending";
+      if (tamper === "empty") run.gates.GATE_2.artifacts = [];
+      if (tamper === "foreign") run.gates.GATE_2.artifacts[0] = run.gates.GATE_1.artifacts[0];
+      writeJson(f.runPath, run);
+      const before = ownerBytes(f.root);
+      assert.throws(() => completeStage(f.root, "04_execute"), /GATE_[12].*stale/i);
+      assert.deepEqual(ownerBytes(f.root), before);
+    } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+  }
+});
+
+test("P-01: CLI rejects stale approval before committing a transition", () => {
+  const f = approvedFixture("04_execute");
+  try {
+    fs.appendFileSync(f.output("03_validate", "validation.json"), "\n");
+    const before = ownerBytes(f.root);
+    const child = spawnSync(process.execPath, [path.join(REPO_ROOT, "workflow/scripts/pulse_icm.mjs"), "complete", "--repo-root", f.root, "--stage", "04_execute"], { encoding: "utf8" });
+    assert.equal(child.status, 1);
+    assert.match(child.stderr, /GATE_3.*stale/i);
+    assert.deepEqual(ownerBytes(f.root), before);
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
 
 test("R1: resume status returns its handoff without changing partial progress", () => {
   const f = approvedFixture("04_execute");
@@ -124,17 +209,39 @@ test("R4: invalid transition and node requests do not change the run", () => {
   } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
 });
 
-function interruptRevision(f) {
+function interruptRevision(f, options = { stage: "04_execute", reason: "Review correction", nodes: ["A"] }) {
   const rename = fs.renameSync;
   fs.renameSync = (source, target) => {
     if (target === f.runPath && JSON.parse(fs.readFileSync(source)).revision?.phase === "applied") throw new Error("injected final commit failure");
     return rename(source, target);
   };
   try {
-    assert.throws(() => icm.reviseIcmRun(f.root, { stage: "04_execute", reason: "Review correction", nodes: ["A"] }), /injected final commit failure/);
+    assert.throws(() => icm.reviseIcmRun(f.root, options), /injected final commit failure/);
   } finally { fs.renameSync = rename; }
   return JSON.parse(fs.readFileSync(f.runPath)).revision.path.split("/").at(-2);
 }
+
+test("P-01: recovery of a stale-plan revision validates the retained prefix only", () => {
+  for (const locked of [false, true]) {
+    const f = approvedFixture();
+    try {
+      fs.appendFileSync(f.output("02_plan", "plan.md"), "Changed after approval\n");
+      const id = interruptRevision(f, { stage: "02_plan", reason: "Renew stale plan" });
+      if (locked) {
+        const manifest = JSON.parse(fs.readFileSync(path.join(f.root, JSON.parse(fs.readFileSync(f.runPath)).revision.path)));
+        const child = spawnSync(process.execPath, ["-e", "process.exit(0)"], { encoding: "utf8" });
+        assert.equal(child.status, 0);
+        writeJson(path.join(f.root, ".pulse/lifecycle.lock"), { pid: child.pid, token: "dead-revision-owner", revision_id: id, run_sha256: manifest.run_before.sha256 });
+      }
+      const recovered = icm.recoverIcmRevision(f.root, id);
+      assert.equal(recovered.run.current_stage, "02_plan");
+      assert.equal(recovered.run.gates.GATE_1.status, "approved");
+      assert.equal(recovered.run.gates.GATE_2.status, "pending");
+      assert.equal(readIcmStatus(f.root).status, "ready");
+      assert.equal(fs.existsSync(path.join(f.root, ".pulse/lifecycle.lock")), false);
+    } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+  }
+});
 
 test("R5: interrupted commit blocks advancement and explicit recovery completes only that revision", () => {
   const f = approvedFixture();
@@ -519,14 +626,8 @@ test("BDD B6-B7: Gate 3 preserves explicit eligible swarm and rejects ineligible
   try {
     initIcmRun(root, "execution-mode", "Choose an execution mode.");
     const featureRoot = path.join(root, "history", "execution-mode");
-    const runPath = path.join(featureRoot, "run.json");
-    const run = JSON.parse(fs.readFileSync(runPath, "utf8"));
-    run.current_stage = "03_validate";
-    writeJson(runPath, run);
-
-    const graphPath = path.join(featureRoot, "stages", "02_plan", "output", "work-graph.json");
     const validationPath = path.join(featureRoot, "stages", "03_validate", "output", "validation.json");
-    writeJson(graphPath, graph([
+    approvePlan(root, featureRoot, graph([
       node("A", [], ["src/a.ts"]),
       node("B", [], ["src/b.ts"]),
     ]));
@@ -545,12 +646,7 @@ test("BDD B6-B7: Gate 3 preserves explicit eligible swarm and rejects ineligible
     try {
       initIcmRun(singleRoot, "connected", "Connected graph.");
       const connectedFeature = path.join(singleRoot, "history", "connected");
-      const connectedRunPath = path.join(connectedFeature, "run.json");
-      const connectedRun = JSON.parse(fs.readFileSync(connectedRunPath, "utf8"));
-      connectedRun.current_stage = "03_validate";
-      writeJson(connectedRunPath, connectedRun);
-      writeJson(
-        path.join(connectedFeature, "stages", "02_plan", "output", "work-graph.json"),
+      approvePlan(singleRoot, connectedFeature,
         graph([node("A", [], ["src/a.ts"]), node("B", ["A"], ["src/b.ts"])]),
       );
       writeJson(
@@ -574,13 +670,11 @@ test("execution and compounding completion advance only after required outputs e
   try {
     initIcmRun(root, "stage-completion", "Complete mechanical stages.");
     const featureRoot = path.join(root, "history", "stage-completion");
-    const runPath = path.join(featureRoot, "run.json");
-    const run = JSON.parse(fs.readFileSync(runPath, "utf8"));
-    run.current_stage = "04_execute";
-    writeJson(runPath, run);
+    approvePlan(root, featureRoot, graph([node("A", [], ["src/a.ts"])]));
+    writeJson(path.join(featureRoot, "stages/03_validate/output/validation.json"), { schema_version: "1.0", status: "ready" });
+    approveGate(root, "GATE_3", { strategy: "single-worker" });
 
     assert.throws(() => completeStage(root, "04_execute"), /execution-state/i);
-    writeJson(path.join(featureRoot, "stages", "02_plan", "output", "work-graph.json"), graph([node("A", [], ["src/a.ts"])]));
     writeJson(
       path.join(featureRoot, "stages", "04_execute", "output", "execution-state.json"),
       { schema_version: "1.0", nodes: { A: "complete" } },
@@ -592,9 +686,9 @@ test("execution and compounding completion advance only after required outputs e
     );
     assert.equal(completeStage(root, "04_execute").run.current_stage, "05_review");
 
-    const nextRun = JSON.parse(fs.readFileSync(runPath, "utf8"));
-    nextRun.current_stage = "06_compound";
-    writeJson(runPath, nextRun);
+    writeJson(path.join(featureRoot, "stages/05_review/output/review.json"), { schema_version: "1.0", status: "ready", findings: [] });
+    fs.writeFileSync(path.join(featureRoot, "stages/05_review/output/uat.md"), "# UAT\n");
+    approveGate(root, "GATE_4");
     fs.writeFileSync(
       path.join(featureRoot, "stages", "06_compound", "output", "compounding.md"),
       "# Compounding\n",
@@ -713,12 +807,7 @@ test("BDD B8: Given independent work, when single-worker is approved, then the r
   try {
     initIcmRun(root, "single-root", "Keep execution root-owned.");
     const featureRoot = path.join(root, "history", "single-root");
-    const runPath = path.join(featureRoot, "run.json");
-    const run = JSON.parse(fs.readFileSync(runPath, "utf8"));
-    run.current_stage = "03_validate";
-    writeJson(runPath, run);
-    writeJson(
-      path.join(featureRoot, "stages", "02_plan", "output", "work-graph.json"),
+    approvePlan(root, featureRoot,
       graph([node("A", [], ["src/a.ts"]), node("B", [], ["src/b.ts"])]),
     );
     writeJson(
@@ -769,9 +858,11 @@ test("BDD B9: Given lifecycle transitions, when the CLI responds, then hashes pe
     );
     assert.match(persisted.gates.GATE_1.artifacts[0].sha256, /^[a-f0-9]{64}$/u);
 
-    persisted.current_stage = "04_execute";
-    writeJson(path.join(root, "history", "quiet-hash", "run.json"), persisted);
+    fs.writeFileSync(path.join(root, "history/quiet-hash/stages/02_plan/output/plan.md"), "# Plan\n");
     writeJson(path.join(root, "history", "quiet-hash", "stages", "02_plan", "output", "work-graph.json"), graph([node("A", [], ["src/a.ts"])]));
+    approveGate(root, "GATE_2");
+    writeJson(path.join(root, "history/quiet-hash/stages/03_validate/output/validation.json"), { schema_version: "1.0", status: "ready" });
+    approveGate(root, "GATE_3", { strategy: "single-worker" });
     writeJson(
       path.join(root, "history", "quiet-hash", "stages", "04_execute", "output", "execution-state.json"),
       { schema_version: "1.0", nodes: { A: "complete" } },

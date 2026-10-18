@@ -1,0 +1,50 @@
+name: Pulse portable checks
+
+on:
+  push:
+    branches: [tuned/main]
+  pull_request:
+    branches: [tuned/main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Lifecycle, onboarding and governance
+        run: >-
+          node --test
+          workflow/scripts/test_pulse_icm.mjs
+          workflow/scripts/test_workflow_contracts.mjs
+          skills/using-pulse/scripts/test_onboard_pulse.mjs
+          skills/governed-feature/scripts/test-validate-governance.mjs
+      - name: Packages and fork distribution
+        run: >-
+          node --test
+          scripts/test-build-plugin-dist.mjs
+          scripts/test-build-antigravity-dist.mjs
+          scripts/test-install-cli-bridge.mjs
+          scripts/test-bump-version.mjs
+          scripts/test-distribution.mjs
+      - name: Evidence contracts and evaluator
+        run: >-
+          node --test
+          scripts/test-pulse-skill-evidence.mjs
+          scripts/test-pulse-skill-action-evidence.mjs
+          scripts/test-pulse-skill-iteration.mjs
+          scripts/test-pulse-plugin-eval.mjs
+      - name: Static contracts
+        run: node scripts/pulse-plugin-eval.mjs run --skip-runtime --skip-scenarios --strict
+      - name: Portable Markdown links
+        run: bash scripts/check-markdown-links.sh

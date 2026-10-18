@@ -2033,6 +2033,9 @@ test("packaged Pulse inventory has full dependency coverage", () => {
   );
   const mcpServers = pluginMcp.mcpServers || pluginMcp;
 
+  const packagedSkills = fs.readdirSync(path.join(LOCAL_REPO_ROOT, "skills"))
+    .filter((name) => fs.existsSync(path.join(LOCAL_REPO_ROOT, "skills", name, "SKILL.md"))).sort();
+  assert.deepEqual(report.skills.map((skill) => skill.skill_name).sort(), packagedSkills);
   assert.equal(report.summary.skills_total, report.summary.skills_covered);
   assert.equal(report.summary.skills_uncovered, 0);
   assert.deepEqual(report.uncovered_skills, []);
@@ -2056,4 +2059,18 @@ test("packaged Pulse inventory has full dependency coverage", () => {
   ]);
   assert.equal(mcpServers.MCP_DOCKER.command, "docker");
   assert.equal(mcpServers["morph-mcp"].command, "npx");
+});
+
+test("cli-bridge dependency health separates required helper runtime from CLI transport", () => {
+  for (const [missing, expected] of [[null, "available"], ["node", "unavailable"], ["bwrap", "degraded"]]) {
+    const report = buildPulseDependencyReport({
+      repoRoot: LOCAL_REPO_ROOT,
+      skillsRoot: path.join(LOCAL_REPO_ROOT, "skills"),
+      commandProbe: (command) => ({ available: command !== missing, detail: "controlled command probe" }),
+    });
+    const bridge = report.skills.find((skill) => skill.skill_name === "cli-bridge");
+    assert.equal(bridge.coverage_status, "declared_dependencies");
+    assert.deepEqual(bridge.dependencies.map((dependency) => dependency.command).sort(), ["bwrap", "node"]);
+    assert.equal(bridge.status, expected, `missing=${missing}`);
+  }
 });

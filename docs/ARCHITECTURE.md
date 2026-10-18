@@ -60,7 +60,11 @@ history/<feature>/
 - Gate 3 approves validated execution and strategy.
 - Gate 4 approves merge after review and UAT.
 
-Each approval records SHA-256 hashes for the exact artifacts reviewed. Editing an approved artifact invalidates that gate and blocks downstream routing. Preflight cannot restore a stale approval.
+Each approval records SHA-256 hashes for the exact artifacts reviewed. Editing an approved artifact invalidates that gate and blocks downstream routing and mutation through the ICM helpers. Mutations revalidate the full prior approval prefix under the lifecycle lock. Explicit revision and recovery validate the prefix they retain, allowing stale downstream artifacts to be corrected. Preflight cannot restore a stale approval.
+
+These checks govern helper transitions. Execution completion checks declared graph-node states and required outputs; the root agent and reviewer must assess the actual test and UAT evidence.
+
+Strong-fit governance uses the active runtime's approved intent: `stages/01_explore/output/decisions.md` in v2 or `CONTEXT.md` in legacy v1. Structural overlay validation does not approve domain semantics or human gates.
 
 ## Work Graph
 
@@ -96,7 +100,9 @@ An active v2 run plus an active legacy handoff is a conflict. Pulse stops and as
 
 ## Plugin Boundary
 
-Pulse 4 packages 25 skills and four MCP servers: GitNexus, Docker MCP, Morph and OpenCode models. It intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
+Pulse Tuned packages 26 skills. The source retains four optional MCP definitions: GitNexus, Docker MCP, Morph and the historical OpenCode models route. The maintained Antigravity package excludes the retired OpenCode route and retains three definitions. Configuration does not prove a live server connection. Pulse intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
+
+The maintained distribution is `jeremienunez/pulse` on `tuned/main`. Catalogs retain the `pulse` plugin and `pulse-dev` marketplace identities. Portable CI covers deterministic contracts and package construction; native CLI, transport and model-behavior evidence are separate checks.
 
 The `design` support skill owns on-demand framing, realization, review, cultural enquiry and motion methods. `visual-assets` selects production by capability contracts and contributes a brand-family recipe; it shares the same task research and admission. The catalogue describes local Threading/Primitive paths and external references, rather than a new retrieval or orchestration service. Skillry packages and upstream engines are not bundled.
 

@@ -2,7 +2,7 @@
 
 <img src="assets/logo-combination.svg" alt="Pulse logo" width="420" />
 
-# Pulse
+# Pulse Tuned
 
 <p><strong>A gated delivery workflow for Claude Code, Codex and Antigravity CLI</strong></p>
 
@@ -16,7 +16,7 @@
   </a>
 </p>
 
-<p><em>Stop agents from hallucinating requirements, skipping verification, and producing unauditable work.</em></p>
+<p><em>Keep decisions, approvals and verification evidence visible throughout delivery.</em></p>
 
 </div>
 
@@ -24,9 +24,7 @@
 
 ## What is Pulse?
 
-Pulse wraps AI agents in a **gated, filesystem-visible delivery chain**. Every decision is locked before planning starts. Every plan and execution graph is approved before code is written. Every graph node is verified before it is complete. Every feature is reviewed before it merges.
-
-Without this structure, agents skip steps. With it, they can't.
+Pulse gives AI agents a **gated, filesystem-visible delivery chain**. The workflow calls for approved decisions before planning, an approved plan and execution graph before implementation, and review before merge. The ICM helpers check stage transitions and content-bound approvals; the agent and reviewer supply the actual verification evidence.
 
 Pulse ships as a **skills package**. Numbered contracts under `workflow/stages/` are the canonical source; lean `SKILL.md` adapters are generated for plugin discovery. Plain Markdown and JSON files carry stage context, while local Node helpers perform only mechanical validation, hashing, and graph analysis. There is no orchestration service or automatic lifecycle hook.
 
@@ -53,12 +51,12 @@ Pulse turns a vague request into a reviewed delivery trail:
 
 ### The 4 Human Gates
 
-| Gate | What it blocks |
+| Gate | What it approves |
 | --- | --- |
-| **Gate 1** | Planning before decisions are locked |
-| **Gate 2** | Validation before the plan and immutable work graph are approved |
-| **Gate 3** | Execution before feasibility-validated current work is explicitly approved |
-| **Gate 4** | Merge before review is complete |
+| **Gate 1** | Decisions |
+| **Gate 2** | Plan and immutable work graph |
+| **Gate 3** | Validated feasibility and execution strategy |
+| **Gate 4** | Merge after review and UAT |
 
 ## Why use pulse
 
@@ -70,6 +68,8 @@ Pulse turns a vague request into a reviewed delivery trail:
 | Work is hard to audit later | Keep artifacts, evidence, and review trail in the repo |
 
 ## Lineage
+
+This repository is [jeremienunez's Pulse Tuned fork](https://github.com/jeremienunez/pulse/tree/tuned/main), based on [quanpersie2001/Pulse](https://github.com/quanpersie2001/pulse). Plugin identifiers remain `pulse` and `pulse-dev`; original author credits are retained.
 
 Pulse is downstream of several strong agentic-development systems and distills the parts that fit this repo owner's actual workflow:
 
@@ -87,18 +87,23 @@ See the [lineage record](references/lineage/README.md) for the exact adaptation 
 
 ### Claude Code
 
+Clone the distribution branch, then register that local checkout:
+
 ```bash
-/plugin marketplace add quanpersie2001/pulse
-/plugin install pulse@pulse
+git clone --branch tuned/main --single-branch https://github.com/jeremienunez/pulse.git pulse-tuned
+cd pulse-tuned
+claude plugin marketplace add "$PWD"
+claude plugin install pulse@pulse-dev --scope user
 ```
 
 ### Codex
 
 ```bash
-codex plugin marketplace add quanpersie2001/pulse
+codex plugin marketplace add jeremienunez/pulse --ref tuned/main
+codex plugin add pulse@pulse-dev
 ```
 
-Codex reads the marketplace name from [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json), so the installed plugin key is `pulse@pulse-dev`. In the desktop app, enable or install `pulse` from the `pulse-dev` marketplace if it is not already active after the marketplace add step.
+Codex reads the marketplace name from [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json), so the installed plugin key is `pulse@pulse-dev`. Both the marketplace command and its plugin source select `tuned/main`; the repository's default branch can contain an older release. In the desktop app, select `Pulse Tuned` from the `pulse-dev` marketplace.
 
 If you previously added an older Pulse marketplace named `pulse`, remove it before reinstalling:
 
@@ -146,6 +151,8 @@ Installing the plugin makes the packaged skills and selected MCP server definiti
 | Historical Pulse 3.6.0 certification | [docs/evaluation/certifications/pulse-3.6.0.md](docs/evaluation/certifications/pulse-3.6.0.md) |
 
 ## Maintainer Notes
+
+The [portable CI](https://github.com/jeremienunez/pulse/blob/tuned/main/.github/workflows/ci.yml) runs on pushes and pull requests to `tuned/main`. It checks ICM, onboarding, governance, evidence validation, package construction, distribution metadata and Markdown links with Node 24. It does not require installed coding CLIs, model credentials or paid calls. Native App Server and Bubblewrap integration tests remain separate local checks; a passing CI is not model-behavior certification.
 
 When public docs or skill metadata change:
 

@@ -107,6 +107,42 @@ test('accepts a complete governance overlay without semantic claims', () => {
   assert.equal(result.grants_approval, false);
 });
 
+const V2 = VALID.replace('history/payments/CONTEXT.md', 'history/payments/stages/01_explore/output/decisions.md');
+
+test('accepts ICM v2 approved decisions without changing the structural-only contract', () => {
+  const result = validateGovernanceText(V2);
+  assert.equal(result.valid, true, result.errors.join('\n'));
+  assert.equal(result.semantic_validation, 'not_performed');
+  assert.equal(result.grants_approval, false);
+});
+
+test('rejects plan and review documents as governance intent authority', () => {
+  for (const authority of [
+    'history/payments/stages/02_plan/output/plan.md',
+    'history/payments/stages/05_review/output/decisions.md',
+    'history/payments/decisions.md',
+    '/history/payments/stages/01_explore/output/decisions.md',
+  ]) {
+    const result = validateGovernanceText(VALID.replace('history/payments/CONTEXT.md', authority));
+    assert.equal(result.valid, false, authority);
+    assert.match(result.errors.join('\n'), /Authoritative context/);
+  }
+});
+
+test('CLI accepts a v2 overlay and reports structural-only validation', () => {
+  const root = mkdtempSync(join(tmpdir(), 'pulse-governance-v2-'));
+  try {
+    const overlay = join(root, 'governance.md');
+    writeFileSync(overlay, V2);
+    const child = spawnSync(process.execPath, [fileURLToPath(new URL('./validate-governance.mjs', import.meta.url)), '--json', overlay], { encoding: 'utf8' });
+    assert.equal(child.status, 0, child.stderr || child.stdout);
+    const result = JSON.parse(child.stdout);
+    assert.equal(result.valid, true);
+    assert.equal(result.semantic_validation, 'not_performed');
+    assert.equal(result.grants_approval, false);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
 test('rejects a missing required section', () => {
   const result = validateGovernanceText(VALID.replace('## Safeguards', '## Guardrails'));
   assert.equal(result.valid, false);

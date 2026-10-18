@@ -141,8 +141,8 @@ export function validateGovernanceText(markdown, file = '<memory>') {
   }
 
   const contextPath = cleanValue(getField(metadata, 'Authoritative context'));
-  if (!/^history\/[^/]+\/CONTEXT\.md$/.test(contextPath)) {
-    errors.push('Authoritative context must be history/<feature>/CONTEXT.md');
+  if (!/^history\/[^/]+\/(?:stages\/01_explore\/output\/decisions\.md|CONTEXT\.md)$/.test(contextPath)) {
+    errors.push('Authoritative context must be history/<feature>/stages/01_explore/output/decisions.md (ICM v2) or history/<feature>/CONTEXT.md (legacy v1)');
   }
 
   const requirementRows = tableRows(getSection(normalized, 'Requirements References'));

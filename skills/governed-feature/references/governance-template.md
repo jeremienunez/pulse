@@ -2,13 +2,15 @@
 
 Copy this template to `history/<feature>/governance.md` only for a `strong` fitness result. Remove instructional placeholders while preserving the section structure.
 
+Use the active runtime's approved intent for Authoritative context: the decisions path below for ICM v2, or `history/<feature>/CONTEXT.md` for an existing legacy v1 run.
+
 ## Governance Metadata
 
 - Feature: `<feature>`
 - Fitness: `strong`
 - Change class: `<new | intent-change | preserve | containment | test-only>`
 - Overlay status: `<draft | in-review | current | needs-refresh>`
-- Authoritative context: `history/<feature>/CONTEXT.md`
+- Authoritative context: `history/<feature>/stages/01_explore/output/decisions.md`
 - Context approval/version: `<approved marker or revision>`
 - Last reviewed: `<ISO-8601 timestamp>`
 

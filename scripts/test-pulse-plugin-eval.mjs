@@ -13,6 +13,30 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const evaluatorPath = path.join(scriptDir, "pulse-plugin-eval.mjs");
 
+test("packaged evaluator requires the Tuned fork and its explicit distribution branch", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-source-sync-"));
+  try {
+    const dist = path.join(root, "plugin");
+    buildPluginDist(repoRoot, dist);
+    const catalogPath = path.join(dist, ".agents/plugins/marketplace.json");
+    const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
+    for (const [source, expected] of [
+      [{ source: "url", url: "https://github.com/jeremienunez/pulse.git", ref: "tuned/main" }, "PASS"],
+      [{ source: "url", url: "https://github.com/quanpersie2001/pulse.git", ref: "tuned/main" }, "WARN"],
+      [{ source: "url", url: "https://github.com/jeremienunez/pulse.git", ref: "main" }, "WARN"],
+      [{ source: "url", url: "https://github.com/jeremienunez/pulse.git" }, "WARN"],
+      [{ source: "local", path: "./" }, "WARN"],
+    ]) {
+      catalog.plugins.find((entry) => entry.name === "pulse").source = source;
+      fs.writeFileSync(catalogPath, JSON.stringify(catalog));
+      const out = spawnSync(process.execPath, [path.join(dist, "scripts/pulse-plugin-eval.mjs"), "analyze", "--json"], { cwd: dist, encoding: "utf8" });
+      assert.ok(out.stdout, out.stderr);
+      const check = JSON.parse(out.stdout).checks.find((entry) => entry.name === "codex-marketplace-source");
+      assert.equal(check?.status, expected, JSON.stringify(source));
+    }
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
 test("packaged evaluator accepts only same-release Codex cache metadata", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "pulse-version-sync-"));
   try {
