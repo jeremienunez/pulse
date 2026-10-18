@@ -1,0 +1,4 @@
+#!/bin/sh
+# Pulse managed Git quality hook v1
+set -eu
+exec node scripts/pulse-quality.mjs --profile commit

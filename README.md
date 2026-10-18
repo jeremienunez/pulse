@@ -152,7 +152,17 @@ Installing the plugin makes the packaged skills and selected MCP server definiti
 
 ## Maintainer Notes
 
-The [portable CI](https://github.com/jeremienunez/pulse/blob/tuned/main/.github/workflows/ci.yml) runs on pushes and pull requests to `tuned/main`. It checks ICM, onboarding, governance, evidence validation, package construction, distribution metadata and Markdown links with Node 24. It does not require installed coding CLIs, model credentials or paid calls. Native App Server and Bubblewrap integration tests remain separate local checks; a passing CI is not model-behavior certification.
+The [portable CI](https://github.com/jeremienunez/pulse/blob/tuned/main/.github/workflows/ci.yml) runs on pushes and pull requests to `tuned/main`. It calls the same [quality entrypoint](scripts/pulse-quality.mjs) as the optional Git pre-commit hook. The `commit` profile checks syntax, static contracts, Markdown links and core workflow/helper behavior; `ci` adds the package and evidence suites. Both verify a copy of the active Git index, preserving uncommitted working files. They require no installed coding CLI, model credentials or paid calls. Native App Server and Bubblewrap integration tests remain separate local checks.
+
+To inspect or install the hook explicitly in a Pulse source checkout:
+
+```bash
+node scripts/install-git-hooks.mjs --dry-run
+node scripts/install-git-hooks.mjs
+node scripts/pulse-quality.mjs --profile commit
+```
+
+The installer preserves foreign hooks and configuration. Multiple worktrees need an explicitly configured worktree-specific hooks path. See the [Git quality contract](docs/git-quality-hooks.md) for candidate identity, receipts, supported files, CI scope and installation limits. This is the Pulse repository pilot; it does not install hooks into other projects through onboarding.
 
 When public docs or skill metadata change:
 
