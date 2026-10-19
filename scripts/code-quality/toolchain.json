@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "node": "24.15.0",
+  "npm_lock": "tools/package-lock.json",
+  "python_packages": {"ruff": "0.17.1", "lizard": "1.24.1", "pathspec": "1.1.1", "pygments": "2.21.0"},
+  "tokei": "15.0.0",
+  "notes": "Prepared explicitly outside the repository. No install, restore or provider call is launched by checks. Cargo/rustc are recorded from the selected native environment."
+}

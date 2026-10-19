@@ -144,6 +144,10 @@ The installer links only this skill and preserves foreign destinations. The curr
 
 Installing the plugin makes the packaged skills and selected MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start every project task with `pulse:using-pulse`, including small changes and disposable prototypes: initialize ICM first or resume the matching run. Keep preparation and verification proportionate within the cycle. Run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic; its v2 checks depend on the selected work, so unrelated Beads or swarm tooling does not block a single-worker prototype.
 
+## Deterministic Code Quality
+
+The optional source hook and CI also enforce a tracked code policy: LOC/complexity signals, native naming and ownership contracts, baseline non-regression and frontend design tokens. The core is language-independent, with native adapters and explicit JSON/SARIF bindings. It never creates helpers/classes automatically or claims a SOLID score. See [code quality](docs/code-quality.md) for prepared tools, coverage, source-preserving checks and adoption.
+
 ## Project Docs
 
 | Read this when you want... | Link |

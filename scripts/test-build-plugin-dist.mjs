@@ -182,3 +182,16 @@ const cycle=owner+'/history/package-action/stages/04_execute/output/verification
     assert.equal(fs.existsSync(path.join(packaged,'.pulse')),false);
   } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('code quality runtime is packaged without tool installs or a pilot policy imposed on consumers', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pulse-code-package-'));
+  try {
+    const pkg = path.join(root, 'package'); buildPluginDist(REPO_ROOT, pkg);
+    for (const file of ['scripts/code-quality/policy.mjs', 'scripts/code-quality/report.mjs', 'scripts/code-quality/python-ast.py', 'scripts/code-quality/profiles/native.json', 'scripts/code-quality/tools/package-lock.json', 'docs/code-quality.md']) assert.ok(fs.existsSync(path.join(pkg, file)), file);
+    const manifest = JSON.parse(fs.readFileSync(path.join(pkg, 'dist-manifest.json')));
+    assert.equal(manifest.files.some(f => /(?:node_modules|__pycache__|\.venv|cargo-target|toolchain\/build)/u.test(f.path)), false);
+    assert.equal(fs.existsSync(path.join(pkg, 'pulse-quality.config.json')), false);
+    const cli = spawnSync(process.execPath, [path.join(pkg, 'scripts/pulse-quality.mjs'), '--scope', 'unknown', '--profile', 'commit'], { encoding: 'utf8', cwd: root });
+    assert.equal(cli.status, 2);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});

@@ -56,3 +56,9 @@ This feature is an explicit developer tool for the Pulse source repository. It d
 The workflow calls the `ci` profile on a clean checkout, where the active index represents the checked-out commit. The required check policy for a protected branch is configured separately on GitHub. A local Git hook can be bypassed using `--no-verify`; it does not enforce remote merge policy by itself.
 
 Tests cover real indexed blobs, partial and alternate indexes, binary data, unusual filenames, index changes, unavailable checks and installation preservation. Installer tests exercise real commits using a controlled project entrypoint. The final full-profile check is executed separately from the unit tests, avoiding recursive execution of its own suite.
+
+## Deterministic code policy
+
+A tracked `pulse-quality.config.json` extends the shared entrypoint with the [code quality layer](code-quality.md): code metrics, native conventions, import/owner boundaries, baseline comparison and frontend token contracts. LOC alone warns unless the project opts into a strict budget. Snapshot-pure checks run locally; build-bound checks are explicitly CI-only and require a prepared environment. This adds no provider/model call, automatic tool install, refactor or baseline rewrite to the hook.
+
+The Pulse pilot uses a reviewed baseline from its pre-feature tree. Other repositories explicitly select `--scope code`, own their policy and native bindings, and prepare their own tools. Passing a syntax/import/token policy does not certify SOLID or the usefulness of a class. Receipts and the CLI keep incomplete and advisory coverage visible.

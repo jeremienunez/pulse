@@ -5,6 +5,8 @@ const core = [
   "skills/governed-feature/scripts/test-validate-governance.mjs",
   "scripts/test-pulse-quality.mjs",
   "scripts/test-install-git-hooks.mjs",
+  "scripts/test-code-quality-policy.mjs",
+  "scripts/test-code-quality-report.mjs",
 ];
 const packages = [
   "scripts/test-build-plugin-dist.mjs", "scripts/test-build-antigravity-dist.mjs",
@@ -20,11 +22,13 @@ export function qualityChecks(profile, entries) {
   const node = (id, args) => ({ id, command: process.execPath, args });
   const syntax = entries.filter(entry => /\.[cm]?js$/u.test(entry.path))
     .map(entry => node(`syntax:${entry.path}`, ["--check", entry.path]));
+  const codeConformance = entries.some(e => e.path === "scripts/test-code-quality-integration.mjs")
+    ? [node("code-conformance", ["--test", "scripts/test-code-quality-metrics.mjs", "scripts/test-code-quality-javascript.mjs", "scripts/test-code-quality-native.mjs", "scripts/test-code-quality-frontend.mjs", "scripts/test-code-quality-integration.mjs"])] : [];
   return [
     ...syntax,
     node("static-contracts", ["scripts/pulse-plugin-eval.mjs", "run", "--skip-runtime", "--skip-scenarios", "--strict"]),
     { id: "markdown-links", command: "bash", args: ["scripts/check-markdown-links.sh"] },
     node("core-contracts", ["--test", ...core]),
-    ...(profile === "ci" ? [node("packages", ["--test", ...packages]), node("evidence", ["--test", ...evidence])] : []),
+    ...(profile === "ci" ? [node("packages", ["--test", ...packages]), node("evidence", ["--test", ...evidence]), ...codeConformance] : []),
   ];
 }

@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "id": "javascript",
+  "languages": [
+    "javascript",
+    "typescript"
+  ],
+  "commit": [
+    "AST-metrics",
+    "ESLint-local-lint",
+    "static-import-ownership",
+    "naming",
+    "public-surface-review"
+  ],
+  "ci_optional": [
+    "knip",
+    "jscpd",
+    "project-typecheck-binding"
+  ],
+  "not_claimed": [
+    "behavioral-LSP",
+    "type-resolution-without-build-context"
+  ]
+}

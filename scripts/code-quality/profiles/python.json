@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "id": "python",
+  "languages": [
+    "python"
+  ],
+  "commit": [
+    "ast-tokenize-metrics",
+    "ruff",
+    "public-surface-review"
+  ],
+  "ci_optional": [
+    "project-typecheck-binding"
+  ],
+  "not_claimed": [
+    "runtime-import-behavior",
+    "automatic-SOLID"
+  ]
+}

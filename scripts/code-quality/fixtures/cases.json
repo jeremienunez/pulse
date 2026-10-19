@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {"id": "staged-debugger", "language": "javascript", "path": "program.mjs", "source": "export const value = 1; debugger;\n", "expected_rule": "eslint/no-debugger"},
+    {"id": "resource-owner", "language": "typescript", "path": "resource.ts", "source": "export class Resource { private value = 1; read() { return this.value; } }\n", "expected_kind": "review"},
+    {"id": "python-undefined", "language": "python", "path": "program.py", "source": "def read_value():\n    return missing\n", "expected_rule": "ruff/F821"},
+    {"id": "jsx-literal", "language": "typescript", "path": "View.tsx", "source": "export const View = () => <div style={{color: '#fff'}} />;\n", "expected_rule": "tokens/literal"}
+  ]
+}

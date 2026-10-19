@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "id": "native",
+  "transport": [
+    "JSON",
+    "SARIF-2.1.0-subset"
+  ],
+  "families": {
+    "go": "gofmt/vet/golangci-lint project binding",
+    "csharp": "Roslyn/.NET project binding",
+    "java": "PMD/Checkstyle/project architecture tests",
+    "cpp": "clang-tidy with captured compilation context",
+    "php": "PHPStan/project binding",
+    "ruby": "RuboCop/project binding",
+    "swift": "SwiftLint/project binding",
+    "kotlin": "detekt/project binding",
+    "dart": "dart analyzer/project binding",
+    "shell": "ShellCheck/project binding",
+    "other": "explicit local analyzer with declared JSON/SARIF result"
+  },
+  "qualification": "A declared family is not a native execution proof. Required absent bindings/tools are unavailable."
+}

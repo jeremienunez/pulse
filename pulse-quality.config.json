@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "mode": "enforce-new",
+  "profiles": ["metrics", "javascript", "python", "rust", "frontend", "native"],
+  "include": ["scripts/**/*.mjs", "scripts/**/*.py", "skills/**/scripts/**/*.mjs", "skills/**/scripts/**/*.py", "workflow/scripts/**/*.mjs"],
+  "exclude": [
+    {"pattern": "scripts/code-quality/tools/**", "reason": "Locked development tool manifests, not program source"},
+    {"pattern": "scripts/code-quality/fixtures/**", "reason": "Data for intentionally invalid conformance cases, materialized by tests"}
+  ],
+  "strictBudgets": [],
+  "ownership": {
+    "required": false,
+    "zones": [
+      {"id": "code-quality", "patterns": ["scripts/code-quality/**"], "allows": []},
+      {"id": "quality-runtime", "patterns": ["scripts/lib/pulse-quality*.mjs", "scripts/pulse-quality.mjs"], "allows": ["code-quality"]},
+      {"id": "quality-tests", "patterns": ["scripts/test-code-quality-*.mjs", "scripts/test-pulse-quality.mjs"], "allows": ["quality-runtime", "code-quality"]},
+      {"id": "pulse", "patterns": ["**/*"], "allows": ["quality-runtime", "code-quality"]}
+    ]
+  },
+  "naming": {"javascript": {"files": "kebab", "symbols": true}, "typescript": {"files": "kebab", "symbols": true}},
+  "baseline": "pulse-quality.baseline.json"
+}

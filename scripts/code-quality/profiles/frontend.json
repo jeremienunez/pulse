@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "id": "frontend",
+  "languages": [
+    "css",
+    "scss",
+    "javascript",
+    "typescript"
+  ],
+  "commit": [
+    "declared-token-sources",
+    "known-static-tokens",
+    "literal-policy",
+    "static-JSX-styles",
+    "arbitrary-utility-class-review"
+  ],
+  "not_claimed": [
+    "full-CSS-cascade",
+    "arbitrary-JS-evaluation",
+    "complete-Tailwind-semantics"
+  ]
+}

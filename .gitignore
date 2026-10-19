@@ -26,3 +26,7 @@ pulse-eval-workspace/*/
 pulse-eval-workspace/*.html
 pulse-eval-workspace/benchmark*.json
 .gitnexus
+
+# Explicitly versioned development toolchain; installs stay outside the repo.
+!scripts/code-quality/tools/package.json
+!scripts/code-quality/tools/package-lock.json

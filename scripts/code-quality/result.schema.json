@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pulse code quality result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tree",
+    "profile",
+    "status",
+    "exit_code",
+    "coverage",
+    "findings",
+    "runtime",
+    "toolchain"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "tree": {
+      "type": "string"
+    },
+    "profile": {
+      "enum": [
+        "commit",
+        "ci"
+      ]
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed",
+        "observed",
+        "unavailable"
+      ]
+    },
+    "exit_code": {
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "files"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "checked",
+              "not_scheduled",
+              "not_applicable",
+              "unsupported",
+              "unavailable",
+              "excluded"
+            ]
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ruleId",
+          "language",
+          "path",
+          "kind",
+          "severity",
+          "message"
+        ],
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "language": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "violation",
+              "metric",
+              "review"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "number"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "column": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "disposition": {
+            "enum": [
+              "new",
+              "legacy",
+              "excepted"
+            ]
+          },
+          "fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "metric"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "metric",
+                "value"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "toolchain": {
+      "type": "array"
+    }
+  }
+}

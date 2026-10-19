@@ -183,3 +183,11 @@ test("a verifier launched from another checkout cannot silently verify a differe
   f.git("add", "scripts");
   await assert.rejects(runQuality(f.root, "commit"), /quality verifier|verifier version/u);
 });
+
+test('capturing a large regular blob does not accumulate the repository in a bounded stdout buffer', t => {
+  const f = fixture(t), target = path.join(f.root, 'large.bin'), length = 129 * 1024 * 1024;
+  const fd = fs.openSync(target, 'w'); fs.ftruncateSync(fd, length); fs.writeSync(fd, Buffer.from([1,2,3,4]), 0, 4, length - 4); fs.closeSync(fd);
+  f.git('add', 'large.bin'); const candidate = f.capture(), copied = path.join(candidate.root, 'large.bin');
+  assert.equal(fs.statSync(copied).size, length); const read = fs.openSync(copied, 'r'), tail = Buffer.alloc(4); fs.readSync(read, tail, 0, 4, length - 4); fs.closeSync(read); assert.deepEqual(tail, Buffer.from([1,2,3,4]));
+  assert.equal(indexTree(f.root, f.env), candidate.tree);
+});

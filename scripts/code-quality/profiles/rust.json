@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "id": "rust",
+  "languages": [
+    "rust"
+  ],
+  "commit": [
+    "lexical-metrics-if-prepared"
+  ],
+  "ci": [
+    "offline-locked-cargo-clippy"
+  ],
+  "not_claimed": [
+    "complete-module-ownership-graph",
+    "classes-in-Rust"
+  ]
+}

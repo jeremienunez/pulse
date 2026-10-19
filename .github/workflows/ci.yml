@@ -13,14 +13,36 @@ permissions:
 jobs:
   portable:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    env:
+      PULSE_QUALITY_TOOLCHAIN: ${{ runner.temp }}/pulse-code-quality-tools
+      RUSTUP_TOOLCHAIN: '1.93.1'
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '24.15.0'
           package-manager-cache: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14.4'
+      - name: Prepare explicitly locked tools outside the source
+        shell: bash
+        run: |
+          mkdir -p "$PULSE_QUALITY_TOOLCHAIN"
+          cp scripts/code-quality/tools/package.json scripts/code-quality/tools/package-lock.json "$PULSE_QUALITY_TOOLCHAIN/"
+          npm ci --prefix "$PULSE_QUALITY_TOOLCHAIN" --ignore-scripts --no-audit --no-fund
+          python - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          root = pathlib.Path(os.environ['PULSE_QUALITY_TOOLCHAIN'])
+          subprocess.run([sys.executable, '-m', 'venv', str(root / '.venv')], check=True)
+          versions = json.loads(pathlib.Path('scripts/code-quality/toolchain.json').read_text())['python_packages']
+          subprocess.run([str(root / '.venv/bin/python'), '-m', 'pip', 'install', '--disable-pip-version-check', '--no-deps', *[f'{name}=={version}' for name, version in versions.items()]], check=True)
+          PY
+          rustup toolchain install 1.93.1 --profile minimal --component clippy
+          cargo install tokei --version 15.0.0 --locked --root "$PULSE_QUALITY_TOOLCHAIN/native"
       - name: Verify the indexed candidate with the shared CI profile
         run: node scripts/pulse-quality.mjs --profile ci
