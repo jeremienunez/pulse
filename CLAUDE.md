@@ -25,6 +25,8 @@ Brainstorming is optional. Preflight is explicit-only. Swarming is an approved S
 
 `pulse:design` provides on-demand design, cultural enquiry and domain-specific motion methods. `pulse:visual-assets` selects specialized production by effect, material/reference input role, output and inspected availability; it shares the existing task evidence and creative admission. An open direction requires inspected cultural branches and root substance review; covered extensions, backend work and exact copy corrections stay proportional. See [the design skill](skills/design/SKILL.md), [visual assets](skills/visual-assets/SKILL.md) and [provenance and diagnostic limits](docs/design/design-expression-provenance.md).
 
+[`pulse:reverse-engineering`](skills/reverse-engineering/SKILL.md) supplies target-specific investigation guides for shipped artifacts and runtime observations. REA remains an optional external engine; its original Evidence contributes to the existing Pulse stage. Source analysis uses repository tools/GitNexus. See the [local evaluation and limits](docs/evaluation/reverse-engineering.md).
+
 ## New-Run Artifacts
 
 ```text

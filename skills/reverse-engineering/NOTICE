@@ -1,0 +1,11 @@
+This directory adapts selected guidance from REA (morluto/rea).
+Copyright (c) 2026 morluto. Licensed under the MIT License; see LICENSE.
+Source commit: d5fc7e6ebf9af050081fc4c6e18b9079cfaa5cdc.
+
+Modified for Pulse Tuned (2026): on-demand support-skill routing, existing
+Pulse stage ownership, maintained client scope, condensed target recipes,
+pinned upstream links and explicit analyzed-source versus delivery coverage.
+Source paths and SHA-256 hashes are in references/rea-source-lock.json.
+
+The REA engine, providers, third-party dependencies and submodules are not
+distributed here. They retain their own licenses and installation requirements.

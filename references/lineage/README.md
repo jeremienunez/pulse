@@ -30,6 +30,14 @@ Pulse owns the resulting skills and routing. In particular, `worktree-isolation`
 - Excluded: engine/detectors, hooks, vendor agents, state, native-platform guides and full catalogue import.
 - [Source paths/hashes, changes and diagnostic adoption boundary](../../docs/design/impeccable-provenance.md).
 
+## REA
+
+- Source: [morluto/rea](https://github.com/morluto/rea), guidance commit `d5fc7e6ebf9af050081fc4c6e18b9079cfaa5cdc`.
+- License: MIT, copyright 2026 morluto; [license](../../skills/reverse-engineering/LICENSE), [modification notice](../../skills/reverse-engineering/NOTICE) and [source hashes](../../skills/reverse-engineering/references/rea-source-lock.json) are preserved.
+- Adapted: a short support entry with target-specific investigation, connection and original Evidence recipes. Pulse retains the delivery lifecycle; REA retains its technical sessions and ledger.
+- Excluded: engine/provider implementations, package dependencies, submodules, automatic installation/registration and upstream orchestration choices.
+- [Local evaluation and qualification limits](../../docs/evaluation/reverse-engineering.md). A published CLI package and upstream guidance commit are separate identities; feature parity is not assumed.
+
 ## Other Influences
 
 - [Khuym](https://github.com/hoangnb24/skills/tree/main) informed much of the validate-first chain and Flywheel-style bead workflow.

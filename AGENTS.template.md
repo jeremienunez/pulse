@@ -13,6 +13,8 @@ Preflight is a manual diagnostic outside the delivery graph. Run `pulse:prefligh
 
 ## Glossary
 
+`pulse:reverse-engineering` contributes artifact investigation through target-specific guides. REA remains an optional external CLI/MCP engine with its own technical Evidence; the current Pulse stage keeps delivery ownership. Source-repository analysis stays with repository tools and GitNexus.
+
 - `run.json` — canonical v2 run state and content-bound gate approvals.
 - stage contract — one numbered stage's Inputs, Process, Outputs, and Exit rules.
 - `work-graph.json` — immutable approved execution DAG.

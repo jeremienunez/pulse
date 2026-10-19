@@ -4,7 +4,7 @@
   "generatedFiles": [
     "skill-catalog.json"
   ],
-  "skillCount": 26,
+  "skillCount": 27,
   "skills": [
     {
       "directory": "architecture-rescue",
@@ -239,6 +239,19 @@
       "hasScriptsDir": false,
       "hasAgentsDir": true,
       "skillPath": "skills/refresh-project-docs/SKILL.md"
+    },
+    {
+      "directory": "reverse-engineering",
+      "name": "reverse-engineering",
+      "description": "Use when a question depends on shipped application artifacts, decompilation, version comparisons or browser/Electron observations that the available source repository does not establish.",
+      "metadata": {
+        "version": "1.0",
+        "position": "support skill — loaded by target and activity on demand"
+      },
+      "hasReferencesDir": true,
+      "hasScriptsDir": false,
+      "hasAgentsDir": false,
+      "skillPath": "skills/reverse-engineering/SKILL.md"
     },
     {
       "directory": "reviewing",

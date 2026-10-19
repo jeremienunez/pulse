@@ -61,6 +61,7 @@ Pulse is not:
 | `pulse:dream` | Manual dream consolidation over Claude Code or Codex runtime artifacts |
 | `pulse:design` | Design, cultural enquiry and motion methods, loaded by activity on demand |
 | `pulse:visual-assets` | Capability-based selection and admitted specialized asset production |
+| `pulse:reverse-engineering` | Shipped-artifact and runtime investigation with optional external REA and original Evidence |
 
 ## The Chain
 
@@ -490,6 +491,8 @@ Preflight is a manual diagnostic outside the delivery graph. Run `pulse:prefligh
 `pulse:design` contributes framing, realization, review and domain-specific motion guidance on demand. An open expressive direction uses its shared cultural method: inspected works, observation-induced research chains, a counterpoint and consequences for the brief, with root substance review. `pulse:visual-assets` selects specialized production by effect, input role, output and actual availability; selection and admitted execution remain separate. Task evidence stays with the existing Pulse owner. Backend work, exact copy corrections and extensions covered by an approved direction retain their proportional scope.
 
 ## Glossary
+
+`pulse:reverse-engineering` contributes artifact investigation through target-specific guides. REA remains an optional external CLI/MCP engine with its own technical Evidence; the current Pulse stage keeps delivery ownership. Source-repository analysis stays with repository tools and GitNexus.
 
 - `run.json` — canonical v2 run state and content-bound gate approvals.
 - stage contract — one numbered stage's Inputs, Process, Outputs, and Exit rules.

@@ -100,7 +100,7 @@ An active v2 run plus an active legacy handoff is a conflict. Pulse stops and as
 
 ## Plugin Boundary
 
-Pulse Tuned packages 26 skills. The source retains four optional MCP definitions: GitNexus, Docker MCP, Morph and the historical OpenCode models route. The maintained Antigravity package excludes the retired OpenCode route and retains three definitions. Configuration does not prove a live server connection. Pulse intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
+Pulse Tuned packages 27 skills. The source retains four optional MCP definitions: GitNexus, Docker MCP, Morph and the historical OpenCode models route. The maintained Antigravity package excludes the retired OpenCode route and retains three definitions. Configuration does not prove a live server connection. Pulse intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
 
 The maintained distribution is `jeremienunez/pulse` on `tuned/main`. Catalogs retain the `pulse` plugin and `pulse-dev` marketplace identities. Portable CI covers deterministic contracts and package construction; native CLI, transport and model-behavior evidence are separate checks.
 
@@ -109,3 +109,5 @@ The `design` support skill owns on-demand framing, realization, review, cultural
 Native creative sessions use the [1.1 evidence contract](evaluation/frontend-creative.md): a verified manifest selects the version, a cultural tree resolves existing inspected supports and two causal research chains, and root substance review remains distinct from structural validation. Frozen1.0 evidence follows its original rules. The optional [Threading adapter](evaluation/frontend-threading-svg.md) consumes external pinned source under an existing reservation, preserves native SVG bytes and requires actual cleanup. Primitive retains its own job and grammar. [Provenance and limits](design/design-expression-provenance.md) accompany the package. No delivery stage, mandatory project document or automatic media provider is added.
 
 Codex is the blocking release target. Claude manifests remain version-aligned and buildable but are not required to reach equivalent behavioral certification in this release.
+
+The `reverse-engineering` support skill routes shipped-artifact and runtime questions to relevant guides. REA stays external: it owns analysis sessions and Evidence; Pulse owns the existing task, gates and review. No REA server, engine, provider or package dependency is registered or bundled. Retained views query already analyzed source coverage; additional source selections produce new Evidence. The [local evaluation](evaluation/reverse-engineering.md) separates a real static CLI pilot from diagnostic model replies and unverified runtime/native-provider behavior.

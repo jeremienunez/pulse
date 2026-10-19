@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "repository": "https://github.com/morluto/rea",
+  "commit": "d5fc7e6ebf9af050081fc4c6e18b9079cfaa5cdc",
+  "license": "MIT",
+  "materials": [
+    {
+      "path": "LICENSE",
+      "sha256": "798f9e4d18e49b30bf2f12696c8ced73dc4e1413da375a333d01281543a1ea8b"
+    },
+    {
+      "path": ".agents/skills/reverse-engineer-anything/SKILL.md",
+      "sha256": "976e400f028618926c0b658ee50df79996f5f32402d33b49a23bfdbc232b45e6"
+    },
+    {
+      "path": ".agents/skills/reverse-engineer-anything/references/javascript-applications.md",
+      "sha256": "aaa78502a3e95268f6269e75f373908045291fedf6ddd106001555ed06bb2bf6"
+    },
+    {
+      "path": ".agents/skills/reverse-engineer-anything/references/native-and-artifacts.md",
+      "sha256": "18b8828aec6476be03ca92bdb9506c47cc9ef8c1415c37d33e4af2f8c55cf8f9"
+    },
+    {
+      "path": ".agents/skills/reverse-engineer-anything/references/runtime-observation.md",
+      "sha256": "fea85e2005a8fd1c86a946eeede24c20e57592a1deb36576b45216e9854803c8"
+    },
+    {
+      "path": ".agents/skills/reverse-engineer-anything/references/evidence-workflows.md",
+      "sha256": "2bdee98a843d018cf850c706111bb74c459ba8640da00799e9208122e4d5ab80"
+    },
+    {
+      "path": ".agents/skills/reverse-engineer-anything/references/connection-and-recovery.md",
+      "sha256": "a33760c84ae100f6ffd27d666e515956c5014ac33a6ee2414807833ae666a2b1"
+    }
+  ],
+  "boundary": "Selected guidance adapted; REA engine, third-party providers, dependencies and submodules are external. Runtime schemas remain authoritative."
+}
