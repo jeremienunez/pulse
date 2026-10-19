@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PULSE_QUALITY_TOOLCHAIN: ${{ runner.temp }}/pulse-code-quality-tools
       RUSTUP_TOOLCHAIN: '1.93.1'
     steps:
       - uses: actions/checkout@v7
@@ -32,6 +31,8 @@ jobs:
       - name: Prepare explicitly locked tools outside the source
         shell: bash
         run: |
+          export PULSE_QUALITY_TOOLCHAIN="$RUNNER_TEMP/pulse-code-quality-tools"
+          echo "PULSE_QUALITY_TOOLCHAIN=$PULSE_QUALITY_TOOLCHAIN" >> "$GITHUB_ENV"
           mkdir -p "$PULSE_QUALITY_TOOLCHAIN"
           cp scripts/code-quality/tools/package.json scripts/code-quality/tools/package-lock.json "$PULSE_QUALITY_TOOLCHAIN/"
           npm ci --prefix "$PULSE_QUALITY_TOOLCHAIN" --ignore-scripts --no-audit --no-fund
