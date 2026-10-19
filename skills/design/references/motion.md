@@ -8,6 +8,8 @@ For each animated change, specify its trigger, initial/final state, information,
 
 Choose properties and timing from the actual distance, content and frequency. Existing application motion and the platform are useful context. Inspect the implemented movement and its static information state at the supported sizes; source values alone do not establish the experience.
 
+For web craft, read the retained [motion prescriptions and recipes](awwwards-motion.md) and [implementation patterns](awwwards-patterns.md) before selecting treatments. Keep one concept-derived verb, concrete timing, one treatment per role, continuous state handoffs and the primary/utility distinction. Read the full touch, focus, idle, interruption and reduced-motion clauses; a short statement that motion should be useful does not supply these decisions. [Engine](awwwards-engine.md), [WebGL](awwwards-webgl.md) and chosen stack adapters remain optional technical recipes with adjacent [discordance notes](awwwards-adaptation.md#a11-local-recipe-discordances).
+
 ## Film and temporal composition
 
 Start with a short beat sheet: what leads, what changes, and what the viewer retains. Define each shot's purpose, visual anchor, framing, movement and transition into the next. Allocate reading time from the actual text and image complexity. Inspect a rough timing pass before adding layers.

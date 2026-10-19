@@ -31,3 +31,18 @@ The `skill/reference/ios.md` and `skill/reference/android.md` platform reference
 **Original work:** https://github.com/ehmo/platform-design-skills
 **Original license:** MIT
 **Author:** ehmo
+
+# Additional retained awwwards / jury guidance
+
+The named awwwards-*.md and jury*.md references retain the substantive text,
+examples and optional implementation recipes of juliobsz/skills, commit
+f193f6745aae738e9d54a0ca28792822e4777a63. Copyright (c) 2026 Julio (juliobsz).
+MIT License is included as LICENSE.juliobsz-skills. The existing Impeccable and
+Motionmaxxing licence notices above retain their own scopes.
+
+Local path, owner, historical-status and recipe clarifications are recorded in
+references/awwwards-adaptations.json with source/output hashes. The 19 text
+sources map to 18 references by deduplicating the generated quality-bar copy.
+Preservation checks do not certify semantic adaptation or model behaviour.
+Upstream helper scripts, runtime engines, dependencies and provider accounts
+are not installed or executed by retaining their documentation.

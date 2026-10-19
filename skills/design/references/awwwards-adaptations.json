@@ -1,0 +1,2631 @@
+{
+  "schema_version": "1.0",
+  "source_commit": "f193f6745aae738e9d54a0ca28792822e4777a63",
+  "proof_boundary": "Reconstruction establishes undeclared byte changes only. The semantic acceptability of every declared replacement/annotation and every destination requires the exact final text/diff review.",
+  "files": [
+    {
+      "source": "awwwards/SKILL.md",
+      "source_sha256": "87f9e001615cbe13188025c1c7f534ed797ea48be86335cf809ee5cbc34bf9aa",
+      "source_bytes": 22566,
+      "destination": "skills/design/references/awwwards.md",
+      "destination_sha256": "2bbf6f980ce6c330858bc442366d956878e618ac7231e369bd50344548cf3f60",
+      "destination_bytes": 23773,
+      "section_inventory": [
+        {
+          "line": 6,
+          "heading": "# /awwwards"
+        },
+        {
+          "line": 24,
+          "heading": "## What makes a site win (internalize before anything else)"
+        },
+        {
+          "line": 46,
+          "heading": "## Stack"
+        },
+        {
+          "line": 63,
+          "heading": "## Workflow"
+        },
+        {
+          "line": 68,
+          "heading": "### Phase 0: Brief (2 minutes, no questions by default)"
+        },
+        {
+          "line": 83,
+          "heading": "### Phase 1: Concept (the step that decides the score)"
+        },
+        {
+          "line": 106,
+          "heading": "### Phase 2: Art direction system"
+        },
+        {
+          "line": 131,
+          "heading": "### Phase 3: Build"
+        },
+        {
+          "line": 170,
+          "heading": "### Phase 4: QA loop (minimum two full passes)"
+        },
+        {
+          "line": 175,
+          "heading": "# Next.js:  npm run build && npx next start -p 4400        (run in background)"
+        },
+        {
+          "line": 176,
+          "heading": "# Astro:    npm run build && node $SKILL/scripts/serve.mjs dist --port 4400"
+        },
+        {
+          "line": 230,
+          "heading": "### Phase 5: Ship"
+        },
+        {
+          "line": 250,
+          "heading": "## Hard rules"
+        },
+        {
+          "line": 339,
+          "heading": "## Reference map"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 1498,
+          "before": "**Skill root:** the directory containing this file (`$SKILL`; substitute the absolute path in\ncommands).",
+          "after": "**Upstream helper root:** `$UPSTREAM_AWWWARDS_ROOT` is the verified upstream `awwwards/` directory.\n[Library and helper scope](awwwards-adaptation.md#a9-libraries-and-helpers) applies.",
+          "kind": "ownership",
+          "reason": "Identify external helper root rather than this reference directory",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 4396,
+          "before": "Run the phases in order. Write the planning artifacts (Brief, Concept, System) into the project\nas `DESIGN.md` so later passes stay consistent. Keep chat updates short.",
+          "after": "Use these phase contributions within the current Pulse stage and approved scope. Keep every\nBrief, Concept and System field in the current Pulse decisions so later passes stay consistent.\nKeep chat updates short. [Artefact mapping](awwwards-adaptation.md#a3-current-pulse-owner-and-artefacts) applies.",
+          "kind": "ownership",
+          "reason": "Reuse Pulse stages and full decision content, rather than starting a second lifecycle",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6188,
+          "before": "Pick one and give\nthe reason in one line.",
+          "after": "Recommend one and give\nthe reason in one line. Record the user choice in the current Pulse decisions unless that\nchoice was explicitly delegated.",
+          "kind": "ownership",
+          "reason": "Preserve recommendation and scoring while retaining actual choice authority",
+          "arbitration": "A2"
+        },
+        {
+          "offset": 13857,
+          "before": "If you can launch a subagent, give a fresh one the critic brief in",
+          "after": "When an independent critic is authorised, give a fresh one the critic brief in",
+          "kind": "ownership",
+          "reason": "Availability does not authorise spawning a specialist",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 14155,
+          "before": "If you can't launch subagents, score it yourself following the",
+          "after": "If an independent critic is unavailable or unauthorised, score it yourself following the",
+          "kind": "ownership",
+          "reason": "Keep honest self-score fallback when no authorised independent critic exists",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 17763,
+          "before": "Run one clock: everything goes through GSAP's ticker. No `addEventListener('scroll')`, no\n  `requestAnimationFrame` loops of your own.",
+          "after": "Run one continuous concept/render clock through GSAP's ticker and the public scroll feed.\n  The engine's native fallback listener and one-off refresh rAF are plumbing exceptions; no\n  additional continuous animation loop is introduced.",
+          "kind": "recipe-clarification",
+          "reason": "Make the clock rule agree with the retained fallback and refresh code",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 11682,
+          "before": "node $SKILL/scripts/shoot.mjs http://127.0.0.1:4400/ --crawl --nav",
+          "after": "node $SKILL/scripts/shoot.mjs http://127.0.0.1:4400/ --crawl --nav --out \"$PULSE_DESIGN_EVIDENCE/shots\"",
+          "kind": "artefact-path",
+          "reason": "Explicit fresh evidence destination; no default .shots overwrite",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 11953,
+          "before": "- If `shoot.mjs` reports no Chromium, run `npx playwright install chromium` once.",
+          "after": "- If `shoot.mjs` reports no Chromium, establish the missing capability in the current task;\n  `npx playwright install chromium` is an upstream preparation recipe, run only when authorised.",
+          "kind": "ownership",
+          "reason": "Preserve preparation recipe without implicit installation",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 23107,
+          "before": "references/ship.md",
+          "after": "awwwards-ship.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 23005,
+          "before": "references/quality.md",
+          "after": "awwwards-quality.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22909,
+          "before": "references/content.md",
+          "after": "awwwards-content.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22778,
+          "before": "references/anatomy.md",
+          "after": "awwwards-anatomy.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22672,
+          "before": "references/patterns.md",
+          "after": "awwwards-patterns.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22564,
+          "before": "references/webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22434,
+          "before": "references/motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22353,
+          "before": "references/astro.md",
+          "after": "awwwards-astro.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22252,
+          "before": "references/nextjs.md",
+          "after": "awwwards-nextjs.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22152,
+          "before": "references/engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 22052,
+          "before": "references/layout.md",
+          "after": "awwwards-layout.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 21952,
+          "before": "references/typography.md",
+          "after": "awwwards-typography.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 21807,
+          "before": "references/art-direction.md",
+          "after": "awwwards-art-direction.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 21768,
+          "before": "references/concepts.md",
+          "after": "awwwards-concepts.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 21682,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 20953,
+          "before": "references/content.md",
+          "after": "awwwards-content.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 17188,
+          "before": "references/motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 15630,
+          "before": "references/ship.md",
+          "after": "awwwards-ship.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 14083,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 13861,
+          "before": "references/anatomy.md",
+          "after": "awwwards-anatomy.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 13733,
+          "before": "references/quality.md",
+          "after": "awwwards-quality.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 10207,
+          "before": "references/anatomy.md",
+          "after": "awwwards-anatomy.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 10074,
+          "before": "references/patterns.md",
+          "after": "awwwards-patterns.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 9789,
+          "before": "references/webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 9762,
+          "before": "references/motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 9404,
+          "before": "references/content.md",
+          "after": "awwwards-content.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8767,
+          "before": "references/webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8660,
+          "before": "references/engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8533,
+          "before": "astro.md",
+          "after": "awwwards-astro.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8517,
+          "before": "nextjs.md",
+          "after": "awwwards-nextjs.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7985,
+          "before": "references/anatomy.md",
+          "after": "awwwards-anatomy.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7234,
+          "before": "art-direction.md",
+          "after": "awwwards-art-direction.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7005,
+          "before": "references/layout.md",
+          "after": "awwwards-layout.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6965,
+          "before": "references/typography.md",
+          "after": "awwwards-typography.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6931,
+          "before": "references/art-direction.md",
+          "after": "awwwards-art-direction.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6358,
+          "before": "concepts.md",
+          "after": "awwwards-concepts.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 5652,
+          "before": "references/concepts.md",
+          "after": "awwwards-concepts.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 4371,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 4193,
+          "before": "references/engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3945,
+          "before": "references/astro.md",
+          "after": "awwwards-astro.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3716,
+          "before": "references/nextjs.md",
+          "after": "awwwards-nextjs.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1421,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 17664,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 15318,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 14458,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 14186,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7070,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6499,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 15713,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 11856,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 11706,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 11659,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 11301,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 11097,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 9057,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 1842,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 1697,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 14279,
+          "before": ".shots/",
+          "after": "$PULSE_DESIGN_EVIDENCE/shots/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global hidden directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 12708,
+          "before": ".shots/",
+          "after": "$PULSE_DESIGN_EVIDENCE/shots/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global hidden directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 12436,
+          "before": ".shots/",
+          "after": "$PULSE_DESIGN_EVIDENCE/shots/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global hidden directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 12042,
+          "before": ".shots/",
+          "after": "$PULSE_DESIGN_EVIDENCE/shots/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global hidden directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 756,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        },
+        {
+          "offset": 12258,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/audit.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/audit.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 12091,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 12329,
+          "before": "$PULSE_DESIGN_EVIDENCE/shots/audit.txt",
+          "after": "\"$PULSE_DESIGN_EVIDENCE/shots/audit.txt\"",
+          "kind": "artefact-path",
+          "reason": "Quote evidence paths in executable command examples",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 2114,
+          "before": "Knowledge and code live in\n`$UPSTREAM_AWWWARDS_ROOT/references`.",
+          "after": "The retained knowledge and code recipes are in the local [reference map](#reference-map).\nThe upstream root above supplies external helper scripts only.",
+          "kind": "ownership",
+          "reason": "Keep the annotated local corpus authoritative; the external root is only for helpers",
+          "arbitration": "A3/A9"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/anatomy.md",
+      "source_sha256": "89e60c7581bc0b664589c1d4411b9c3a9a9ea5424e61687d112831e3c06d982e",
+      "source_bytes": 5495,
+      "destination": "skills/design/references/awwwards-anatomy.md",
+      "destination_sha256": "cb20c49b70d9901fc9320c4b0ff8250d685218336d68f0147b23900568b8f2ef",
+      "destination_bytes": 5784,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Explainer figures with /anatomy (optional companion)"
+        },
+        {
+          "line": 16,
+          "heading": "## When a figure earns its place"
+        },
+        {
+          "line": 35,
+          "heading": "## How to call it"
+        },
+        {
+          "line": 52,
+          "heading": "## Fitting it into the site"
+        },
+        {
+          "line": 92,
+          "heading": "## QA"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 2300,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1912,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/art-direction.md",
+      "source_sha256": "646266e21e3b656cbf31a8ca89bc810d9644c1eb6538b0933c529d50d5f78ca0",
+      "source_bytes": 8396,
+      "destination": "skills/design/references/awwwards-art-direction.md",
+      "destination_sha256": "b311f381c3efcc7a682f345485c80b43b47c13634d76088abe0bc4135ce57e3d",
+      "destination_bytes": 8685,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Art direction: what winning sites look like, and how to choose"
+        },
+        {
+          "line": 3,
+          "heading": "## Observed patterns in 2026 winners (probed live: screenshots, computed styles, scripts)"
+        },
+        {
+          "line": 29,
+          "heading": "## Interaction patterns (probed live Oct 2026: pointer moved onto targets, styles and pixels compared)"
+        },
+        {
+          "line": 67,
+          "heading": "## Archetypes (starting points; mutate them with the concept)"
+        },
+        {
+          "line": 79,
+          "heading": "## Palette rules"
+        },
+        {
+          "line": 90,
+          "heading": "## Defaults to avoid (AI tells), unless the concept genuinely calls for it"
+        },
+        {
+          "line": 105,
+          "heading": "## Details that separate 7 from 8"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 7724,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6452,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/astro.md",
+      "source_sha256": "aeeaf41c3152876f6d5da37f5b36468a1781af752ea7f87fb62f1c8c755d43d3",
+      "source_bytes": 8957,
+      "destination": "skills/design/references/awwwards-astro.md",
+      "destination_sha256": "cae176ef771cba2c0e4dd793639ba7aa526c81099a05ee4b2768e9c7a811d8d2",
+      "destination_bytes": 9370,
+      "section_inventory": [
+        {
+          "line": 2,
+          "heading": "# Astro"
+        },
+        {
+          "line": 10,
+          "heading": "## Scaffold"
+        },
+        {
+          "line": 29,
+          "heading": "## Adapter: `src/engine/astro.ts`"
+        },
+        {
+          "line": 59,
+          "heading": "## Layout: `src/layouts/Base.astro`"
+        },
+        {
+          "line": 141,
+          "heading": "## Loader: `src/components/Loader.astro`"
+        },
+        {
+          "line": 158,
+          "heading": "## Global motion: `src/motion/setup.ts`"
+        },
+        {
+          "line": 172,
+          "heading": "## Config: `astro.config.mjs`"
+        },
+        {
+          "line": 193,
+          "heading": "## Component scripts"
+        },
+        {
+          "line": 210,
+          "heading": "## Pages"
+        },
+        {
+          "line": 219,
+          "heading": "## QA"
+        },
+        {
+          "line": 228,
+          "heading": "## Pitfalls"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 1237,
+          "before": "content.md",
+          "after": "awwwards-content.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1176,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1134,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 988,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8512,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 8448,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 8384,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        },
+        {
+          "offset": 8829,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 8748,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/audit.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/audit.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 8667,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/serve.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/serve.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 8828,
+          "before": "node \"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\" http://127.0.0.1:4400/ --nav",
+          "after": "node \"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\" http://127.0.0.1:4400/ --nav --out \"$PULSE_DESIGN_EVIDENCE/shots\"",
+          "kind": "artefact-path",
+          "reason": "Use explicit fresh current-node evidence for the Astro recipe",
+          "arbitration": "A3"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/concepts.md",
+      "source_sha256": "af5b3b401cbde5af858670fc7160409cecccc49f27058e0f66c11c8cf0a82099",
+      "source_bytes": 8409,
+      "destination": "skills/design/references/awwwards-concepts.md",
+      "destination_sha256": "bd0b18b11078cfcbbfa775c09cd93b82d41b7fff954fc6fb0d5f66b1b296468f",
+      "destination_bytes": 9082,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Concepts: finding the idea that cannot be moved"
+        },
+        {
+          "line": 10,
+          "heading": "## Five territories (generate one concept from at least three of them)"
+        },
+        {
+          "line": 29,
+          "heading": "## Method"
+        },
+        {
+          "line": 45,
+          "heading": "## Worked examples (the method, not ideas to reuse)"
+        },
+        {
+          "line": 52,
+          "heading": "### \"make me a portfolio, my name is Marco\""
+        },
+        {
+          "line": 68,
+          "heading": "### \"a launch page for Ledger, a budgeting app\""
+        },
+        {
+          "line": 79,
+          "heading": "### \"a site for Brasa, a wood-fire restaurant in Lisbon\""
+        },
+        {
+          "line": 90,
+          "heading": "## Signature moment catalog (pick one; recipes in motion.md / webgl.md)"
+        },
+        {
+          "line": 104,
+          "heading": "## Concept quality bar"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 2037,
+          "before": "",
+          "after": "\n\n> Pulse A2/A11: Lower portability is favourable. If using a total, use originality + fit + feasibility + (6 - portability); do not reward a high raw portability score. Keep the recommendation and the actual selection authority described in [A2](awwwards-adaptation.md#a2-concept-choice-and-facts).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A2/A11"
+        },
+        {
+          "offset": 8297,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8182,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8059,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7965,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7832,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7717,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7455,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7318,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7136,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7124,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/content.md",
+      "source_sha256": "eefb2bf14948e7cf3c21b8875bb0827723095968a4d6067b25864ecaf7bc2c32",
+      "source_bytes": 4447,
+      "destination": "skills/design/references/awwwards-content.md",
+      "destination_sha256": "ce4143e50a870886f396dfee7816cb39d496d961c8cd16f7313f72bd7840737c",
+      "destination_bytes": 4730,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Content and copy"
+        },
+        {
+          "line": 6,
+          "heading": "## Voice"
+        },
+        {
+          "line": 18,
+          "heading": "## Honest placeholders (name-only prompts)"
+        },
+        {
+          "line": 32,
+          "heading": "## The content file (`src/data/site.ts`)"
+        },
+        {
+          "line": 65,
+          "heading": "## Case study structure (each project page)"
+        },
+        {
+          "line": 76,
+          "heading": "## About section"
+        },
+        {
+          "line": 81,
+          "heading": "## Microcopy"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/engine.md",
+      "source_sha256": "dc5b1b6704cb797afe9a08e76cf1bd4dec46e56ae25084715b0377146ae1faf8",
+      "source_bytes": 32066,
+      "destination": "skills/design/references/awwwards-engine.md",
+      "destination_sha256": "415379c10a3ef0f8c53d571cbe9f62c3521a41c63463a338458d84c87c05f30f",
+      "destination_bytes": 33150,
+      "section_inventory": [
+        {
+          "line": 2,
+          "heading": "# Motion engine (framework-agnostic)"
+        },
+        {
+          "line": 21,
+          "heading": "## Files"
+        },
+        {
+          "line": 38,
+          "heading": "## Adapter contract (wire these four hooks in any framework)"
+        },
+        {
+          "line": 51,
+          "heading": "## Layout contract (markup every page shares)"
+        },
+        {
+          "line": 76,
+          "heading": "## Markup API (data attributes)"
+        },
+        {
+          "line": 92,
+          "heading": "## Script API (`import { … } from '@/engine'` or a relative path)"
+        },
+        {
+          "line": 119,
+          "heading": "## Lifecycle"
+        },
+        {
+          "line": 129,
+          "heading": "## Pitfalls already handled (do not undo)"
+        },
+        {
+          "line": 138,
+          "heading": "## Code"
+        },
+        {
+          "line": 143,
+          "heading": "### `src/engine/env.ts`"
+        },
+        {
+          "line": 159,
+          "heading": "### `src/engine/scroll.ts`"
+        },
+        {
+          "line": 223,
+          "heading": "### `src/engine/reveal.ts`"
+        },
+        {
+          "line": 324,
+          "heading": "### `src/engine/loader.ts`"
+        },
+        {
+          "line": 396,
+          "heading": "### `src/engine/interactions.ts`"
+        },
+        {
+          "line": 442,
+          "heading": "### `src/engine/transition.ts`"
+        },
+        {
+          "line": 478,
+          "heading": "### `src/engine/index.ts`"
+        },
+        {
+          "line": 593,
+          "heading": "## CSS"
+        },
+        {
+          "line": 595,
+          "heading": "### Tokens (`tokens.css`)"
+        },
+        {
+          "line": 642,
+          "heading": "### Engine foundation (`engine.css`)"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 6223,
+          "before": "Call global setup (`setTransition`, `setLoaderFormat`, `setLoaderExit`, `setBackground`, the\ndriver module) once on the client **before** `boot()` runs: in Astro, from a script imported\nright after the adapter; in Next, at module level of a client module imported by the\ncomponent that renders `<Engine />`. These setters touch no DOM, so they are safe in modules\nthat also render on the server.",
+          "after": "Register global setup (`setTransition`, `setLoaderFormat`, `setLoaderExit`, `setBackground`,\nthe driver module) in `boot(setup)`: once on the client, **after** scroll/GL initialisation and\nbefore page callbacks, as the adapters and retained boot code show. `setBackground` needs\nthe renderer; driver modules may access the DOM. Do not execute this setup at module level\nin code that also renders on the server. [Recipe notes](awwwards-adaptation.md#a11-local-recipe-discordances).",
+          "kind": "recipe-clarification",
+          "reason": "Resolve setup/GL/SSR contradiction using the actual boot and adapter contract",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 6810,
+          "before": "progress (fonts + critical images, 1.1 s floor, 2.6 s cap), then page init, then the\n  `data-intro` timeline plays.",
+          "after": "progress (fonts + critical images, 1.1 s floor and 2.6 s total target). The retained code\n  initialises page effects before awaiting the loader; the `data-intro` timeline plays after\n  it. The sample MAX plus smoothing/exit does not enforce the total target; measure it.",
+          "kind": "recipe-clarification",
+          "reason": "Distinguish page initialisation, intro timing and actual total loader budget",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 6717,
+          "before": "",
+          "after": "\n\n> Pulse A11: Custom onPage/usePage effects must implement reduced-motion and cleanup themselves; the common reveal guard and CSS reset do not stop every custom JavaScript tween. See [recipe notes](awwwards-adaptation.md#a11-local-recipe-discordances).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 15344,
+          "before": "",
+          "after": "\n\n> Pulse A7/A11: The hard budget remains 2.6 seconds including progress and exit. This retained sample smooths after MAX and then plays an exit, so it does not enforce that ceiling; verify/correct the project implementation before claiming the budget.\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A7/A11"
+        },
+        {
+          "offset": 6069,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 4771,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1491,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 927,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 663,
+          "before": "astro.md",
+          "after": "awwwards-astro.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 650,
+          "before": "nextjs.md",
+          "after": "awwwards-nextjs.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/layout.md",
+      "source_sha256": "d5528281738cfa34f4b7b2fc6f317aae85448c35e0876a12f081311a49a48b80",
+      "source_bytes": 4702,
+      "destination": "skills/design/references/awwwards-layout.md",
+      "destination_sha256": "17f9e41f4af1012180c7ec6e2e73a9e576dff31a24d4153a3f3e894b2b81f8dc",
+      "destination_bytes": 4985,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Layout and composition"
+        },
+        {
+          "line": 3,
+          "heading": "## Grid"
+        },
+        {
+          "line": 15,
+          "heading": "## Section layout families (each family at most once per page)"
+        },
+        {
+          "line": 28,
+          "heading": "## Hero patterns (choose by concept, not by habit)"
+        },
+        {
+          "line": 39,
+          "heading": "## Portfolio information architecture"
+        },
+        {
+          "line": 52,
+          "heading": "## Presenting work (pick one primary pattern)"
+        },
+        {
+          "line": 63,
+          "heading": "## Menus"
+        },
+        {
+          "line": 69,
+          "heading": "## Mobile composition (390 px)"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/motion.md",
+      "source_sha256": "c0485886f69b4dc19a67e38dbfd3b3c4ae0816593d4228071d9c2d0da2b07a0f",
+      "source_bytes": 25276,
+      "destination": "skills/design/references/awwwards-motion.md",
+      "destination_sha256": "5e1600e82001b764c99af2c3aa9912806f25e7c9ff4ce2522ee9b77e2da34824",
+      "destination_bytes": 26436,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Motion: choreography and recipes"
+        },
+        {
+          "line": 3,
+          "heading": "## Principles"
+        },
+        {
+          "line": 22,
+          "heading": "## Timing"
+        },
+        {
+          "line": 36,
+          "heading": "## Engine-first"
+        },
+        {
+          "line": 43,
+          "heading": "## Micro-interactions (one treatment per role, chosen from the verb)"
+        },
+        {
+          "line": 80,
+          "heading": "### Letter roll (nav, button labels)"
+        },
+        {
+          "line": 103,
+          "heading": "### Underline draw (nav) and underline rise (inline links)"
+        },
+        {
+          "line": 122,
+          "heading": "### Button fill from the pointer's side"
+        },
+        {
+          "line": 178,
+          "heading": "### Idle state (the concept keeps breathing)"
+        },
+        {
+          "line": 238,
+          "heading": "## Recipes"
+        },
+        {
+          "line": 242,
+          "heading": "### Loader handoff (counter becomes the hero)"
+        },
+        {
+          "line": 255,
+          "heading": "### Custom page transition: clip-path iris from the click point"
+        },
+        {
+          "line": 276,
+          "heading": "### Shared-element transition: thumbnail grows into the case hero"
+        },
+        {
+          "line": 311,
+          "heading": "### Index list with cursor-following preview (desktop) and inline thumbnails (touch)"
+        },
+        {
+          "line": 358,
+          "heading": "### Velocity marquee (one per page, max)"
+        },
+        {
+          "line": 372,
+          "heading": "### Pinned horizontal pan (only for real sequences)"
+        },
+        {
+          "line": 384,
+          "heading": "### Pinned chapters (sticky media, changing state)"
+        },
+        {
+          "line": 398,
+          "heading": "### Scroll-scrubbed timeline (one object transforms across a section)"
+        },
+        {
+          "line": 404,
+          "heading": "### Kinetic type: variable axis on scroll"
+        },
+        {
+          "line": 415,
+          "heading": "### Text scramble (tech concepts; final text stays in the DOM)"
+        },
+        {
+          "line": 428,
+          "heading": "### Counter (real numbers only)"
+        },
+        {
+          "line": 435,
+          "heading": "### Full-screen menu overlay (accessible)"
+        },
+        {
+          "line": 441,
+          "heading": "### Image trail (playful portfolios)"
+        },
+        {
+          "line": 446,
+          "heading": "### Drag canvas (big archives)"
+        },
+        {
+          "line": 451,
+          "heading": "### Sound (only when the concept is about sound)"
+        },
+        {
+          "line": 455,
+          "heading": "## Pitfalls"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 15710,
+          "before": "",
+          "after": "\n\n> Pulse A11: The retained ghost animates dimensions and position. This is an explicit layout-property exception to the transform-first rule; prefer a transform implementation where possible and inspect performance, rather than claiming automatic conformity. [A11](awwwards-adaptation.md#a11-local-recipe-discordances).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 22553,
+          "before": "",
+          "after": "\n\n> Pulse A11: Variable-font axes can change layout metrics. Preserve the small-character scope and actual font-axis requirements; guard reduced motion and inspect the result. [A11](awwwards-adaptation.md#a11-local-recipe-discordances).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 10196,
+          "before": "",
+          "after": "\n\n> Pulse A11: Subtlety alone does not establish an accessibility exemption. Verify pause/stop needs for the actual content and project target; preserve reduced-motion/offscreen handling and the visible control for a prominent automatic loop. [A11](awwwards-adaptation.md#a11-local-recipe-discordances).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 13228,
+          "before": "references/patterns.md",
+          "after": "awwwards-patterns.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 10666,
+          "before": "references/patterns.md",
+          "after": "awwwards-patterns.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3641,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3146,
+          "before": "references/art-direction.md",
+          "after": "awwwards-art-direction.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 2204,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 11896,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/nextjs.md",
+      "source_sha256": "2a6598eb48617ffac934c2556875da6cf75fa19c3a4a0510b5888d2f4406baaf",
+      "source_bytes": 17042,
+      "destination": "skills/design/references/awwwards-nextjs.md",
+      "destination_sha256": "e27d7eac57bbeba514cbaef59fe208a32fd359dcdbd6f5046f2581ce186906d3",
+      "destination_bytes": 17732,
+      "section_inventory": [
+        {
+          "line": 2,
+          "heading": "# Next.js (App Router)"
+        },
+        {
+          "line": 9,
+          "heading": "## Scaffold"
+        },
+        {
+          "line": 29,
+          "heading": "## Adapter: `src/engine/next.tsx`"
+        },
+        {
+          "line": 98,
+          "heading": "## Layout: `src/app/layout.tsx`"
+        },
+        {
+          "line": 164,
+          "heading": "## Global motion: `src/components/Motion.tsx` + `src/motion/setup.ts`"
+        },
+        {
+          "line": 213,
+          "heading": "## Component-level motion: `usePage`"
+        },
+        {
+          "line": 245,
+          "heading": "## Fonts: `src/app/fonts.ts`"
+        },
+        {
+          "line": 268,
+          "heading": "## Metadata, sitemap, robots, 404, icons"
+        },
+        {
+          "line": 298,
+          "heading": "## Pages"
+        },
+        {
+          "line": 350,
+          "heading": "## Static export (optional)"
+        },
+        {
+          "line": 357,
+          "heading": "## QA"
+        },
+        {
+          "line": 367,
+          "heading": "## Pitfalls"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 9054,
+          "before": "",
+          "after": "\n\n> Pulse A11: The retained engine initialises page effects before awaiting the loader and plays intro afterwards. A custom usePage callback is not guaranteed to start after the loader; explicitly guard reduced motion for custom loops. [A11](awwwards-adaptation.md#a11-local-recipe-discordances).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A11"
+        },
+        {
+          "offset": 1391,
+          "before": "content.md",
+          "after": "awwwards-content.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1330,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1288,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 975,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 15765,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 15712,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        },
+        {
+          "offset": 16065,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 15995,
+          "before": "$UPSTREAM_AWWWARDS_ROOT/scripts/audit.mjs",
+          "after": "\"$UPSTREAM_AWWWARDS_ROOT/scripts/audit.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 16062,
+          "before": "node \"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\" http://127.0.0.1:4400/ --nav",
+          "after": "node \"$UPSTREAM_AWWWARDS_ROOT/scripts/shoot.mjs\" http://127.0.0.1:4400/ --nav --out \"$PULSE_DESIGN_EVIDENCE/shots\"",
+          "kind": "artefact-path",
+          "reason": "Use explicit fresh current-node evidence for the Next recipe",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 9348,
+          "before": "## Component-level motion\n\n> Pulse A11: The retained engine initialises page effects before awaiting the loader and plays intro afterwards. A custom usePage callback is not guaranteed to start after the loader; explicitly guard reduced motion for custom loops. [A11](awwwards-adaptation.md#a11-local-recipe-discordances).\n: `usePage`",
+          "after": "## Component-level motion: `usePage`\n\n> Pulse A11: The retained engine initialises page effects before awaiting the loader and plays intro afterwards. A custom usePage callback is not guaranteed to start after the loader; explicitly guard reduced motion for custom loops. [A11](awwwards-adaptation.md#a11-local-recipe-discordances).",
+          "kind": "annotation",
+          "reason": "Place the local note after the complete original usePage heading",
+          "arbitration": "A11"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/patterns.md",
+      "source_sha256": "ba09fd0cbf2898bd06349d7ac4779ec8ad3f5ae0265815755b0d0d83c29cd169",
+      "source_bytes": 6266,
+      "destination": "skills/design/references/awwwards-patterns.md",
+      "destination_sha256": "117e8cd08aae880cb6ffce1173a22642cb5bda29a910643510845c70b453a631",
+      "destination_bytes": 6556,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Proven implementation patterns"
+        },
+        {
+          "line": 6,
+          "heading": "## 1. The driver module (one variable → every concept-bearing visual)"
+        },
+        {
+          "line": 57,
+          "heading": "## 2. Sticky stage hero (the signature plays while the hero is in view)"
+        },
+        {
+          "line": 66,
+          "heading": "## 3. Static fallbacks per section"
+        },
+        {
+          "line": 77,
+          "heading": "## 4. Decorative text copies (shadows, reflections, outlines, echoes)"
+        },
+        {
+          "line": 89,
+          "heading": "## 5. Loader → UI handoff"
+        },
+        {
+          "line": 96,
+          "heading": "## 6. Frame that steps aside"
+        },
+        {
+          "line": 113,
+          "heading": "## 7. Index as concept (the work list is part of the idea)"
+        },
+        {
+          "line": 119,
+          "heading": "## 8. Transitions that belong to the concept"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 3097,
+          "before": "references/motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 619,
+          "before": "webgl.md",
+          "after": "awwwards-webgl.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/quality-bar.md",
+      "source_sha256": "cdc6de8aa3d5869c827dd894ad49d594e9d60a03154f5949297ffafd857eb523",
+      "source_bytes": 10831,
+      "destination": "skills/design/references/awwwards-quality-bar.md",
+      "destination_sha256": "567826ba4fbf1daa4636c8658aa18ab14c3480202d4dc78ab69f04af919f357a",
+      "destination_bytes": 11109,
+      "section_inventory": [
+        {
+          "line": 2,
+          "heading": "# The quality bar: how award sites are scored, the rubric, and the critic brief"
+        },
+        {
+          "line": 9,
+          "heading": "## The system (awwwards.com/about-evaluation, verified Oct 2026)"
+        },
+        {
+          "line": 24,
+          "heading": "## What gets punished"
+        },
+        {
+          "line": 37,
+          "heading": "## Critic's self-test (do this on your screenshots)"
+        },
+        {
+          "line": 48,
+          "heading": "## Score rubric (1 to 10, with evidence from specific screenshots)"
+        },
+        {
+          "line": 95,
+          "heading": "## Critic brief (for a fresh subagent on every QA pass)"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 0,
+          "before": "<!-- Generated from jury/references/quality-bar.md by tests/_gen/build.py; edit there, not here. -->\n",
+          "after": "",
+          "kind": "deduplicate",
+          "reason": "Canonical jury quality-bar; retain the generated alias identity",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 6744,
+          "before": "for a fresh subagent on every QA pass",
+          "after": "for an authorised fresh independent critic on each scoring pass",
+          "kind": "ownership",
+          "reason": "Preserve freshness and blind review without automatic specialist spawn",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 6958,
+          "before": "Pass this brief to a fresh subagent,",
+          "after": "Pass this brief to an authorised fresh independent critic,",
+          "kind": "ownership",
+          "reason": "Use the existing review authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 7618,
+          "before": "Only if your environment cannot launch subagents or delegate.",
+          "after": "If an independent critic is unavailable or unauthorised.",
+          "kind": "ownership",
+          "reason": "Honest self-score fallback under current authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 10457,
+          "before": "**Without subagents**, and only then,",
+          "after": "**Without an authorised independent critic**,",
+          "kind": "ownership",
+          "reason": "Do not imply availability alone grants delegation authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 7925,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7071,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8012,
+          "before": ".shots/",
+          "after": "$PULSE_DESIGN_EVIDENCE/shots/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global hidden directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        },
+        {
+          "offset": 0,
+          "before": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). This is the critic scoring reference. An independent critic uses only the Score rubric and supplied evidence; the root handles delivery authority. Do not open adaptation, provenance or calibration material during scoring.\n\n",
+          "kind": "annotation",
+          "reason": "Keep root-only calibration and provenance outside the independent critic packet",
+          "arbitration": "A4/A6"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/quality.md",
+      "source_sha256": "fadd5d7124004d35a73ae67856ad9023a389e3886696a3c54fb83cfda186ee00",
+      "source_bytes": 7766,
+      "destination": "skills/design/references/awwwards-quality.md",
+      "destination_sha256": "5a0ce9ea48b8ef7b791c31857bc6c3dd499370241d9f7bbae36ed44b8a4bfb1f",
+      "destination_bytes": 8079,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Quality: the developer checklist (and the Usability 30%)"
+        },
+        {
+          "line": 8,
+          "heading": "## Semantics / SEO / Markup"
+        },
+        {
+          "line": 18,
+          "heading": "## Accessibility (where most award sites lose points)"
+        },
+        {
+          "line": 31,
+          "heading": "## WPO (performance)"
+        },
+        {
+          "line": 47,
+          "heading": "## Responsive"
+        },
+        {
+          "line": 52,
+          "heading": "## Animations / transitions"
+        },
+        {
+          "line": 58,
+          "heading": "## Bugs found in real test builds (check each one explicitly)"
+        },
+        {
+          "line": 80,
+          "heading": "## QA checklist (tick with evidence)"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 5816,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 5591,
+          "before": "patterns.md",
+          "after": "awwwards-patterns.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 5580,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7415,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/ship.md",
+      "source_sha256": "c05a1c10ae396745e220edf391de214dbf3a2ff7e0a2260fb59c7d7028c41e15",
+      "source_bytes": 1683,
+      "destination": "skills/design/references/awwwards-ship.md",
+      "destination_sha256": "7e3c23b044af73ec727dea63560d02944c850037d98722cdce3bc83f26f2ac79",
+      "destination_bytes": 1983,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Ship: final checks and deploy"
+        },
+        {
+          "line": 3,
+          "heading": "## Before deploy"
+        },
+        {
+          "line": 16,
+          "heading": "## Deploy"
+        },
+        {
+          "line": 28,
+          "heading": "## Hand-off"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 411,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_AWWWARDS_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/typography.md",
+      "source_sha256": "270286daae65407bd8953c9fae68a1632c42e9af4b0493f0397d4b8c46ac34ed",
+      "source_bytes": 7591,
+      "destination": "skills/design/references/awwwards-typography.md",
+      "destination_sha256": "4887dfb22ee4f8670c4078fa21207343c53dafe2ea48d5606aadc4c7f8ac5a5a",
+      "destination_bytes": 7883,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Typography"
+        },
+        {
+          "line": 5,
+          "heading": "## Choosing: role first, then voice"
+        },
+        {
+          "line": 18,
+          "heading": "### Neo-grotesk / grotesk (the workhorse of winners)"
+        },
+        {
+          "line": 35,
+          "heading": "### Display with attitude"
+        },
+        {
+          "line": 51,
+          "heading": "### Serif (editorial, luxury, culture: needs a reason)"
+        },
+        {
+          "line": 69,
+          "heading": "### Mono and accents"
+        },
+        {
+          "line": 78,
+          "heading": "## Pairings that work"
+        },
+        {
+          "line": 88,
+          "heading": "## Setting display type (where sites win)"
+        },
+        {
+          "line": 111,
+          "heading": "## Scale"
+        },
+        {
+          "line": 127,
+          "heading": "## Kinetic type ideas (see motion.md for code)"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 6954,
+          "before": "motion.md",
+          "after": "awwwards-motion.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "awwwards/references/webgl.md",
+      "source_sha256": "37815f066dac2d3ca9115fb88912e6ea4aed442ce07660d786baeadb05b396e8",
+      "source_bytes": 19247,
+      "destination": "skills/design/references/awwwards-webgl.md",
+      "destination_sha256": "e13113f2e0267011a8cc617e95542a15c8bd0933192d7ddf4620a19614014c6c",
+      "destination_bytes": 19539,
+      "section_inventory": [
+        {
+          "line": 2,
+          "heading": "# WebGL"
+        },
+        {
+          "line": 10,
+          "heading": "## Primitives"
+        },
+        {
+          "line": 43,
+          "heading": "## Recipes"
+        },
+        {
+          "line": 45,
+          "heading": "### Scroll-driven sky / time of day (fullscreen)"
+        },
+        {
+          "line": 73,
+          "heading": "### Image hover variants (edit `imageFragment`)"
+        },
+        {
+          "line": 79,
+          "heading": "### Reveal variants (edit `revealMask`)"
+        },
+        {
+          "line": 83,
+          "heading": "### Text in WebGL"
+        },
+        {
+          "line": 88,
+          "heading": "### 3D models"
+        },
+        {
+          "line": 93,
+          "heading": "## Performance rules"
+        },
+        {
+          "line": 106,
+          "heading": "## Module code"
+        },
+        {
+          "line": 111,
+          "heading": "### `src/engine/gl/index.ts`"
+        },
+        {
+          "line": 340,
+          "heading": "### `src/engine/gl/shaders.ts`"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 6238,
+          "before": "engine.md",
+          "after": "awwwards-engine.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "jury/SKILL.md",
+      "source_sha256": "0ea2ac4bad26cb0803d284c60941429e659e8d0619415b1718987b0b16f23aab",
+      "source_bytes": 8030,
+      "destination": "skills/design/references/jury.md",
+      "destination_sha256": "67d8387ac05c0dd8a8939666918ba336c2972f49f68ac350414cb6a4f906e6da",
+      "destination_bytes": 9197,
+      "section_inventory": [
+        {
+          "line": 6,
+          "heading": "# /jury"
+        },
+        {
+          "line": 21,
+          "heading": "## Why blind"
+        },
+        {
+          "line": 28,
+          "heading": "## Workflow"
+        },
+        {
+          "line": 30,
+          "heading": "### 1. Target"
+        },
+        {
+          "line": 48,
+          "heading": "### 2. Tools"
+        },
+        {
+          "line": 61,
+          "heading": "### 3. Evidence"
+        },
+        {
+          "line": 82,
+          "heading": "### 4. Score"
+        },
+        {
+          "line": 93,
+          "heading": "### 5. Score card"
+        },
+        {
+          "line": 98,
+          "heading": "# <site>: jury score"
+        },
+        {
+          "line": 122,
+          "heading": "## Fixes, most score first"
+        },
+        {
+          "line": 126,
+          "heading": "## Measured"
+        },
+        {
+          "line": 143,
+          "heading": "### Re-scoring after fixes"
+        },
+        {
+          "line": 149,
+          "heading": "## Rules"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 1125,
+          "before": "**Skill root:** the directory containing this file (`$SKILL`; substitute the absolute path in\ncommands).",
+          "after": "**Upstream helper root:** `$UPSTREAM_JURY_ROOT` is the verified upstream `jury/` directory.\n[Library and helper scope](awwwards-adaptation.md#a9-libraries-and-helpers) applies.",
+          "kind": "ownership",
+          "reason": "Identify external helper root rather than this reference directory",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 2760,
+          "before": "- **Behind a login or password:** it can't be scored. Ask for a public URL or a local build.",
+          "after": "- **Behind a login or password:** the public helper cannot establish that state. Use an\n  authorised connected session or a local build with its actual scope; otherwise obtain a\n  reachable surface. A login wall itself is not a score of the requested page.",
+          "kind": "coverage",
+          "reason": "Preserve evidence boundary without treating public-helper access as universal inability",
+          "arbitration": "A10"
+        },
+        {
+          "offset": 3018,
+          "before": "Evidence goes in `.jury/<host>/` in the current directory (`<host>` such as `example.com` or\n`127.0.0.1-4400`). Use absolute paths for it below.",
+          "after": "Evidence goes in a fresh `$PULSE_DESIGN_EVIDENCE/` under the current Pulse verification\ndirectory. Use its absolute path below; preserve all earlier capture directories.",
+          "kind": "artefact-path",
+          "reason": "Use current owner and preserve evidence history",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3412,
+          "before": "Otherwise don't add dependencies to someone's project for a review. Install once into a cache\n  folder outside it and run the scripts from that folder:",
+          "after": "Otherwise don't add dependencies to someone's project for a review. Establish preparation\n  in the current approved task. The upstream cache recipe below can be used when authorised:",
+          "kind": "ownership",
+          "reason": "Keep non-invasive cache recipe without implicit install",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 3715,
+          "before": "- If `shoot.mjs` reports no Chromium, run `npx playwright install chromium` once in that folder.",
+          "after": "- If Chromium is missing, keep the check unavailable until preparation is authorised; the\n  upstream recipe is `npx playwright install chromium` in that folder.",
+          "kind": "ownership",
+          "reason": "Preserve missing-browser boundary and preparation example",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 5135,
+          "before": "**With subagents:**",
+          "after": "**With an authorised independent critic:**",
+          "kind": "ownership",
+          "reason": "Preserve blind critic method under actual delegation authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 5475,
+          "before": "**Without subagents:**",
+          "after": "**Without an authorised independent critic:**",
+          "kind": "ownership",
+          "reason": "Declare self-score when independent review is unavailable or unauthorised",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 5718,
+          "before": "subagent, or say on the card that the score is not independent.",
+          "after": "authorised independent critic, or say on the card that the score is not independent.",
+          "kind": "ownership",
+          "reason": "Do not mandate an unauthorised spawn for honest review",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 5823,
+          "before": "Write `.jury/<host>/scorecard.md` and give the same card in chat:",
+          "after": "Write `$PULSE_DESIGN_EVIDENCE/scorecard.md` as supporting evidence and give the card in chat.\nRecord task findings in the existing Pulse review/uat. The +1.1 estimate/band lines retained\nin the template below are historical upstream examples; omit them from a current Pulse result\nunless a separate calibration is qualified and authorised. [Historical calibration](jury-calibration.md) retains their full context:",
+          "kind": "ownership",
+          "reason": "Retain full scorecard while separating evidence, gates and historical estimate",
+          "arbitration": "A5/A6"
+        },
+        {
+          "offset": 7476,
+          "before": "Take the offset for the jury estimate from `references/calibration.md` (the 1.1 above is the\noffset when this was written) and follow its rules: the critic's own numbers stay as scored, and\nthe developer areas get no jury estimate.",
+          "after": "Keep the complete upstream calibration in `jury-calibration.md` as historical evidence.\nDo not transfer its offset automatically to Pulse or another critic/model. Preserve the raw\ncritic scores and fixes; never give the critic the calibration or adjust developer scores.",
+          "kind": "historical-status",
+          "reason": "Preserve historical data without silently applying a two-site offset",
+          "arbitration": "A6"
+        },
+        {
+          "offset": 4021,
+          "before": "<abs>/.jury/<host>",
+          "after": "$PULSE_DESIGN_EVIDENCE",
+          "kind": "artefact-path",
+          "reason": "Current verification directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3958,
+          "before": "<abs>/.jury/<host>",
+          "after": "$PULSE_DESIGN_EVIDENCE",
+          "kind": "artefact-path",
+          "reason": "Current verification directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 5402,
+          "before": "calibration.md",
+          "after": "jury-calibration.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 5226,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1464,
+          "before": "references/calibration.md",
+          "after": "jury-calibration.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1387,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 1812,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 3987,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_JURY_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 3902,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_JURY_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 2326,
+          "before": "$SKILL",
+          "after": "$UPSTREAM_JURY_ROOT",
+          "kind": "helper-path",
+          "reason": "Helper scripts remain external and pinned, rather than falsely local to the Pulse reference",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 5375,
+          "before": ".jury/<host>/",
+          "after": "$PULSE_DESIGN_EVIDENCE/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global host directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 5350,
+          "before": ".jury/<host>/",
+          "after": "$PULSE_DESIGN_EVIDENCE/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global host directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 699,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        },
+        {
+          "offset": 6058,
+          "before": "Use a\n  authorised independent critic",
+          "after": "Use an\n  authorised independent critic",
+          "kind": "ownership",
+          "reason": "Use grammatical authorised-critic wording",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 4296,
+          "before": "$UPSTREAM_JURY_ROOT/scripts/audit.mjs",
+          "after": "\"$UPSTREAM_JURY_ROOT/scripts/audit.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 4198,
+          "before": "$UPSTREAM_JURY_ROOT/scripts/shoot.mjs",
+          "after": "\"$UPSTREAM_JURY_ROOT/scripts/shoot.mjs\"",
+          "kind": "helper-path",
+          "reason": "Quote external helper paths in executable command examples",
+          "arbitration": "A9"
+        },
+        {
+          "offset": 4346,
+          "before": "$PULSE_DESIGN_EVIDENCE/audit.txt",
+          "after": "\"$PULSE_DESIGN_EVIDENCE/audit.txt\"",
+          "kind": "artefact-path",
+          "reason": "Quote evidence paths in executable command examples",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 4264,
+          "before": "$PULSE_DESIGN_EVIDENCE/shots",
+          "after": "\"$PULSE_DESIGN_EVIDENCE/shots\"",
+          "kind": "artefact-path",
+          "reason": "Quote evidence paths in executable command examples",
+          "arbitration": "A3"
+        }
+      ]
+    },
+    {
+      "source": "jury/references/calibration.md",
+      "source_sha256": "86c268316f53cdecfbd7c4904dff124e198c802e0ee850e789fb22b5b324a139",
+      "source_bytes": 3622,
+      "destination": "skills/design/references/jury-calibration.md",
+      "destination_sha256": "8b719ea864d762fe123223d25c82b6f6ee2fd81092c88c1d40845f21d3ffbc43",
+      "destination_bytes": 4244,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# Calibration: the critic against real juries"
+        },
+        {
+          "line": 11,
+          "heading": "## Runs"
+        },
+        {
+          "line": 34,
+          "heading": "## What the gap says"
+        },
+        {
+          "line": 49,
+          "heading": "## Using it on a score card"
+        },
+        {
+          "line": 59,
+          "heading": "## Adding a run"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 2627,
+          "before": "",
+          "after": "\n\n> Pulse A6: This section is retained as the historical upstream proposal, including its numerical example. Pulse does not apply +1.1 to a new critic/model automatically; use the raw supported score unless a new calibration is separately qualified and authorised. [A6](awwwards-adaptation.md#a6-historical-calibration).\n",
+          "kind": "annotation",
+          "reason": "Local recipe/ownership clarification without deleting the source section",
+          "arbitration": "A6"
+        },
+        {
+          "offset": 627,
+          "before": "quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 449,
+          "before": "quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        }
+      ]
+    },
+    {
+      "source": "jury/references/quality-bar.md",
+      "source_sha256": "ec90fe4e421ba478e3825dd7125e2157561a4b77bf5e019705f3b0763816ce0c",
+      "source_bytes": 10730,
+      "destination": "skills/design/references/awwwards-quality-bar.md",
+      "destination_sha256": "567826ba4fbf1daa4636c8658aa18ab14c3480202d4dc78ab69f04af919f357a",
+      "destination_bytes": 11109,
+      "section_inventory": [
+        {
+          "line": 1,
+          "heading": "# The quality bar: how award sites are scored, the rubric, and the critic brief"
+        },
+        {
+          "line": 8,
+          "heading": "## The system (awwwards.com/about-evaluation, verified Oct 2026)"
+        },
+        {
+          "line": 23,
+          "heading": "## What gets punished"
+        },
+        {
+          "line": 36,
+          "heading": "## Critic's self-test (do this on your screenshots)"
+        },
+        {
+          "line": 47,
+          "heading": "## Score rubric (1 to 10, with evidence from specific screenshots)"
+        },
+        {
+          "line": 94,
+          "heading": "## Critic brief (for a fresh subagent on every QA pass)"
+        }
+      ],
+      "operations": [
+        {
+          "offset": 6744,
+          "before": "for a fresh subagent on every QA pass",
+          "after": "for an authorised fresh independent critic on each scoring pass",
+          "kind": "ownership",
+          "reason": "Preserve freshness and blind review without automatic specialist spawn",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 6958,
+          "before": "Pass this brief to a fresh subagent,",
+          "after": "Pass this brief to an authorised fresh independent critic,",
+          "kind": "ownership",
+          "reason": "Use the existing review authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 7618,
+          "before": "Only if your environment cannot launch subagents or delegate.",
+          "after": "If an independent critic is unavailable or unauthorised.",
+          "kind": "ownership",
+          "reason": "Honest self-score fallback under current authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 10457,
+          "before": "**Without subagents**, and only then,",
+          "after": "**Without an authorised independent critic**,",
+          "kind": "ownership",
+          "reason": "Do not imply availability alone grants delegation authority",
+          "arbitration": "A4"
+        },
+        {
+          "offset": 7925,
+          "before": "references/quality-bar.md",
+          "after": "awwwards-quality-bar.md",
+          "kind": "reference-path",
+          "reason": "Retained corpus uses one-level topic references",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 7071,
+          "before": "DESIGN.md",
+          "after": "decisions.md",
+          "kind": "artefact-path",
+          "reason": "Current approved decisions contain the complete design brief/card/system",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 8012,
+          "before": ".shots/",
+          "after": "$PULSE_DESIGN_EVIDENCE/shots/",
+          "kind": "artefact-path",
+          "reason": "Current verification evidence rather than a project-global hidden directory",
+          "arbitration": "A3"
+        },
+        {
+          "offset": 0,
+          "before": "",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "kind": "attribution",
+          "reason": "Attribute the retained source and expose local adaptation context",
+          "arbitration": "A1/A12"
+        },
+        {
+          "offset": 0,
+          "before": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). Read the full prescriptions, examples and exceptions for the selected activity. [Pulse scope and local adaptations](awwwards-adaptation.md) keep the current task, evidence and recipe limits explicit.\n\n",
+          "after": "> Retained from juliobsz/skills @ f193f6745aae738e9d54a0ca28792822e4777a63 (MIT). This is the critic scoring reference. An independent critic uses only the Score rubric and supplied evidence; the root handles delivery authority. Do not open adaptation, provenance or calibration material during scoring.\n\n",
+          "kind": "annotation",
+          "reason": "Keep root-only calibration and provenance outside the independent critic packet",
+          "arbitration": "A4/A6"
+        }
+      ]
+    }
+  ]
+}

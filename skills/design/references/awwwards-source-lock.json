@@ -1,0 +1,1170 @@
+{
+  "schema_version": "1.0",
+  "repository": "https://github.com/juliobsz/skills",
+  "commit": "f193f6745aae738e9d54a0ca28792822e4777a63",
+  "pulse_control_commit": "c440bf790e9218238568009c341f4e5e1266d8d8",
+  "approved_source_map_sha256": "6dedd78592f1471ef88f57fe88c42c9d481bd1774879bdeed45c465f9a2c5a6a",
+  "approved_source_map": {
+    "schema_version": "1.0",
+    "source_repository": "https://github.com/juliobsz/skills",
+    "source_commit": "f193f6745aae738e9d54a0ca28792822e4777a63",
+    "pulse_base": "c440bf790e9218238568009c341f4e5e1266d8d8",
+    "canonical_quality_bar": "jury/references/quality-bar.md",
+    "files": [
+      {
+        "source": "awwwards/SKILL.md",
+        "source_sha256": "87f9e001615cbe13188025c1c7f534ed797ea48be86335cf809ee5cbc34bf9aa",
+        "source_line_count": 357,
+        "destination": "skills/design/references/awwwards.md",
+        "section_inventory": [
+          {
+            "line": 6,
+            "heading": "# /awwwards"
+          },
+          {
+            "line": 24,
+            "heading": "## What makes a site win (internalize before anything else)"
+          },
+          {
+            "line": 46,
+            "heading": "## Stack"
+          },
+          {
+            "line": 63,
+            "heading": "## Workflow"
+          },
+          {
+            "line": 68,
+            "heading": "### Phase 0: Brief (2 minutes, no questions by default)"
+          },
+          {
+            "line": 83,
+            "heading": "### Phase 1: Concept (the step that decides the score)"
+          },
+          {
+            "line": 106,
+            "heading": "### Phase 2: Art direction system"
+          },
+          {
+            "line": 131,
+            "heading": "### Phase 3: Build"
+          },
+          {
+            "line": 170,
+            "heading": "### Phase 4: QA loop (minimum two full passes)"
+          },
+          {
+            "line": 175,
+            "heading": "# Next.js:  npm run build && npx next start -p 4400        (run in background)"
+          },
+          {
+            "line": 176,
+            "heading": "# Astro:    npm run build && node $SKILL/scripts/serve.mjs dist --port 4400"
+          },
+          {
+            "line": 230,
+            "heading": "### Phase 5: Ship"
+          },
+          {
+            "line": 250,
+            "heading": "## Hard rules"
+          },
+          {
+            "line": 339,
+            "heading": "## Reference map"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/anatomy.md",
+        "source_sha256": "89e60c7581bc0b664589c1d4411b9c3a9a9ea5424e61687d112831e3c06d982e",
+        "source_line_count": 103,
+        "destination": "skills/design/references/awwwards-anatomy.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Explainer figures with /anatomy (optional companion)"
+          },
+          {
+            "line": 16,
+            "heading": "## When a figure earns its place"
+          },
+          {
+            "line": 35,
+            "heading": "## How to call it"
+          },
+          {
+            "line": 52,
+            "heading": "## Fitting it into the site"
+          },
+          {
+            "line": 92,
+            "heading": "## QA"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/art-direction.md",
+        "source_sha256": "646266e21e3b656cbf31a8ca89bc810d9644c1eb6538b0933c529d50d5f78ca0",
+        "source_line_count": 114,
+        "destination": "skills/design/references/awwwards-art-direction.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Art direction: what winning sites look like, and how to choose"
+          },
+          {
+            "line": 3,
+            "heading": "## Observed patterns in 2026 winners (probed live: screenshots, computed styles, scripts)"
+          },
+          {
+            "line": 29,
+            "heading": "## Interaction patterns (probed live Oct 2026: pointer moved onto targets, styles and pixels compared)"
+          },
+          {
+            "line": 67,
+            "heading": "## Archetypes (starting points; mutate them with the concept)"
+          },
+          {
+            "line": 79,
+            "heading": "## Palette rules"
+          },
+          {
+            "line": 90,
+            "heading": "## Defaults to avoid (AI tells), unless the concept genuinely calls for it"
+          },
+          {
+            "line": 105,
+            "heading": "## Details that separate 7 from 8"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/astro.md",
+        "source_sha256": "aeeaf41c3152876f6d5da37f5b36468a1781af752ea7f87fb62f1c8c755d43d3",
+        "source_line_count": 235,
+        "destination": "skills/design/references/awwwards-astro.md",
+        "section_inventory": [
+          {
+            "line": 2,
+            "heading": "# Astro"
+          },
+          {
+            "line": 10,
+            "heading": "## Scaffold"
+          },
+          {
+            "line": 29,
+            "heading": "## Adapter: `src/engine/astro.ts`"
+          },
+          {
+            "line": 59,
+            "heading": "## Layout: `src/layouts/Base.astro`"
+          },
+          {
+            "line": 141,
+            "heading": "## Loader: `src/components/Loader.astro`"
+          },
+          {
+            "line": 158,
+            "heading": "## Global motion: `src/motion/setup.ts`"
+          },
+          {
+            "line": 172,
+            "heading": "## Config: `astro.config.mjs`"
+          },
+          {
+            "line": 193,
+            "heading": "## Component scripts"
+          },
+          {
+            "line": 210,
+            "heading": "## Pages"
+          },
+          {
+            "line": 219,
+            "heading": "## QA"
+          },
+          {
+            "line": 228,
+            "heading": "## Pitfalls"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/concepts.md",
+        "source_sha256": "af5b3b401cbde5af858670fc7160409cecccc49f27058e0f66c11c8cf0a82099",
+        "source_line_count": 110,
+        "destination": "skills/design/references/awwwards-concepts.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Concepts: finding the idea that cannot be moved"
+          },
+          {
+            "line": 10,
+            "heading": "## Five territories (generate one concept from at least three of them)"
+          },
+          {
+            "line": 29,
+            "heading": "## Method"
+          },
+          {
+            "line": 45,
+            "heading": "## Worked examples (the method, not ideas to reuse)"
+          },
+          {
+            "line": 52,
+            "heading": "### \"make me a portfolio, my name is Marco\""
+          },
+          {
+            "line": 68,
+            "heading": "### \"a launch page for Ledger, a budgeting app\""
+          },
+          {
+            "line": 79,
+            "heading": "### \"a site for Brasa, a wood-fire restaurant in Lisbon\""
+          },
+          {
+            "line": 90,
+            "heading": "## Signature moment catalog (pick one; recipes in motion.md / webgl.md)"
+          },
+          {
+            "line": 104,
+            "heading": "## Concept quality bar"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/content.md",
+        "source_sha256": "eefb2bf14948e7cf3c21b8875bb0827723095968a4d6067b25864ecaf7bc2c32",
+        "source_line_count": 88,
+        "destination": "skills/design/references/awwwards-content.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Content and copy"
+          },
+          {
+            "line": 6,
+            "heading": "## Voice"
+          },
+          {
+            "line": 18,
+            "heading": "## Honest placeholders (name-only prompts)"
+          },
+          {
+            "line": 32,
+            "heading": "## The content file (`src/data/site.ts`)"
+          },
+          {
+            "line": 65,
+            "heading": "## Case study structure (each project page)"
+          },
+          {
+            "line": 76,
+            "heading": "## About section"
+          },
+          {
+            "line": 81,
+            "heading": "## Microcopy"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/engine.md",
+        "source_sha256": "dc5b1b6704cb797afe9a08e76cf1bd4dec46e56ae25084715b0377146ae1faf8",
+        "source_line_count": 751,
+        "destination": "skills/design/references/awwwards-engine.md",
+        "section_inventory": [
+          {
+            "line": 2,
+            "heading": "# Motion engine (framework-agnostic)"
+          },
+          {
+            "line": 21,
+            "heading": "## Files"
+          },
+          {
+            "line": 38,
+            "heading": "## Adapter contract (wire these four hooks in any framework)"
+          },
+          {
+            "line": 51,
+            "heading": "## Layout contract (markup every page shares)"
+          },
+          {
+            "line": 76,
+            "heading": "## Markup API (data attributes)"
+          },
+          {
+            "line": 92,
+            "heading": "## Script API (`import { … } from '@/engine'` or a relative path)"
+          },
+          {
+            "line": 119,
+            "heading": "## Lifecycle"
+          },
+          {
+            "line": 129,
+            "heading": "## Pitfalls already handled (do not undo)"
+          },
+          {
+            "line": 138,
+            "heading": "## Code"
+          },
+          {
+            "line": 143,
+            "heading": "### `src/engine/env.ts`"
+          },
+          {
+            "line": 159,
+            "heading": "### `src/engine/scroll.ts`"
+          },
+          {
+            "line": 223,
+            "heading": "### `src/engine/reveal.ts`"
+          },
+          {
+            "line": 324,
+            "heading": "### `src/engine/loader.ts`"
+          },
+          {
+            "line": 396,
+            "heading": "### `src/engine/interactions.ts`"
+          },
+          {
+            "line": 442,
+            "heading": "### `src/engine/transition.ts`"
+          },
+          {
+            "line": 478,
+            "heading": "### `src/engine/index.ts`"
+          },
+          {
+            "line": 593,
+            "heading": "## CSS"
+          },
+          {
+            "line": 595,
+            "heading": "### Tokens (`tokens.css`)"
+          },
+          {
+            "line": 642,
+            "heading": "### Engine foundation (`engine.css`)"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/layout.md",
+        "source_sha256": "d5528281738cfa34f4b7b2fc6f317aae85448c35e0876a12f081311a49a48b80",
+        "source_line_count": 81,
+        "destination": "skills/design/references/awwwards-layout.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Layout and composition"
+          },
+          {
+            "line": 3,
+            "heading": "## Grid"
+          },
+          {
+            "line": 15,
+            "heading": "## Section layout families (each family at most once per page)"
+          },
+          {
+            "line": 28,
+            "heading": "## Hero patterns (choose by concept, not by habit)"
+          },
+          {
+            "line": 39,
+            "heading": "## Portfolio information architecture"
+          },
+          {
+            "line": 52,
+            "heading": "## Presenting work (pick one primary pattern)"
+          },
+          {
+            "line": 63,
+            "heading": "## Menus"
+          },
+          {
+            "line": 69,
+            "heading": "## Mobile composition (390 px)"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/motion.md",
+        "source_sha256": "c0485886f69b4dc19a67e38dbfd3b3c4ae0816593d4228071d9c2d0da2b07a0f",
+        "source_line_count": 463,
+        "destination": "skills/design/references/awwwards-motion.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Motion: choreography and recipes"
+          },
+          {
+            "line": 3,
+            "heading": "## Principles"
+          },
+          {
+            "line": 22,
+            "heading": "## Timing"
+          },
+          {
+            "line": 36,
+            "heading": "## Engine-first"
+          },
+          {
+            "line": 43,
+            "heading": "## Micro-interactions (one treatment per role, chosen from the verb)"
+          },
+          {
+            "line": 80,
+            "heading": "### Letter roll (nav, button labels)"
+          },
+          {
+            "line": 103,
+            "heading": "### Underline draw (nav) and underline rise (inline links)"
+          },
+          {
+            "line": 122,
+            "heading": "### Button fill from the pointer's side"
+          },
+          {
+            "line": 178,
+            "heading": "### Idle state (the concept keeps breathing)"
+          },
+          {
+            "line": 238,
+            "heading": "## Recipes"
+          },
+          {
+            "line": 242,
+            "heading": "### Loader handoff (counter becomes the hero)"
+          },
+          {
+            "line": 255,
+            "heading": "### Custom page transition: clip-path iris from the click point"
+          },
+          {
+            "line": 276,
+            "heading": "### Shared-element transition: thumbnail grows into the case hero"
+          },
+          {
+            "line": 311,
+            "heading": "### Index list with cursor-following preview (desktop) and inline thumbnails (touch)"
+          },
+          {
+            "line": 358,
+            "heading": "### Velocity marquee (one per page, max)"
+          },
+          {
+            "line": 372,
+            "heading": "### Pinned horizontal pan (only for real sequences)"
+          },
+          {
+            "line": 384,
+            "heading": "### Pinned chapters (sticky media, changing state)"
+          },
+          {
+            "line": 398,
+            "heading": "### Scroll-scrubbed timeline (one object transforms across a section)"
+          },
+          {
+            "line": 404,
+            "heading": "### Kinetic type: variable axis on scroll"
+          },
+          {
+            "line": 415,
+            "heading": "### Text scramble (tech concepts; final text stays in the DOM)"
+          },
+          {
+            "line": 428,
+            "heading": "### Counter (real numbers only)"
+          },
+          {
+            "line": 435,
+            "heading": "### Full-screen menu overlay (accessible)"
+          },
+          {
+            "line": 441,
+            "heading": "### Image trail (playful portfolios)"
+          },
+          {
+            "line": 446,
+            "heading": "### Drag canvas (big archives)"
+          },
+          {
+            "line": 451,
+            "heading": "### Sound (only when the concept is about sound)"
+          },
+          {
+            "line": 455,
+            "heading": "## Pitfalls"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/nextjs.md",
+        "source_sha256": "2a6598eb48617ffac934c2556875da6cf75fa19c3a4a0510b5888d2f4406baaf",
+        "source_line_count": 386,
+        "destination": "skills/design/references/awwwards-nextjs.md",
+        "section_inventory": [
+          {
+            "line": 2,
+            "heading": "# Next.js (App Router)"
+          },
+          {
+            "line": 9,
+            "heading": "## Scaffold"
+          },
+          {
+            "line": 29,
+            "heading": "## Adapter: `src/engine/next.tsx`"
+          },
+          {
+            "line": 98,
+            "heading": "## Layout: `src/app/layout.tsx`"
+          },
+          {
+            "line": 164,
+            "heading": "## Global motion: `src/components/Motion.tsx` + `src/motion/setup.ts`"
+          },
+          {
+            "line": 213,
+            "heading": "## Component-level motion: `usePage`"
+          },
+          {
+            "line": 245,
+            "heading": "## Fonts: `src/app/fonts.ts`"
+          },
+          {
+            "line": 268,
+            "heading": "## Metadata, sitemap, robots, 404, icons"
+          },
+          {
+            "line": 298,
+            "heading": "## Pages"
+          },
+          {
+            "line": 350,
+            "heading": "## Static export (optional)"
+          },
+          {
+            "line": 357,
+            "heading": "## QA"
+          },
+          {
+            "line": 367,
+            "heading": "## Pitfalls"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/patterns.md",
+        "source_sha256": "ba09fd0cbf2898bd06349d7ac4779ec8ad3f5ae0265815755b0d0d83c29cd169",
+        "source_line_count": 123,
+        "destination": "skills/design/references/awwwards-patterns.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Proven implementation patterns"
+          },
+          {
+            "line": 6,
+            "heading": "## 1. The driver module (one variable → every concept-bearing visual)"
+          },
+          {
+            "line": 57,
+            "heading": "## 2. Sticky stage hero (the signature plays while the hero is in view)"
+          },
+          {
+            "line": 66,
+            "heading": "## 3. Static fallbacks per section"
+          },
+          {
+            "line": 77,
+            "heading": "## 4. Decorative text copies (shadows, reflections, outlines, echoes)"
+          },
+          {
+            "line": 89,
+            "heading": "## 5. Loader → UI handoff"
+          },
+          {
+            "line": 96,
+            "heading": "## 6. Frame that steps aside"
+          },
+          {
+            "line": 113,
+            "heading": "## 7. Index as concept (the work list is part of the idea)"
+          },
+          {
+            "line": 119,
+            "heading": "## 8. Transitions that belong to the concept"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/quality-bar.md",
+        "source_sha256": "cdc6de8aa3d5869c827dd894ad49d594e9d60a03154f5949297ffafd857eb523",
+        "source_line_count": 151,
+        "destination": "skills/design/references/awwwards-quality-bar.md",
+        "section_inventory": [
+          {
+            "line": 2,
+            "heading": "# The quality bar: how award sites are scored, the rubric, and the critic brief"
+          },
+          {
+            "line": 9,
+            "heading": "## The system (awwwards.com/about-evaluation, verified Oct 2026)"
+          },
+          {
+            "line": 24,
+            "heading": "## What gets punished"
+          },
+          {
+            "line": 37,
+            "heading": "## Critic's self-test (do this on your screenshots)"
+          },
+          {
+            "line": 48,
+            "heading": "## Score rubric (1 to 10, with evidence from specific screenshots)"
+          },
+          {
+            "line": 95,
+            "heading": "## Critic brief (for a fresh subagent on every QA pass)"
+          }
+        ],
+        "disposition": "deduplicate-generated-copy"
+      },
+      {
+        "source": "awwwards/references/quality.md",
+        "source_sha256": "fadd5d7124004d35a73ae67856ad9023a389e3886696a3c54fb83cfda186ee00",
+        "source_line_count": 91,
+        "destination": "skills/design/references/awwwards-quality.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Quality: the developer checklist (and the Usability 30%)"
+          },
+          {
+            "line": 8,
+            "heading": "## Semantics / SEO / Markup"
+          },
+          {
+            "line": 18,
+            "heading": "## Accessibility (where most award sites lose points)"
+          },
+          {
+            "line": 31,
+            "heading": "## WPO (performance)"
+          },
+          {
+            "line": 47,
+            "heading": "## Responsive"
+          },
+          {
+            "line": 52,
+            "heading": "## Animations / transitions"
+          },
+          {
+            "line": 58,
+            "heading": "## Bugs found in real test builds (check each one explicitly)"
+          },
+          {
+            "line": 80,
+            "heading": "## QA checklist (tick with evidence)"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/ship.md",
+        "source_sha256": "c05a1c10ae396745e220edf391de214dbf3a2ff7e0a2260fb59c7d7028c41e15",
+        "source_line_count": 30,
+        "destination": "skills/design/references/awwwards-ship.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Ship: final checks and deploy"
+          },
+          {
+            "line": 3,
+            "heading": "## Before deploy"
+          },
+          {
+            "line": 16,
+            "heading": "## Deploy"
+          },
+          {
+            "line": 28,
+            "heading": "## Hand-off"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/typography.md",
+        "source_sha256": "270286daae65407bd8953c9fae68a1632c42e9af4b0493f0397d4b8c46ac34ed",
+        "source_line_count": 135,
+        "destination": "skills/design/references/awwwards-typography.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Typography"
+          },
+          {
+            "line": 5,
+            "heading": "## Choosing: role first, then voice"
+          },
+          {
+            "line": 18,
+            "heading": "### Neo-grotesk / grotesk (the workhorse of winners)"
+          },
+          {
+            "line": 35,
+            "heading": "### Display with attitude"
+          },
+          {
+            "line": 51,
+            "heading": "### Serif (editorial, luxury, culture: needs a reason)"
+          },
+          {
+            "line": 69,
+            "heading": "### Mono and accents"
+          },
+          {
+            "line": 78,
+            "heading": "## Pairings that work"
+          },
+          {
+            "line": 88,
+            "heading": "## Setting display type (where sites win)"
+          },
+          {
+            "line": 111,
+            "heading": "## Scale"
+          },
+          {
+            "line": 127,
+            "heading": "## Kinetic type ideas (see motion.md for code)"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "awwwards/references/webgl.md",
+        "source_sha256": "37815f066dac2d3ca9115fb88912e6ea4aed442ce07660d786baeadb05b396e8",
+        "source_line_count": 430,
+        "destination": "skills/design/references/awwwards-webgl.md",
+        "section_inventory": [
+          {
+            "line": 2,
+            "heading": "# WebGL"
+          },
+          {
+            "line": 10,
+            "heading": "## Primitives"
+          },
+          {
+            "line": 43,
+            "heading": "## Recipes"
+          },
+          {
+            "line": 45,
+            "heading": "### Scroll-driven sky / time of day (fullscreen)"
+          },
+          {
+            "line": 73,
+            "heading": "### Image hover variants (edit `imageFragment`)"
+          },
+          {
+            "line": 79,
+            "heading": "### Reveal variants (edit `revealMask`)"
+          },
+          {
+            "line": 83,
+            "heading": "### Text in WebGL"
+          },
+          {
+            "line": 88,
+            "heading": "### 3D models"
+          },
+          {
+            "line": 93,
+            "heading": "## Performance rules"
+          },
+          {
+            "line": 106,
+            "heading": "## Module code"
+          },
+          {
+            "line": 111,
+            "heading": "### `src/engine/gl/index.ts`"
+          },
+          {
+            "line": 340,
+            "heading": "### `src/engine/gl/shaders.ts`"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "jury/SKILL.md",
+        "source_sha256": "0ea2ac4bad26cb0803d284c60941429e659e8d0619415b1718987b0b16f23aab",
+        "source_line_count": 156,
+        "destination": "skills/design/references/jury.md",
+        "section_inventory": [
+          {
+            "line": 6,
+            "heading": "# /jury"
+          },
+          {
+            "line": 21,
+            "heading": "## Why blind"
+          },
+          {
+            "line": 28,
+            "heading": "## Workflow"
+          },
+          {
+            "line": 30,
+            "heading": "### 1. Target"
+          },
+          {
+            "line": 48,
+            "heading": "### 2. Tools"
+          },
+          {
+            "line": 61,
+            "heading": "### 3. Evidence"
+          },
+          {
+            "line": 82,
+            "heading": "### 4. Score"
+          },
+          {
+            "line": 93,
+            "heading": "### 5. Score card"
+          },
+          {
+            "line": 98,
+            "heading": "# <site>: jury score"
+          },
+          {
+            "line": 122,
+            "heading": "## Fixes, most score first"
+          },
+          {
+            "line": 126,
+            "heading": "## Measured"
+          },
+          {
+            "line": 143,
+            "heading": "### Re-scoring after fixes"
+          },
+          {
+            "line": 149,
+            "heading": "## Rules"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "jury/references/calibration.md",
+        "source_sha256": "86c268316f53cdecfbd7c4904dff124e198c802e0ee850e789fb22b5b324a139",
+        "source_line_count": 67,
+        "destination": "skills/design/references/jury-calibration.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# Calibration: the critic against real juries"
+          },
+          {
+            "line": 11,
+            "heading": "## Runs"
+          },
+          {
+            "line": 34,
+            "heading": "## What the gap says"
+          },
+          {
+            "line": 49,
+            "heading": "## Using it on a score card"
+          },
+          {
+            "line": 59,
+            "heading": "## Adding a run"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      },
+      {
+        "source": "jury/references/quality-bar.md",
+        "source_sha256": "ec90fe4e421ba478e3825dd7125e2157561a4b77bf5e019705f3b0763816ce0c",
+        "source_line_count": 150,
+        "destination": "skills/design/references/awwwards-quality-bar.md",
+        "section_inventory": [
+          {
+            "line": 1,
+            "heading": "# The quality bar: how award sites are scored, the rubric, and the critic brief"
+          },
+          {
+            "line": 8,
+            "heading": "## The system (awwwards.com/about-evaluation, verified Oct 2026)"
+          },
+          {
+            "line": 23,
+            "heading": "## What gets punished"
+          },
+          {
+            "line": 36,
+            "heading": "## Critic's self-test (do this on your screenshots)"
+          },
+          {
+            "line": 47,
+            "heading": "## Score rubric (1 to 10, with evidence from specific screenshots)"
+          },
+          {
+            "line": 94,
+            "heading": "## Critic brief (for a fresh subagent on every QA pass)"
+          }
+        ],
+        "disposition": "retain-text-with-recorded-local-adaptations"
+      }
+    ]
+  },
+  "license": {
+    "spdx": "MIT",
+    "source": "LICENSE",
+    "sha256": "26577196d8f396c81c0b17c1ba71800f957a0af72b3681cecfc832800bfa4a06",
+    "destination": "skills/design/LICENSE.juliobsz-skills"
+  },
+  "canonical_quality_bar": "jury/references/quality-bar.md",
+  "text_sources": [
+    {
+      "source": "awwwards/SKILL.md",
+      "source_sha256": "87f9e001615cbe13188025c1c7f534ed797ea48be86335cf809ee5cbc34bf9aa",
+      "source_bytes": 22566,
+      "destination": "skills/design/references/awwwards.md",
+      "destination_sha256": "2bbf6f980ce6c330858bc442366d956878e618ac7231e369bd50344548cf3f60",
+      "destination_bytes": 23773
+    },
+    {
+      "source": "awwwards/references/anatomy.md",
+      "source_sha256": "89e60c7581bc0b664589c1d4411b9c3a9a9ea5424e61687d112831e3c06d982e",
+      "source_bytes": 5495,
+      "destination": "skills/design/references/awwwards-anatomy.md",
+      "destination_sha256": "cb20c49b70d9901fc9320c4b0ff8250d685218336d68f0147b23900568b8f2ef",
+      "destination_bytes": 5784
+    },
+    {
+      "source": "awwwards/references/art-direction.md",
+      "source_sha256": "646266e21e3b656cbf31a8ca89bc810d9644c1eb6538b0933c529d50d5f78ca0",
+      "source_bytes": 8396,
+      "destination": "skills/design/references/awwwards-art-direction.md",
+      "destination_sha256": "b311f381c3efcc7a682f345485c80b43b47c13634d76088abe0bc4135ce57e3d",
+      "destination_bytes": 8685
+    },
+    {
+      "source": "awwwards/references/astro.md",
+      "source_sha256": "aeeaf41c3152876f6d5da37f5b36468a1781af752ea7f87fb62f1c8c755d43d3",
+      "source_bytes": 8957,
+      "destination": "skills/design/references/awwwards-astro.md",
+      "destination_sha256": "cae176ef771cba2c0e4dd793639ba7aa526c81099a05ee4b2768e9c7a811d8d2",
+      "destination_bytes": 9370
+    },
+    {
+      "source": "awwwards/references/concepts.md",
+      "source_sha256": "af5b3b401cbde5af858670fc7160409cecccc49f27058e0f66c11c8cf0a82099",
+      "source_bytes": 8409,
+      "destination": "skills/design/references/awwwards-concepts.md",
+      "destination_sha256": "bd0b18b11078cfcbbfa775c09cd93b82d41b7fff954fc6fb0d5f66b1b296468f",
+      "destination_bytes": 9082
+    },
+    {
+      "source": "awwwards/references/content.md",
+      "source_sha256": "eefb2bf14948e7cf3c21b8875bb0827723095968a4d6067b25864ecaf7bc2c32",
+      "source_bytes": 4447,
+      "destination": "skills/design/references/awwwards-content.md",
+      "destination_sha256": "ce4143e50a870886f396dfee7816cb39d496d961c8cd16f7313f72bd7840737c",
+      "destination_bytes": 4730
+    },
+    {
+      "source": "awwwards/references/engine.md",
+      "source_sha256": "dc5b1b6704cb797afe9a08e76cf1bd4dec46e56ae25084715b0377146ae1faf8",
+      "source_bytes": 32066,
+      "destination": "skills/design/references/awwwards-engine.md",
+      "destination_sha256": "415379c10a3ef0f8c53d571cbe9f62c3521a41c63463a338458d84c87c05f30f",
+      "destination_bytes": 33150
+    },
+    {
+      "source": "awwwards/references/layout.md",
+      "source_sha256": "d5528281738cfa34f4b7b2fc6f317aae85448c35e0876a12f081311a49a48b80",
+      "source_bytes": 4702,
+      "destination": "skills/design/references/awwwards-layout.md",
+      "destination_sha256": "17f9e41f4af1012180c7ec6e2e73a9e576dff31a24d4153a3f3e894b2b81f8dc",
+      "destination_bytes": 4985
+    },
+    {
+      "source": "awwwards/references/motion.md",
+      "source_sha256": "c0485886f69b4dc19a67e38dbfd3b3c4ae0816593d4228071d9c2d0da2b07a0f",
+      "source_bytes": 25276,
+      "destination": "skills/design/references/awwwards-motion.md",
+      "destination_sha256": "5e1600e82001b764c99af2c3aa9912806f25e7c9ff4ce2522ee9b77e2da34824",
+      "destination_bytes": 26436
+    },
+    {
+      "source": "awwwards/references/nextjs.md",
+      "source_sha256": "2a6598eb48617ffac934c2556875da6cf75fa19c3a4a0510b5888d2f4406baaf",
+      "source_bytes": 17042,
+      "destination": "skills/design/references/awwwards-nextjs.md",
+      "destination_sha256": "e27d7eac57bbeba514cbaef59fe208a32fd359dcdbd6f5046f2581ce186906d3",
+      "destination_bytes": 17732
+    },
+    {
+      "source": "awwwards/references/patterns.md",
+      "source_sha256": "ba09fd0cbf2898bd06349d7ac4779ec8ad3f5ae0265815755b0d0d83c29cd169",
+      "source_bytes": 6266,
+      "destination": "skills/design/references/awwwards-patterns.md",
+      "destination_sha256": "117e8cd08aae880cb6ffce1173a22642cb5bda29a910643510845c70b453a631",
+      "destination_bytes": 6556
+    },
+    {
+      "source": "awwwards/references/quality-bar.md",
+      "source_sha256": "cdc6de8aa3d5869c827dd894ad49d594e9d60a03154f5949297ffafd857eb523",
+      "source_bytes": 10831,
+      "destination": "skills/design/references/awwwards-quality-bar.md",
+      "destination_sha256": "567826ba4fbf1daa4636c8658aa18ab14c3480202d4dc78ab69f04af919f357a",
+      "destination_bytes": 11109
+    },
+    {
+      "source": "awwwards/references/quality.md",
+      "source_sha256": "fadd5d7124004d35a73ae67856ad9023a389e3886696a3c54fb83cfda186ee00",
+      "source_bytes": 7766,
+      "destination": "skills/design/references/awwwards-quality.md",
+      "destination_sha256": "5a0ce9ea48b8ef7b791c31857bc6c3dd499370241d9f7bbae36ed44b8a4bfb1f",
+      "destination_bytes": 8079
+    },
+    {
+      "source": "awwwards/references/ship.md",
+      "source_sha256": "c05a1c10ae396745e220edf391de214dbf3a2ff7e0a2260fb59c7d7028c41e15",
+      "source_bytes": 1683,
+      "destination": "skills/design/references/awwwards-ship.md",
+      "destination_sha256": "7e3c23b044af73ec727dea63560d02944c850037d98722cdce3bc83f26f2ac79",
+      "destination_bytes": 1983
+    },
+    {
+      "source": "awwwards/references/typography.md",
+      "source_sha256": "270286daae65407bd8953c9fae68a1632c42e9af4b0493f0397d4b8c46ac34ed",
+      "source_bytes": 7591,
+      "destination": "skills/design/references/awwwards-typography.md",
+      "destination_sha256": "4887dfb22ee4f8670c4078fa21207343c53dafe2ea48d5606aadc4c7f8ac5a5a",
+      "destination_bytes": 7883
+    },
+    {
+      "source": "awwwards/references/webgl.md",
+      "source_sha256": "37815f066dac2d3ca9115fb88912e6ea4aed442ce07660d786baeadb05b396e8",
+      "source_bytes": 19247,
+      "destination": "skills/design/references/awwwards-webgl.md",
+      "destination_sha256": "e13113f2e0267011a8cc617e95542a15c8bd0933192d7ddf4620a19614014c6c",
+      "destination_bytes": 19539
+    },
+    {
+      "source": "jury/SKILL.md",
+      "source_sha256": "0ea2ac4bad26cb0803d284c60941429e659e8d0619415b1718987b0b16f23aab",
+      "source_bytes": 8030,
+      "destination": "skills/design/references/jury.md",
+      "destination_sha256": "67d8387ac05c0dd8a8939666918ba336c2972f49f68ac350414cb6a4f906e6da",
+      "destination_bytes": 9197
+    },
+    {
+      "source": "jury/references/calibration.md",
+      "source_sha256": "86c268316f53cdecfbd7c4904dff124e198c802e0ee850e789fb22b5b324a139",
+      "source_bytes": 3622,
+      "destination": "skills/design/references/jury-calibration.md",
+      "destination_sha256": "8b719ea864d762fe123223d25c82b6f6ee2fd81092c88c1d40845f21d3ffbc43",
+      "destination_bytes": 4244
+    },
+    {
+      "source": "jury/references/quality-bar.md",
+      "source_sha256": "ec90fe4e421ba478e3825dd7125e2157561a4b77bf5e019705f3b0763816ce0c",
+      "source_bytes": 10730,
+      "destination": "skills/design/references/awwwards-quality-bar.md",
+      "destination_sha256": "567826ba4fbf1daa4636c8658aa18ab14c3480202d4dc78ab69f04af919f357a",
+      "destination_bytes": 11109
+    }
+  ],
+  "external_helpers": [
+    {
+      "path": "awwwards/scripts/audit.mjs",
+      "sha256": "6cc274074d1089deffbd8ce80b5d784961642191feb612dcf14f177adef66c22",
+      "bytes": 13582
+    },
+    {
+      "path": "awwwards/scripts/browser.mjs",
+      "sha256": "929964a5877af03964bacecf41c8778445454efed2c646e0efb6432233727c6c",
+      "bytes": 2375
+    },
+    {
+      "path": "awwwards/scripts/font.mjs",
+      "sha256": "46c50b5a57a0c2517f5149b3e372d27f041430ed91edd88ce5dca0a8bc51a1de",
+      "bytes": 5720
+    },
+    {
+      "path": "awwwards/scripts/og.mjs",
+      "sha256": "180676b62a480a1c5d4385ba724ce9764b8204ce58727a63e67a25209ea7f65c",
+      "bytes": 1180
+    },
+    {
+      "path": "awwwards/scripts/photos.mjs",
+      "sha256": "3512275dc8b1ccfba378961425a6867ac14396772d522002b5745886365698d0",
+      "bytes": 3518
+    },
+    {
+      "path": "awwwards/scripts/serve.mjs",
+      "sha256": "9750897e412f15fdb2062b097460627719659dd0ecb05801036f872caaea58fd",
+      "bytes": 2585
+    },
+    {
+      "path": "awwwards/scripts/shoot.mjs",
+      "sha256": "b30e485207b05774f7505e918ab086a521979724daab198ede7d4890e7b748fd",
+      "bytes": 37090
+    },
+    {
+      "path": "jury/scripts/audit.mjs",
+      "sha256": "061adcb6ca4b08739acd8a87fb5a38eb1c3dffef4792b4c992607bcf5a9e47df",
+      "bytes": 13495
+    },
+    {
+      "path": "jury/scripts/browser.mjs",
+      "sha256": "ecb818906044378083c3d77081d8fdf783165852f12eecfbaa4303cb2c00b619",
+      "bytes": 2286
+    },
+    {
+      "path": "jury/scripts/serve.mjs",
+      "sha256": "4d4f3654693aab20e9369e096211efc2b72aff1bf5d107eb10ade982872ab9e6",
+      "bytes": 2498
+    },
+    {
+      "path": "jury/scripts/shoot.mjs",
+      "sha256": "7c29e9f7ea1bbb467a835de7d42a284325186e5a087f9a4392d7d3e956ea8301",
+      "bytes": 37003
+    }
+  ],
+  "helper_execution_or_installation": false
+}

@@ -16,6 +16,12 @@ Read existing `DESIGN.md`/`PRODUCT.md` when present, plus representative compone
 
 An extension inherits its system and resolves the new hierarchy, interaction and states. A precise accepted brief needs only its remaining choices. A new or explicitly replaced identity needs two or three directions before user selection and implementation.
 
+## Use the expressive direction method
+
+For a newly opened expressive site, read [awwwards](awwwards.md), [concepts](awwwards-concepts.md) and [art direction](awwwards-art-direction.md). Use three different territories, a factual anchor and the swap test; derive at least four concrete design decisions from the idea. Keep the whole Concept Card: idea, metaphor, signature and recipe, first-three-seconds emotion, motion verb and screenshot frame. Carry the concept through internal pages, footer and 404. The worked concepts teach a method and are explicitly not ideas to reuse.
+
+Use the detailed [typography](awwwards-typography.md), [layout](awwwards-layout.md) and [content](awwwards-content.md) prescriptions when resolving those parts of the brief. Retain their values, examples and exceptions instead of replacing them with a style label. Generate and recommend with reasons; record the actual user choice unless that choice has already been delegated. These methods enrich the inspected cultural research below, within the same decisions.
+
 ## Inspect references when a choice is open
 
 Select a small relevant set from the product's peers, contemporary work or its audience's cultural context. The task determines depth; a local defect or an established extension does not trigger a research quota.

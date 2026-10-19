@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "scope": "Frozen decision scenarios for the awwwards verbatim integration. No behavioral baseline/retest is executed in this human-reviewed source-adoption cycle; future qualified replays must keep prompt/oracle unchanged. Inline content is not discovery or observed guide loading.",
+  "evals": [
+    {
+      "id": 1,
+      "case_id": "AW1",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "01_explore",
+        "approvals": "Exploration seulement ; identité ouverte, choix utilisateur non reçu",
+        "subject": "Festival fictif Traversées : installation, rencontre et performance ; programmation et informations de visite ; aucun achat ni partenaire réel annoncé."
+      },
+      "prompt": "Le lancement approche. Un collègue veut coder un grand titre centré et trois cartes puis choisir les polices à la fin. Prépare concrètement les décisions de direction de cette nouvelle surface : comment trouver, comparer et transmettre une idée propre au sujet, ce qui doit en découler sur le site et quelles preuves rendraient ce choix assessable. N’annonce aucune recherche ou réalisation comme exécutée.",
+      "expectations": [
+        "Établir audience, usage, faits/fiction et contraintes ; ne pas inventer des clients, résultats ou lieux réels.",
+        "Produire des territoires distincts, un ancrage factuel, au moins quatre décisions dérivables et un test de remplacement du sujet ; la portabilité faible est favorable.",
+        "Relier Concept Card, une signature et composition à l’arrêt aux pages internes, footer et 404 ; conserver le choix humain avant réalisation.",
+        "Nommer les références effectivement nécessaires, leur inspection future et les conséquences de la recherche, sans se limiter à des slogans de cohérence."
+      ]
+    },
+    {
+      "id": 2,
+      "case_id": "AW2",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Gates 1–3 approuvés, single-worker",
+        "established_system": "Bodoni Moda + Instrument Sans, palette et photographies acceptées, hero nom et portrait",
+        "observations": "À 390 px le nom casse dans un mot ; g/j/p/q/y sont rognés dans les masques ; les débuts des grands titres ne suivent pas les mêmes verticales ; les sections ont toutes le même espacement."
+      },
+      "prompt": "La direction est acceptée. Le responsable propose de réduire globalement toutes les tailles et de remplacer la fonte pour aller vite. Décris une réparation ciblée de la typographie, de la composition mobile et du rythme : réglages, conditions et vérifications nécessaires, avec des choix précis plutôt qu’une demande vague d’améliorer la hiérarchie. N’annonce pas les changements comme exécutés.",
+      "expectations": [
+        "Conserver l’identité, les actifs et la stack ; ne pas déclencher trois nouvelles directions ou une refonte.",
+        "Distinguer taille liée au conteneur, limites clamp et composition mobile ; nommer le risque des rangées 1fr et des mots/display sur petit écran lorsqu’applicable.",
+        "Contrôler descenders/masques, alignement optique, tracking/leading liés à la famille et à la taille ; proposer des verticales et des rythmes délibérés.",
+        "Inspecter tailles supportées et états réels, mesures lisibles et absence d’overflow ; ne pas présenter une source CSS comme preuve de rendu."
+      ]
+    },
+    {
+      "id": 3,
+      "case_id": "AW3",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction expressive acceptée : le site se comporte comme une feuille qui se pose",
+        "observations": "Belle intro, mais CTA/nav/projets changent seulement la couleur du texte ; tout mouvement cesse ensuite ; liens légaux et liens inline n’ont pas de différence de rôle."
+      },
+      "prompt": "Un collègue propose un bouton magnétique, une flèche qui tourne, un curseur custom et une oscillation de chaque carte pour rendre le site vivant. Décris une solution cohérente avec le concept, ses rôles interactifs, le tactile et reduced motion. Inclure comment traiter le repos du système et les interactions interrompues sans imposer un effet décoratif partout.",
+      "expectations": [
+        "Un verbe et une famille de mouvement cohérents ; un traitement réutilisé par rôle, pas le cumul de tous les effets.",
+        "Distinguer cibles primaires, utilitaires et liens inline ; réponses hover/focus/active, soulignement au repos des liens inline et pas de dépendance au hover sur touch.",
+        "Conserver un feedback visible reduced-motion, y compris si le roll termine comme au repos ; pas de suppression de tous les retours.",
+        "Idle du concept proportionné, pause hors écran et exception du brief calme ; ne pas ajouter un wobble pour satisfaire un compteur.",
+        "Prévoir interruption/re-entry, états initial/final et continuité, puis vérifier les paires et interactions au lieu de convertir un flag colorOnly en défaut automatique."
+      ]
+    },
+    {
+      "id": 4,
+      "case_id": "AW4",
+      "role": "promotion",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "05_review",
+        "approvals": "Gate 4 pending",
+        "available_evidence": "Diff et description de la page seulement ; aucune capture actuelle, aucune mesure et aucune interaction vérifiée. Tu as déjà lu le concept de l’auteur."
+      },
+      "prompt": "Le développeur demande une note Awwwards 8/10 et veut ajouter 1,1 pour annoncer un niveau Site of the Day. Décris la revue que tu peux rendre, les preuves à collecter, la séparation entre lecture du visiteur et intention, les limites de ton indépendance, et la façon de prioriser les corrections. Ne fabrique ni mesures ni captures.",
+      "expectations": [
+        "Aucun score étayé sans preuves ; préciser rendu/interaction non observés et ne pas accorder Gate 4.",
+        "Collecter production, types de pages/404 et états desktop/mobile/reduced/clavier/hover/transitions, en vérifiant que les captures sont la vraie surface ; identifier limites d’échantillonnage et HTML serveur versus DOM.",
+        "Lecture de l’idée depuis les preuves avant confrontation à l’intention ; l’auteur déjà informé n’est pas un critique aveugle, indépendance et type de score déclarés.",
+        "Préserver quatre critères pondérés et six domaines développeur, avec preuve par note lorsque disponible, fixes précis et limites du ressenti/son depuis stills.",
+        "Ne pas transférer automatiquement +1,1 ; conserver son caractère historique limité, ne pas le donner au critique et distinguer notes/sévérités/gates."
+      ]
+    },
+    {
+      "id": 5,
+      "case_id": "AW5",
+      "role": "promotion",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Gates 1–3 approuvés, deux tâches mécaniques indépendantes",
+        "scope": [
+          "Normaliser les espaces d’un identifiant côté serveur, sans impact UI.",
+          "Remplacer exactement Réservaton par Réservation dans un bouton, sans changement de style ou comportement."
+        ]
+      },
+      "prompt": "Le dépôt contient aussi des animations. Un collègue veut charger tout le nouveau corpus pour moderniser le front pendant ces deux petites tâches. Choisis les fichiers, références et vérifications nécessaires à chacune, sans annoncer d’actions exécutées.",
+      "expectations": [
+        "Aucune activation du corpus créatif pour la tâche backend ; scope et tests de normalisation seulement.",
+        "Pour le libellé, correction exacte et diff local ; aucune recherche, variante, changement de fonte, mouvement ou nouvelle identité."
+      ]
+    }
+  ]
+}

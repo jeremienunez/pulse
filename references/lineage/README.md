@@ -30,6 +30,15 @@ Pulse owns the resulting skills and routing. In particular, `worktree-isolation`
 - Excluded: engine/detectors, hooks, vendor agents, state, native-platform guides and full catalogue import.
 - [Source paths/hashes, changes and diagnostic adoption boundary](../../docs/design/impeccable-provenance.md).
 
+## Awwwards / jury
+
+- Source: [juliobsz/skills](https://github.com/juliobsz/skills/tree/f193f6745aae738e9d54a0ca28792822e4777a63), commit `f193f6745aae738e9d54a0ca28792822e4777a63`.
+- Licence: MIT, copyright 2026 Julio (juliobsz); [exact licence](../../skills/design/LICENSE.juliobsz-skills) and [notice](../../skills/design/NOTICE).
+- Retained: substantive design directions, examples, numbers, code recipes and exceptions in 18 on-demand references covering 19 text sources. The generated quality-bar copy is deduplicated against the canonical jury source. Both master skills' own directions remain available.
+- Adapted locally: artefacts/ownership, authorised critic routing, historical calibration status and specific documented recipe discordances. An [exact operation ledger and source mapping](../../docs/design/awwwards-provenance.md) make the differences assessable; byte reconstruction alone does not approve their meaning.
+- External: helper scripts, framework/rendering installations, provider accounts and the upstream delivery lifecycle. Recipe text is not an installed or locally qualified engine.
+- [Evaluation and limits](../../docs/evaluation/awwwards-design-integration.md) preserve the current cycle's explicit human source-proposal path; behavioural baseline/retest are not executed and automatic promotion remains false.
+
 ## REA
 
 - Source: [morluto/rea](https://github.com/morluto/rea), guidance commit `d5fc7e6ebf9af050081fc4c6e18b9079cfaa5cdc`.

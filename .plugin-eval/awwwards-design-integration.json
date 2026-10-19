@@ -1,0 +1,29 @@
+{
+  "kind": "pulse-plugin-benchmark",
+  "schemaVersion": 4,
+  "version": 4,
+  "mode": "chat",
+  "scenarioSource": "docs/evaluation/awwwards-design-integration/corpus.json",
+  "pilotScenarioIds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "requiredRunnerProfileFields": [
+    "model_id",
+    "model_version",
+    "reasoning_effort",
+    "runtime"
+  ],
+  "shared": {
+    "verifiers": []
+  },
+  "notes": [
+    "Frozen before intervention. Only qualified transport may run behavioral baseline/retest.",
+    "This cycle explicitly uses human source review; no behavioral response, version, trace or certification is fabricated.",
+    "Supply only declared activity guides, never the oracle, prior responses or another condition.",
+    "Text preservation, guide links and package checks do not prove automatic discovery, runtime reading or design quality."
+  ]
+}

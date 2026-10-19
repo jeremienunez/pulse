@@ -12,6 +12,14 @@ Carry the accepted branches and outcomes of the [cultural research](cultural-dig
 
 Make typography express roles through size, weight, spacing and tone. Tune reading density to the actual content, face and surface; inspect long text and fallback fonts. Use color to communicate hierarchy, state or identity. Assess readability against the project's accessibility target, not a palette's attractiveness.
 
+## Apply the retained fabrication directions
+
+Read the relevant full references before composing: [typography](awwwards-typography.md) for display settings, optical alignment, descenders, scales and font roles; [layout](awwwards-layout.md) for grid, section rhythm, hero/work patterns and mobile composition; [content](awwwards-content.md) for voice, case-study structure, microcopy and honest replaceable material. For the selected expressive profile, apply [awwwards hard rules](awwwards.md#hard-rules) and its concept-to-signature method. The composition must work as a still frame; the concept must survive beyond the hero.
+
+For interactive work, read [motion](awwwards-motion.md) and [patterns](awwwards-patterns.md): one motion verb, one treatment per role, primary versus utility feedback, tactile/focus/reduced-motion states and continuity. Use the [engine](awwwards-engine.md), [WebGL](awwwards-webgl.md) and chosen [Next.js](awwwards-nextjs.md)/[Astro](awwwards-astro.md) recipe only when that implementation calls for them. Read the adjacent recipe notes before copying code. The technical recipes remain available with their teaching and exceptions; their presence establishes no installed tool or verified behaviour.
+
+Use [anatomy](awwwards-anatomy.md) when the page must explain a real mechanism, with [visual-assets](../../visual-assets/SKILL.md) for admitted production. Inspect the result against [quality](awwwards-quality.md), including its concrete known failure cases; publication preparation uses [shipping](awwwards-ship.md) within current authorisation.
+
 ## Complete the material states
 
 Use the brief's real or clearly illustrative content. Controls name their actions. For a task flow, realize its relevant loading, empty, error and success states. An error explains recovery; preserve valid input when the flow requires retry. Inspect the states that the changed behavior actually introduces.

@@ -76,7 +76,7 @@
       "name": "design",
       "description": "Use when shaping, building or reviewing web interfaces with material design choices, interaction changes or visual defects.",
       "metadata": {
-        "version": "1.0",
+        "version": "1.1",
         "position": "support skill — loaded by activity on demand"
       },
       "hasReferencesDir": true,
