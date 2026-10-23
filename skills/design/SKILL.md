@@ -1,8 +1,8 @@
 ---
 name: design
-description: "Use when shaping, building or reviewing web interfaces with material design choices, interaction changes or visual defects."
+description: "Use when shaping, building or reviewing web interfaces with material design choices, or directing image/shot composition, photo scenes or series, image/video prompts, rhythmic architecture sequences or narrated layered explainers."
 metadata:
-  version: '1.1'
+  version: '1.2'
   ecosystem: pulse
   position: 'support skill — loaded by activity on demand'
   dependencies: []
@@ -11,6 +11,8 @@ metadata:
 # Design
 
 Bring a web interface's purpose, visual direction and observed result together. Start through `pulse:using-pulse`; contribute to the current owner and its approved scope.
+
+For an image, photographic scene or film, select the named method and its actual deliverable below. A crop, prompt, photo treatment, cue sheet and rendered asset are different contributions.
 
 ## Choose the contribution
 
@@ -25,8 +27,15 @@ Read only the guide needed now:
 | Inspect and critique the result | [Review](references/review.md) | `05_review/output/review.json` and `uat.md` |
 | Investigate an open expressive direction | [Cultural digging](references/cultural-digging.md) | Current research and its owner review |
 | Specify UI motion or a film's temporal composition | [Motion](references/motion.md) | Current brief and verification |
+| Compose or critique an image, shot or hero crop | [Four cinematic devices](references/cinematic-composition.md), or [six geometric methods](references/geometric-composition-director.md) and [verification](references/geometric-verification.md) | Frame specification, prompt or observed-image critique |
+| Write or repair an image/video shot prompt | [Prompt direction](references/cinematic-prompt-direction.md) and its [examples](references/cinematic-prompt-examples.md) | Copyable shot prompt; only the prompt when requested |
+| Direct a photographic scene or series | [Photo direction](references/photographic-art-direction.md), [camera/light](references/photographic-camera-lighting.md), [treatments](references/photographic-treatments.md) and [shot cards](references/photographic-shot-card.md) | Thesis and 1–3 cards for a brief; bible/matrix for a series |
+| Plan architectural repetition on musical cues | [Rhythmic architecture](references/rhythmic-architectural-motion.md) and [five recipes](references/rhythmic-shot-recipes.md) | Anchor/module/projection/event/ease/exit and timed shot plan |
+| Plan a narrated explainer from independent layers | [Code explainer](references/code-animated-explainer.md) and [asset direction](references/explainer-asset-direction.md) | Narration beats, storyboard, alpha-layer manifest and timeline |
 
 Planning consumes the approved brief and its checks. Validation confirms the means needed to inspect them. An extension uses its established system; a new or replaced identity opens direction choices. Reuse accepted choices and ask only about material gaps.
+
+Read the selected full method before making its decisions, including examples and exceptions. For photo direction, state whether a named focal length is a full-frame-equivalent look or a physical focal length on a specified sensor; camera distance determines perspective, and exposure settings still need actual scouting/tests. For cue sheets and layered animation, use the film branch of [motion](references/motion.md). Their preparation/export contracts live with [visual-assets](../visual-assets/SKILL.md); a written brief does not require those helpers.
 
 ## Load concrete web craft
 
@@ -58,3 +67,5 @@ For specialized asset production, load [visual-assets](../visual-assets/SKILL.md
 Use existing project docs, tokens, components and assets as context. Task choices belong in the current decisions; no extra durable design document is required. Pulse retains approvals, revisions, execution strategy and finding severity.
 
 Adapted from Impeccable and retained juliobsz awwwards/jury guidance; see [NOTICE](NOTICE), [Apache-2.0](LICENSE) and [MIT](LICENSE.juliobsz-skills). The creation log records this condition's evaluation limits.
+
+The six Visual Direction profiles retain the supplied pack's complete method text. [Source and adaptations](references/visual-direction-adaptation.md) distinguish its attributed Reel analyses, external recipes and corrected contracts; the archive receives no inferred licence or runtime availability.

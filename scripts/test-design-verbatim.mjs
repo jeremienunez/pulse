@@ -199,7 +199,7 @@ test("extracted design package preserves the complete corpus and licence without
     assert.equal(verifyRetainedCorpus(output).sources, 19);
     const catalog = readJson(output, "skill-catalog.json");
     assert.equal(catalog.skillCount, 27);
-    assert.equal(catalog.skills.find(item => item.name === "design").metadata.version, "1.1");
+    assert.equal(catalog.skills.find(item => item.name === "design").metadata.version, "1.2");
     assert.equal(fs.existsSync(path.join(output, "skills/design/scripts")), false);
     assert.equal(fs.existsSync(path.join(output, "history")), false);
   } finally {

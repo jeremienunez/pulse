@@ -1,8 +1,8 @@
 ---
 name: visual-assets
-description: "Use when selecting or producing visual assets with a specialized algorithm, image input, vector export or an accepted brand asset brief."
+description: "Use when selecting or producing specialized visual assets, geometric SVG guides, symbolic shotboards, manual beat/cut cue sheets or code-rendered layered explainers, including image-input, vector-export and accepted brand-asset briefs."
 metadata:
-  version: '1.0'
+  version: '1.1'
   ecosystem: pulse
   position: 'support skill — loaded by capability need'
   dependencies: []
@@ -20,8 +20,14 @@ Read [routing](references/routing.md) and inspect the relevant record in the [ca
 | Primitive | An image approximated by selected geometric shapes | Native geometric SVG; a different effect from string art |
 | Nonflowers | Seeded procedural drawing | Raster; an external reference in this release |
 | Book of Shapes | External shape/pattern authoring | Final assets under its licence; no bundled pattern library or generator |
+| Composition guides | Geometry/focus and optional raster image | Editable SVG planning overlay; an embedded image remains raster; external recipe |
+| Shotboard | Direction JSON, symbolic camera/subject/light positions | Markdown cards and schematic SVGs, without photometry; external recipe |
+| Beatmap | Manual BPM/downbeat or known times, duration, fps, subdivision | Ideal/quantized times, frames, cuts and collisions; external recipe, no audio analysis |
+| Layered explainer | Project JSON, independent image layers, fonts, optional audio | Code-composed frames, MP4 and editable project/assets when requested; external recipe |
 
 Match every firm requirement, then establish actual availability with the capability's inspection path. A record describes a contract; it does not attest an installed source/profile or a successful export. Selection remains separate from admission and execution. A missing required capability returns to validation/revision before an effect is attempted.
+
+The four Visual Direction additions have no Pulse local adapter. Use their methods to prepare a brief, overlay plan or timeline without installing a helper. [Beatmap](references/beatmap-workflow.md), [explainer production](references/explainer-production.md) and [project format](references/explainer-project-format.md) retain complete standalone recipes and corrected limits. Actual execution requires a separately inspected/admitted source, dependencies, bounded inputs and fresh output paths. Prompt or photo-brief work requires no Python, Pillow, FFmpeg or image-provider account.
 
 For open expressive choices, load the common [cultural method](../design/references/cultural-digging.md), keeping its tree and root substance review in the same task research. [Design](../design/SKILL.md) owns composition and motion guidance. An accepted direction and its relevant research can be reused.
 

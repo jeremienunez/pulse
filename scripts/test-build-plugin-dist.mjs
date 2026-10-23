@@ -26,6 +26,7 @@ test('extracted package carries the optional Primitive adapter without binary/ca
 
 import { buildPluginDist, comparePluginDist } from "./build-plugin-dist.mjs";
 import "./test-design-verbatim.mjs";
+import "./test-visual-direction-verbatim.mjs";
 
 const REPO_ROOT = fileURLToPath(new URL("../", import.meta.url));
 

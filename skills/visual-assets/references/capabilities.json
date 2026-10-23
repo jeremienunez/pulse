@@ -8,14 +8,64 @@
       "kind": "local-algorithm",
       "domain": "image stylization",
       "effect": "string art using segments between pegs",
-      "input": { "role": "material", "formats": ["png", "jpeg"], "rights_basis_required": true },
-      "output": { "format": "svg", "native_vector": true, "grammar": "threading-specific rect/g/circle/line and one fixed style" },
-      "controls": ["shape", "pegs", "lines", "opacity", "thickness", "display_pegs"],
-      "initial_profile": { "quality": 1, "mode": 0, "invert_colors": false, "blur": 0 },
-      "availability": { "status": "requires-current-inspection", "command": ["node", "scripts/pulse-threading-svg.mjs", "inspect", "--profile", "<absolute-local-profile>"] },
-      "runtime": { "source": "operator-supplied external directory", "node": "v24.15.0", "chrome": "155.0.8059.79", "platform": "linux-x64", "automatic_install": false },
-      "provenance": { "repository": "https://github.com/piellardj/image-stylization-threading", "commit": "ef93733b28248340958c5843b5d882e6f4f5fef1", "license": "GPL-3.0", "runtime_bundled": false, "lock": "threading-source-lock.json" },
-      "limits": ["closed local job and profile", "admitted operation required", "60-second deadline", "no universal determinism claim", "input-image permission is separate from program licence"],
+      "input": {
+        "role": "material",
+        "formats": [
+          "png",
+          "jpeg"
+        ],
+        "rights_basis_required": true
+      },
+      "output": {
+        "format": "svg",
+        "native_vector": true,
+        "grammar": "threading-specific rect/g/circle/line and one fixed style"
+      },
+      "controls": [
+        "shape",
+        "pegs",
+        "lines",
+        "opacity",
+        "thickness",
+        "display_pegs"
+      ],
+      "initial_profile": {
+        "quality": 1,
+        "mode": 0,
+        "invert_colors": false,
+        "blur": 0
+      },
+      "availability": {
+        "status": "requires-current-inspection",
+        "command": [
+          "node",
+          "scripts/pulse-threading-svg.mjs",
+          "inspect",
+          "--profile",
+          "<absolute-local-profile>"
+        ]
+      },
+      "runtime": {
+        "source": "operator-supplied external directory",
+        "node": "v24.15.0",
+        "chrome": "155.0.8059.79",
+        "platform": "linux-x64",
+        "automatic_install": false
+      },
+      "provenance": {
+        "repository": "https://github.com/piellardj/image-stylization-threading",
+        "commit": "ef93733b28248340958c5843b5d882e6f4f5fef1",
+        "license": "GPL-3.0",
+        "runtime_bundled": false,
+        "lock": "threading-source-lock.json"
+      },
+      "limits": [
+        "closed local job and profile",
+        "admitted operation required",
+        "60-second deadline",
+        "no universal determinism claim",
+        "input-image permission is separate from program licence"
+      ],
       "reference": "threading.md"
     },
     {
@@ -23,34 +73,362 @@
       "kind": "local-algorithm",
       "domain": "image approximation",
       "effect": "geometric approximation with supported shape exporters",
-      "input": { "role": "material", "formats": ["png", "jpeg"], "rights_basis_required": true },
-      "output": { "format": "svg", "native_vector": true, "grammar": "existing Primitive-specific exporter grammar" },
-      "controls": ["mode", "shapes", "alpha", "workers", "resize", "output_size"],
-      "availability": { "status": "requires-current-inspection", "command": ["node", "scripts/pulse-primitive-svg.mjs", "inspect", "--profile", "<absolute-local-profile>"] },
-      "provenance": { "owner": "existing Pulse Primitive adapter and its build lock", "reference": "../../../docs/evaluation/frontend-primitive-svg.md" },
-      "limits": ["different effect from string art", "existing job/profile/grammar unchanged", "no new exporter admitted by this catalogue"]
+      "input": {
+        "role": "material",
+        "formats": [
+          "png",
+          "jpeg"
+        ],
+        "rights_basis_required": true
+      },
+      "output": {
+        "format": "svg",
+        "native_vector": true,
+        "grammar": "existing Primitive-specific exporter grammar"
+      },
+      "controls": [
+        "mode",
+        "shapes",
+        "alpha",
+        "workers",
+        "resize",
+        "output_size"
+      ],
+      "availability": {
+        "status": "requires-current-inspection",
+        "command": [
+          "node",
+          "scripts/pulse-primitive-svg.mjs",
+          "inspect",
+          "--profile",
+          "<absolute-local-profile>"
+        ]
+      },
+      "provenance": {
+        "owner": "existing Pulse Primitive adapter and its build lock",
+        "reference": "../../../docs/evaluation/frontend-primitive-svg.md"
+      },
+      "limits": [
+        "different effect from string art",
+        "existing job/profile/grammar unchanged",
+        "no new exporter admitted by this catalogue"
+      ]
     },
     {
       "id": "nonflowers",
       "kind": "external-reference",
       "domain": "procedural organic drawing",
       "effect": "seeded plant and floral drawing",
-      "input": { "role": "parameters", "controls": ["seed"] },
-      "output": { "format": "raster", "native_vector": false },
-      "availability": { "status": "no-pulse-local-adapter", "inspection": "Inspect the external source and actual output for a separately scoped task." },
-      "provenance": { "repository": "https://github.com/LingDong-/nonflowers", "commit": "03b653d220f16c6bed7ea9c7edc852f7e91846cb", "license": "MIT", "runtime_bundled": false },
-      "limits": ["not image-to-SVG", "Canvas/paper-background export", "upstream replaces global Math.random; a future runtime must be isolated", "no newly generated output is claimed by this reference"]
+      "input": {
+        "role": "parameters",
+        "controls": [
+          "seed"
+        ]
+      },
+      "output": {
+        "format": "raster",
+        "native_vector": false
+      },
+      "availability": {
+        "status": "no-pulse-local-adapter",
+        "inspection": "Inspect the external source and actual output for a separately scoped task."
+      },
+      "provenance": {
+        "repository": "https://github.com/LingDong-/nonflowers",
+        "commit": "03b653d220f16c6bed7ea9c7edc852f7e91846cb",
+        "license": "MIT",
+        "runtime_bundled": false
+      },
+      "limits": [
+        "not image-to-SVG",
+        "Canvas/paper-background export",
+        "upstream replaces global Math.random; a future runtime must be isolated",
+        "no newly generated output is claimed by this reference"
+      ]
     },
     {
       "id": "book-of-shapes",
       "kind": "external-reference",
       "domain": "parametric motifs",
       "effect": "external shape and pattern authoring",
-      "input": { "role": "parameters", "controls": ["external motif-specific controls"] },
-      "output": { "format": "svg", "native_vector": null },
-      "availability": { "status": "external-tool-only", "inspection": "Inspect the chosen motif, current access, final exported bytes and applicable licence." },
-      "provenance": { "url": "https://bookofshapes.com/", "license_url": "https://bookofshapes.com/license", "runtime_bundled": false },
-      "limits": ["final assets only under the applicable licence", "no redistribution of motif packs, libraries, node definitions or derived generator", "excluded artwork recreations must not be published/sold", "no collection or generator imported into Pulse"]
+      "input": {
+        "role": "parameters",
+        "controls": [
+          "external motif-specific controls"
+        ]
+      },
+      "output": {
+        "format": "svg",
+        "native_vector": null
+      },
+      "availability": {
+        "status": "external-tool-only",
+        "inspection": "Inspect the chosen motif, current access, final exported bytes and applicable licence."
+      },
+      "provenance": {
+        "url": "https://bookofshapes.com/",
+        "license_url": "https://bookofshapes.com/license",
+        "runtime_bundled": false
+      },
+      "limits": [
+        "final assets only under the applicable licence",
+        "no redistribution of motif packs, libraries, node definitions or derived generator",
+        "excluded artwork recreations must not be published/sold",
+        "no collection or generator imported into Pulse"
+      ]
+    },
+    {
+      "id": "composition-guides",
+      "kind": "external-reference",
+      "domain": "composition planning",
+      "effect": "editable manual geometric guides",
+      "input": {
+        "role": "parameters and optional reference image",
+        "techniques": [
+          "golden",
+          "thirds",
+          "circle",
+          "center",
+          "scale",
+          "triangle"
+        ],
+        "canvas_min": 32,
+        "canvas_max": 16384,
+        "focus": "normalized 0–1",
+        "image_formats": [
+          "jpg",
+          "png",
+          "webp",
+          "gif"
+        ]
+      },
+      "output": {
+        "format": "svg",
+        "native_vector": null,
+        "grammar": "guide geometry; optional embedded raster remains raster"
+      },
+      "controls": [
+        "technique",
+        "width",
+        "height",
+        "focus",
+        "optional image",
+        "all techniques"
+      ],
+      "availability": {
+        "status": "no-pulse-local-adapter",
+        "inspection": "Inspect the pinned external source, method-specific dependencies, input/output bounds and fresh destinations in a separately admitted task."
+      },
+      "provenance": {
+        "archive_sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+        "source_skill": "geometric-composition-director",
+        "source_resources": [
+          "geometric-composition-director/README.md",
+          "geometric-composition-director/SKILL.md",
+          "geometric-composition-director/examples/guides/center.svg",
+          "geometric-composition-director/examples/guides/circle.svg",
+          "geometric-composition-director/examples/guides/golden.svg",
+          "geometric-composition-director/examples/guides/scale.svg",
+          "geometric-composition-director/examples/guides/thirds.svg",
+          "geometric-composition-director/examples/guides/triangle.svg",
+          "geometric-composition-director/examples/sample-shot-plan.json",
+          "geometric-composition-director/references/geometry-and-verification.md",
+          "geometric-composition-director/references/shot-recipes.md",
+          "geometric-composition-director/scripts/composition_guides.py",
+          "geometric-composition-director/tests/test_guides.py"
+        ],
+        "runtime_bundled": false,
+        "license": "No additional archive licence asserted."
+      },
+      "limits": [
+        "manual alignment only; no image detection or score",
+        "logarithmic golden-spiral approximation is not Fibonacci-square construction",
+        "output paths may overwrite; fresh destination required for future admission"
+      ],
+      "reference": "../../design/references/geometric-composition-director.md"
+    },
+    {
+      "id": "shotboard",
+      "kind": "external-reference",
+      "domain": "photo production handoff",
+      "effect": "symbolic camera/subject/light blocking",
+      "input": {
+        "role": "direction JSON",
+        "position_range": [
+          0,
+          100
+        ]
+      },
+      "output": {
+        "formats": [
+          "markdown",
+          "svg"
+        ],
+        "native_vector": null,
+        "grammar": "shot-sheet.md plus schematic overhead SVGs"
+      },
+      "controls": [
+        "thesis",
+        "shots",
+        "camera",
+        "subject",
+        "lights"
+      ],
+      "availability": {
+        "status": "no-pulse-local-adapter",
+        "inspection": "Inspect the pinned external source, method-specific dependencies, input/output bounds and fresh destinations in a separately admitted task."
+      },
+      "provenance": {
+        "archive_sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+        "source_skill": "photographic-art-direction",
+        "source_resources": [
+          "photographic-art-direction/README.md",
+          "photographic-art-direction/SKILL.md",
+          "photographic-art-direction/examples/night-studies.json",
+          "photographic-art-direction/references/camera-lighting.md",
+          "photographic-art-direction/references/photographic-treatments.md",
+          "photographic-art-direction/references/shot-card-template.md",
+          "photographic-art-direction/scripts/shotboard.py",
+          "photographic-art-direction/scripts/tests/test_shotboard.py"
+        ],
+        "runtime_bundled": false,
+        "license": "No additional archive licence asserted."
+      },
+      "limits": [
+        "not photometry, location measurement or optical simulation",
+        "source refuses existing output collisions unless --force explicitly chosen",
+        "no source program is bundled or run"
+      ],
+      "reference": "../../design/references/photographic-shot-card.md"
+    },
+    {
+      "id": "beatmap",
+      "kind": "external-reference",
+      "domain": "manual temporal planning",
+      "effect": "beat/event/cut cue metadata",
+      "input": {
+        "role": "BPM/downbeat or strictly increasing known timestamps",
+        "fps": "positive real",
+        "subdivision": "pulses per beat",
+        "duration": "seconds"
+      },
+      "output": {
+        "formats": [
+          "json",
+          "csv"
+        ],
+        "native_vector": false,
+        "grammar": "ideal times, quantized times, frame indices, cuts and collisions"
+      },
+      "controls": [
+        "bpm",
+        "start",
+        "beats-file",
+        "duration",
+        "fps",
+        "subdivision",
+        "shots"
+      ],
+      "availability": {
+        "status": "no-pulse-local-adapter",
+        "inspection": "Inspect the pinned external source, method-specific dependencies, input/output bounds and fresh destinations in a separately admitted task."
+      },
+      "provenance": {
+        "archive_sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+        "source_skill": "rhythmic-architectural-motion",
+        "source_resources": [
+          "rhythmic-architectural-motion/README.md",
+          "rhythmic-architectural-motion/SKILL.md",
+          "rhythmic-architectural-motion/references/example-cues.json",
+          "rhythmic-architectural-motion/references/sample-shot-plan.json",
+          "rhythmic-architectural-motion/references/shot-recipes.md",
+          "rhythmic-architectural-motion/references/timing-and-workflows.md",
+          "rhythmic-architectural-motion/scripts/beatmap.py"
+        ],
+        "runtime_bundled": false,
+        "license": "No additional archive licence asserted."
+      },
+      "limits": [
+        "at most 50000 markers",
+        "no audio/onset analysis; subdivisions interpolate",
+        "nominal BPM does not establish measured sync",
+        "output files may overwrite; fps conversion to a renderer is explicit"
+      ],
+      "reference": "beatmap-workflow.md"
+    },
+    {
+      "id": "layered-explainer",
+      "kind": "external-reference",
+      "domain": "layered narrated media",
+      "effect": "code-composed 2D frames and optional audio mux",
+      "input": {
+        "role": "project JSON and local independent layers/fonts/audio",
+        "even_dimensions_min": 16,
+        "fps_integer_range": [
+          1,
+          60
+        ],
+        "layer_center_range": [
+          -2,
+          3
+        ],
+        "audio_gain_range": [
+          0,
+          2
+        ]
+      },
+      "output": {
+        "formats": [
+          "mp4",
+          "editable project and assets"
+        ],
+        "native_vector": false,
+        "grammar": "Pillow-composed frames, H.264 FFmpeg encode, optional audio mux"
+      },
+      "controls": [
+        "scenes",
+        "layers",
+        "keyframes",
+        "camera",
+        "captions",
+        "up/down paper-tear",
+        "audio"
+      ],
+      "availability": {
+        "status": "no-pulse-local-adapter",
+        "inspection": "Inspect the pinned external source, method-specific dependencies, input/output bounds and fresh destinations in a separately admitted task."
+      },
+      "provenance": {
+        "archive_sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+        "source_skill": "code-animated-explainer",
+        "source_resources": [
+          "code-animated-explainer/README.md",
+          "code-animated-explainer/SKILL.md",
+          "code-animated-explainer/examples/assets/comet.png",
+          "code-animated-explainer/examples/assets/compass.png",
+          "code-animated-explainer/examples/assets/desert.png",
+          "code-animated-explainer/examples/assets/moon.png",
+          "code-animated-explainer/examples/assets/paper.png",
+          "code-animated-explainer/examples/demo-project.json",
+          "code-animated-explainer/references/asset-and-art-direction.md",
+          "code-animated-explainer/references/production-playbook.md",
+          "code-animated-explainer/references/project-format.md",
+          "code-animated-explainer/scripts/make_demo_assets.py",
+          "code-animated-explainer/scripts/render.py",
+          "code-animated-explainer/scripts/test_render.py"
+        ],
+        "runtime_bundled": false,
+        "license": "No additional archive licence asserted."
+      },
+      "limits": [
+        "not admitted; Python/Pillow/FFmpeg source outside Pulse",
+        "at most 100000 frames; no supplied pixel ceiling or subprocess deadline",
+        "caption size is literal pixels; captions remain outside camera transforms",
+        "ffprobe narration guard tolerates visual end +0.15 s; inspect final ending",
+        "no ASR, forced alignment, segmentation, lip-sync or automatic alpha",
+        "output may overwrite; future admission requires bounded fresh outputs"
+      ],
+      "reference": "explainer-project-format.md"
     }
   ]
 }

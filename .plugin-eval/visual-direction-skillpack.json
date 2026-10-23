@@ -1,0 +1,49 @@
+{
+  "kind": "pulse-plugin-benchmark",
+  "schemaVersion": 4,
+  "version": 4,
+  "mode": "chat",
+  "scenarioSource": "docs/evaluation/visual-direction-skillpack/corpus.json",
+  "pilotScenarioIds": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    2,
+    3,
+    5
+  ],
+  "requiredRunnerProfileFields": [
+    "model_id",
+    "model_version",
+    "reasoning_effort",
+    "runtime"
+  ],
+  "skillReferences": {
+    "design": [
+      "skills/design/references/framing.md",
+      "skills/design/references/cultural-digging.md",
+      "skills/design/references/motion.md",
+      "skills/design/references/awwwards.md",
+      "skills/design/references/awwwards-typography.md",
+      "skills/design/references/awwwards-layout.md",
+      "skills/design/references/awwwards-motion.md",
+      "skills/design/references/awwwards-patterns.md",
+      "skills/visual-assets/SKILL.md",
+      "skills/visual-assets/references/routing.md",
+      "skills/visual-assets/references/capabilities.json"
+    ]
+  },
+  "shared": {
+    "verifiers": []
+  },
+  "notes": [
+    "Five new cases plus AW2/AW3/AW5 copied without changes; frozen before baseline.",
+    "Use existing v4 chat preparation/evidence and compareResults. Keep full eight-case baseline before intervention.",
+    "Native iterative helper gates promotion controls until a final condition; that ordering cannot establish the required complete pre-intervention eight-case baseline. No helper contract is changed: v4 benchmark is the existing complete-corpus path.",
+    "At most 16 submitted operator attempts, one at a time. No uncertain attempt replacement or fallback.",
+    "Published fixed snapshot and actual assistant model capture required; no qualification inferred from a requested alias, CLI version or model prose.",
+    "This is guidance-in-context decision evidence; discovery, filesystem loading and real tool action are separate."
+  ]
+}

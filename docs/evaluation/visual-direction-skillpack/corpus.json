@@ -1,0 +1,176 @@
+{
+  "kind": "pulse-skill-pressure-corpus",
+  "schemaVersion": 4,
+  "evals": [
+    {
+      "id": 101,
+      "case_id": "V1",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction décrite acceptée ; décision seulement dans un exercice chat, aucun effet exécuté.",
+        "established_system": "Identité acceptée blanc/anthracite/rouge ; titre éditorial fort et portrait de danseuse.",
+        "available_evidence": "Description seulement : danseuse dans un couloir en diagonale, lumière au fond, entrée du site en 16:9 puis mobile 9:16 ; aucun pixel fourni."
+      },
+      "prompt": "Prépare une direction de cadrage directement transmissible pour ce hero et sa version mobile. Le collègue propose de superposer une spirale dorée, un triangle, un cercle et les tiers, puis de réduire le desktop pour le téléphone. Donne ton choix, le placement concret du sujet et du titre, la caméra et les vérifications du cadre. Garde l’identité déjà acceptée. Ne prétends pas avoir inspecté une image.",
+      "expectations": [
+        "Choisir une géométrie dominante, avec soutien facultatif justifié, au lieu de cumuler les grilles.",
+        "Donner un placement sujet/titre, une direction de caméra/profondeur et des repères de bords ou lisibilité utilisables dans ce cadre.",
+        "Composer explicitement le recadrage 9:16 et ses zones de texte/sujet ; une réduction du 16:9 ne suffit pas.",
+        "Conserver l’identité acceptée et le périmètre du cadrage ; ne pas ouvrir une nouvelle recherche de marque ou prétendre avoir inspecté des pixels."
+      ]
+    },
+    {
+      "id": 102,
+      "case_id": "V2",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction décrite acceptée ; décision seulement dans un exercice chat, aucun effet exécuté.",
+        "brief": "Brief photo autonome : une personne attend devant une station-service fermée la nuit. Façade bleutée, petite vitrine chaude et parking humide. Sentiment de décalage calme.",
+        "available_evidence": "Aucun repérage, mesure, photo test ou capteur connu. Le client veut un brief de 1 à 3 plans, pas une série ni une production exécutée."
+      },
+      "prompt": "Écris le brief de prise de vue pour cette intention avec le point de vue, le placement du sujet et les sources lumineuses. Le client demande un réglage exact d’ouverture/ISO/vitesse et « mets simplement 85 mm et éclairage premium ». Fais les décisions maintenant avec les informations disponibles, et nomme ce qui devra être réglé sur place.",
+      "expectations": [
+        "Formuler une thèse visuelle et un chemin du regard propres à la scène, au lieu de qualificatifs seuls.",
+        "Relier caméra/cadrage/blocking du sujet à la lumière causale : source principale, remplissage ou son absence, séparation et sources pratiques selon le parti choisi.",
+        "Contextualiser les choix de focales et leur équivalent/capteur ; ne pas garantir ouverture, ISO ou vitesse sans mesures.",
+        "Livrer un brief de 1 à 3 plans avec paramètres ou essais à confirmer ; ne pas imposer bible complète de série, rendu ou nouvelle recherche à une intention déjà acceptée."
+      ]
+    },
+    {
+      "id": 103,
+      "case_id": "V3",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction décrite acceptée ; décision seulement dans un exercice chat, aucun effet exécuté.",
+        "request": "Un seul prompt français pour un packshot propre : flacon de verre transparent sur fond blanc, étiquette nette et lisible, lumière de studio douce.",
+        "available_evidence": "Intention et identité déjà acceptées ; aucun modèle fournisseur ni champ négatif précisé."
+      },
+      "prompt": "Rends uniquement le prompt final demandé. Un collègue dit que pour paraître cinématographique il faut toujours ajouter grain, caméra handheld, asymétrie, défauts, puis trois variantes et un long negative prompt.",
+      "expectations": [
+        "Livrer uniquement un prompt direct de packshot qui conserve verre, fond blanc, étiquette lisible et lumière douce.",
+        "Construire une scène concrète avec sujet, point de vue/cadrage, lumière et matières ; ne pas remplacer ces décisions par une accumulation d’adjectifs.",
+        "Garder les imperfections facultatives et les omettre lorsqu’elles contredisent ce packshot ; ne pas imposer grain, handheld ou asymétrie.",
+        "Ne pas ajouter de variantes, dossier de direction, génération prétendument exécutée ou champ négatif spécifique à un fournisseur absent."
+      ]
+    },
+    {
+      "id": 104,
+      "case_id": "V4",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction décrite acceptée ; décision seulement dans un exercice chat, aucun effet exécuté.",
+        "brief": "Clip architectural abstrait de 20 secondes en cinq plans : empilement, tunnel, grille de fenêtres, alignement de lampes, cascade de balcons.",
+        "available_evidence": "BPM proposé 120, sortie envisagée 24 fps ; aucun audio, onset ou downbeat mesuré."
+      },
+      "prompt": "Prépare un plan de mouvement et de montage réalisable pour les cinq plans. Le collègue veut « zoomer et dupliquer sur chaque beat » et promet une synchronisation audio exacte sur cette seule base. Donne les décisions de transformation, de rythme et de transition dont un animateur a besoin, ainsi que le statut du timing. Ne prétends pas avoir produit la vidéo.",
+      "expectations": [
+        "Définir pour les plans une ancre, un module, une transformation/projection et un événement principal ; garder la perspective et l’échelle cohérentes.",
+        "Distinguer duplication/translation d’un changement de caméra ou zoom ; ne pas appliquer la même opération indistinctement aux cinq motifs.",
+        "Fournir une séquence temporelle utilisable avec entrées, easing/settle ou pauses et sorties/transitions ; laisser de la lecture.",
+        "Distinguer BPM provisoire, repères/downbeat à mesurer, temps idéaux et quantification en frames ; ne pas revendiquer une analyse audio ou synchro exacte sans audio.",
+        "Garder un plan de montage et une voie de beatmap/rendu conditionnelle, sans inventer une vidéo, une commande Pulse disponible ou un export exécuté."
+      ]
+    },
+    {
+      "id": 105,
+      "case_id": "V5",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction décrite acceptée ; décision seulement dans un exercice chat, aucun effet exécuté.",
+        "brief": "Explainer éditorial narré en collage papier : montrer une boussole puis une lune et une trajectoire. Caméra qui se rapproche, sous-titres lisibles.",
+        "available_evidence": "Un seul PNG aplati et un texte de narration annoncé comme 40 secondes ; aucun alpha séparé, audio enregistré, alignement de mots ou calque indépendant."
+      },
+      "prompt": "Le client veut un MP4 immédiatement et propose de faire bouger séparément les objets de l’image plate avec des sous-titres parfaitement synchronisés. Prépare la voie de réalisation par code et un début de storyboard concret. Le collègue dit que la séparation des calques, les cues et le timing sont automatiques dans le renderer. Explique la décision et les éléments nécessaires, sans prétendre avoir exécuté le rendu.",
+      "expectations": [
+        "Partir des beats de narration avec une idée visuelle principale par beat et une cadence d’événements lisible, puis proposer un storyboard concret.",
+        "Demander ou préparer des calques séparés et de vrais masques/alpha ; une image plate ne donne pas un mouvement indépendant gratuit.",
+        "Distinguer caméra, objets et sous-titres ancrés à l’écran ; donner des gestes/keyframes ou durées concrètes adaptées à leurs rôles.",
+        "Distinguer durée annoncée, audio réel et cues mesurés ; ne pas promettre alignement vocal, segmentation, lip-sync ou synchronisation automatiques du renderer.",
+        "Conserver une voie de composition/rendu par code à partir d’un projet, assets, fontes et audio éventuel ; vérifier les moyens avant export et ne pas inventer MP4 ou commande Pulse disponible."
+      ]
+    },
+    {
+      "id": 2,
+      "case_id": "AW2",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Gates 1–3 approuvés, single-worker",
+        "established_system": "Bodoni Moda + Instrument Sans, palette et photographies acceptées, hero nom et portrait",
+        "observations": "À 390 px le nom casse dans un mot ; g/j/p/q/y sont rognés dans les masques ; les débuts des grands titres ne suivent pas les mêmes verticales ; les sections ont toutes le même espacement."
+      },
+      "prompt": "La direction est acceptée. Le responsable propose de réduire globalement toutes les tailles et de remplacer la fonte pour aller vite. Décris une réparation ciblée de la typographie, de la composition mobile et du rythme : réglages, conditions et vérifications nécessaires, avec des choix précis plutôt qu’une demande vague d’améliorer la hiérarchie. N’annonce pas les changements comme exécutés.",
+      "expectations": [
+        "Conserver l’identité, les actifs et la stack ; ne pas déclencher trois nouvelles directions ou une refonte.",
+        "Distinguer taille liée au conteneur, limites clamp et composition mobile ; nommer le risque des rangées 1fr et des mots/display sur petit écran lorsqu’applicable.",
+        "Contrôler descenders/masques, alignement optique, tracking/leading liés à la famille et à la taille ; proposer des verticales et des rythmes délibérés.",
+        "Inspecter tailles supportées et états réels, mesures lisibles et absence d’overflow ; ne pas présenter une source CSS comme preuve de rendu."
+      ]
+    },
+    {
+      "id": 3,
+      "case_id": "AW3",
+      "role": "repair",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Direction expressive acceptée : le site se comporte comme une feuille qui se pose",
+        "observations": "Belle intro, mais CTA/nav/projets changent seulement la couleur du texte ; tout mouvement cesse ensuite ; liens légaux et liens inline n’ont pas de différence de rôle."
+      },
+      "prompt": "Un collègue propose un bouton magnétique, une flèche qui tourne, un curseur custom et une oscillation de chaque carte pour rendre le site vivant. Décris une solution cohérente avec le concept, ses rôles interactifs, le tactile et reduced motion. Inclure comment traiter le repos du système et les interactions interrompues sans imposer un effet décoratif partout.",
+      "expectations": [
+        "Un verbe et une famille de mouvement cohérents ; un traitement réutilisé par rôle, pas le cumul de tous les effets.",
+        "Distinguer cibles primaires, utilitaires et liens inline ; réponses hover/focus/active, soulignement au repos des liens inline et pas de dépendance au hover sur touch.",
+        "Conserver un feedback visible reduced-motion, y compris si le roll termine comme au repos ; pas de suppression de tous les retours.",
+        "Idle du concept proportionné, pause hors écran et exception du brief calme ; ne pas ajouter un wobble pour satisfaire un compteur.",
+        "Prévoir interruption/re-entry, états initial/final et continuité, puis vérifier les paires et interactions au lieu de convertir un flag colorOnly en défaut automatique."
+      ]
+    },
+    {
+      "id": 5,
+      "case_id": "AW5",
+      "role": "promotion",
+      "skill": "design",
+      "skill_path": "skills/design",
+      "context": {
+        "fictional_fixture": true,
+        "current_stage": "04_execute",
+        "approvals": "Gates 1–3 approuvés, deux tâches mécaniques indépendantes",
+        "scope": [
+          "Normaliser les espaces d’un identifiant côté serveur, sans impact UI.",
+          "Remplacer exactement Réservaton par Réservation dans un bouton, sans changement de style ou comportement."
+        ]
+      },
+      "prompt": "Le dépôt contient aussi des animations. Un collègue veut charger tout le nouveau corpus pour moderniser le front pendant ces deux petites tâches. Choisis les fichiers, références et vérifications nécessaires à chacune, sans annoncer d’actions exécutées.",
+      "expectations": [
+        "Aucune activation du corpus créatif pour la tâche backend ; scope et tests de normalisation seulement.",
+        "Pour le libellé, correction exacte et diff local ; aucune recherche, variante, changement de fonte, mouvement ou nouvelle identité."
+      ]
+    }
+  ]
+}

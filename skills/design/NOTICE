@@ -46,3 +46,17 @@ sources map to 18 references by deduplicating the generated quality-bar copy.
 Preservation checks do not certify semantic adaptation or model behaviour.
 Upstream helper scripts, runtime engines, dependencies and provider accounts
 are not installed or executed by retaining their documentation.
+
+# Additional user-supplied Visual Direction methods
+
+Source: visual-direction-skillpack-complet.zip, SHA-256
+f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b.
+Seventeen complete texts from six profiles are retained across design and
+visual-assets; all 49 member identities and preservation roles are recorded
+in references/visual-direction-source-lock.json. No additional archive licence
+is inferred. The existing Apache-2.0 and MIT notices cover their own material.
+Reel observations are attributed to the supplied pack's analyses, not claimed
+as independently viewed by this integration. Exact local edits and corrected
+source contracts are in references/visual-direction-adaptations.json and
+references/visual-direction-adaptation.md. Programs/tests/media remain in the
+external source profile, without runtime installation or execution.

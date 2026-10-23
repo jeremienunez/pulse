@@ -1,0 +1,2210 @@
+{
+  "schema_version": "1.0",
+  "archive": {
+    "filename": "visual-direction-skillpack-complet.zip",
+    "sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+    "files": 49
+  },
+  "approved_source_map_sha256": "ea0039e9b3bc97bace711a69d2d9ec176dda7a154d36f272bfb797054ecdb6cf",
+  "approved_source_map": {
+    "schema_version": "1.0",
+    "archive": {
+      "filename": "visual-direction-skillpack-complet.zip",
+      "sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+      "files": 49
+    },
+    "archive_members": [
+      {
+        "path": "SKILLPACK-README.md",
+        "sha256": "2af45cd9a79f75429c15b5b7b0e7bdf281f7383732b2f749d29d55a001dcc9df",
+        "bytes": 2853
+      },
+      {
+        "path": "cinematic-composition/README.md",
+        "sha256": "4d77392119ce81d17c54e9c2b666da2d292559430cfcbbcfe27a4959040806c2",
+        "bytes": 670
+      },
+      {
+        "path": "cinematic-composition/SKILL.md",
+        "sha256": "6db9789b16ec25f102832e512a1c3f38d006aa02665bb675fdc5e2acce22809b",
+        "bytes": 7772
+      },
+      {
+        "path": "cinematic-prompt-direction/README.md",
+        "sha256": "5460864d0b295a53047cef45dafe1cf326d4a1131ad0e81a194019960574e63b",
+        "bytes": 2159
+      },
+      {
+        "path": "cinematic-prompt-direction/SKILL.md",
+        "sha256": "58d3795955883d641800f04291b671451ee2218ab892a7b75646d64652dc5fc4",
+        "bytes": 10643
+      },
+      {
+        "path": "cinematic-prompt-direction/references/prompt-examples.md",
+        "sha256": "c5a627b39f54196720edeea4ced6919633be40c3f0d26fe3664b6df27957efd1",
+        "bytes": 4743
+      },
+      {
+        "path": "code-animated-explainer/README.md",
+        "sha256": "7d37d192998b88a96d4b7e65a094dc800956df676bba0aab2587e30b35d341c9",
+        "bytes": 2475
+      },
+      {
+        "path": "code-animated-explainer/SKILL.md",
+        "sha256": "eee83d117633733d62d22afb5bf412d8f6343609131d7115f5d593f56fc08b52",
+        "bytes": 12250
+      },
+      {
+        "path": "code-animated-explainer/examples/assets/comet.png",
+        "sha256": "c55f79945ee473f7e96f9bd7201b5de53fe66ccbc7283f8856042fc828124e79",
+        "bytes": 3380
+      },
+      {
+        "path": "code-animated-explainer/examples/assets/compass.png",
+        "sha256": "a2c597ff7a243a764dd5cf71caa68c1e532aa168e5c5da99d0fa7702c5e79449",
+        "bytes": 12619
+      },
+      {
+        "path": "code-animated-explainer/examples/assets/desert.png",
+        "sha256": "fc72872d68b56892e3717d7c9ad898c93031b22644fb65c700e3d3af66044cec",
+        "bytes": 5163
+      },
+      {
+        "path": "code-animated-explainer/examples/assets/moon.png",
+        "sha256": "3a11b2d681ca1dc428bb24118522ea7dce404bc1dd4c50c3023c43e215505e96",
+        "bytes": 6051
+      },
+      {
+        "path": "code-animated-explainer/examples/assets/paper.png",
+        "sha256": "5f0c1b96309e1f6646abceacf040c645d0624b0885eb06b3e0af7a9084f456e6",
+        "bytes": 215033
+      },
+      {
+        "path": "code-animated-explainer/examples/demo-project.json",
+        "sha256": "76429a72d6ab128440cdc1ce5bdc632730875b88384288f3148aa2be3e3f292b",
+        "bytes": 2220
+      },
+      {
+        "path": "code-animated-explainer/references/asset-and-art-direction.md",
+        "sha256": "8aeed798f906b0a02125ee8622c2adcf9bdfe7fe59ddf372b2d9194c941e0500",
+        "bytes": 4783
+      },
+      {
+        "path": "code-animated-explainer/references/production-playbook.md",
+        "sha256": "7649198be0a53df34c2433389c7c1edd68acd90b8b98559e15377b81a46d5fa7",
+        "bytes": 6619
+      },
+      {
+        "path": "code-animated-explainer/references/project-format.md",
+        "sha256": "5df17831ecd00241cb494aec20ea2ce47d9e9e9280dfbb4d810fefa8c31d2abb",
+        "bytes": 4577
+      },
+      {
+        "path": "code-animated-explainer/scripts/make_demo_assets.py",
+        "sha256": "c90ec7ef33d9fff7d3cd9d29b659499178b37645c3da09209c0393404bb45268",
+        "bytes": 3707
+      },
+      {
+        "path": "code-animated-explainer/scripts/render.py",
+        "sha256": "4094582e154ffa1758f65afe95918269358dc3a886da6b721e07ed2df0b475f5",
+        "bytes": 21189
+      },
+      {
+        "path": "code-animated-explainer/scripts/test_render.py",
+        "sha256": "ee12123976f1150f9a43831460779870d6737d695681d3c57be61d6c691baaa1",
+        "bytes": 2531
+      },
+      {
+        "path": "geometric-composition-director/README.md",
+        "sha256": "6b317eb6c545322f332ed59a14cae7fddbd017e46fcaf35269fdc61137d421ac",
+        "bytes": 2600
+      },
+      {
+        "path": "geometric-composition-director/SKILL.md",
+        "sha256": "da8f4a124cf142327b137de0d49bdcef524a7a2eda328a85150c64dbfaa6168e",
+        "bytes": 11918
+      },
+      {
+        "path": "geometric-composition-director/examples/guides/center.svg",
+        "sha256": "7272d9025bc95b772243531c476eeac49d60722656dafb816a2a65494489f1d0",
+        "bytes": 1196
+      },
+      {
+        "path": "geometric-composition-director/examples/guides/circle.svg",
+        "sha256": "2acf6a2e8eebb99fd649de97c90673e0535617eeeddd7c8f16ee9bd6a26b0630",
+        "bytes": 1107
+      },
+      {
+        "path": "geometric-composition-director/examples/guides/golden.svg",
+        "sha256": "e230e27e72670f3d94a2d17510017f7772eadd1cec2b24db3f93fa6666548155",
+        "bytes": 10339
+      },
+      {
+        "path": "geometric-composition-director/examples/guides/scale.svg",
+        "sha256": "82898c7a782907a3691b6b142c0b0592dff11fcdd08b22705f0d64b82fd00112",
+        "bytes": 1526
+      },
+      {
+        "path": "geometric-composition-director/examples/guides/thirds.svg",
+        "sha256": "2660903d98426d311fc9e8665a964dc1b1c4fd0d24f7eef6fbcdd41ae1d93c7d",
+        "bytes": 1286
+      },
+      {
+        "path": "geometric-composition-director/examples/guides/triangle.svg",
+        "sha256": "d56fd5d902a40cdafe19c4e3ae5c29a73569c214b885257d32d37f470e604612",
+        "bytes": 910
+      },
+      {
+        "path": "geometric-composition-director/examples/sample-shot-plan.json",
+        "sha256": "13996b4d5119effebbc7016d3f894c985315ee7d2ce722fb8c837f9f1c05678f",
+        "bytes": 1240
+      },
+      {
+        "path": "geometric-composition-director/references/geometry-and-verification.md",
+        "sha256": "c6b7e2f25e5eda5f6d3395eb4722572be38c67a8dcfe55318e39b946c013b50c",
+        "bytes": 3207
+      },
+      {
+        "path": "geometric-composition-director/references/shot-recipes.md",
+        "sha256": "4b1dbf0cbb178d5605a0c431acd9a993fb81a3e6bf497a94ebb3140a6b35b016",
+        "bytes": 3197
+      },
+      {
+        "path": "geometric-composition-director/scripts/composition_guides.py",
+        "sha256": "073182219ec0844c08f68e3ca2313af86fb2da25b663b90e6b328094567779eb",
+        "bytes": 11882
+      },
+      {
+        "path": "geometric-composition-director/tests/test_guides.py",
+        "sha256": "86ef88df27619ced6f241d1c0db60237e98aa422cef59f917efd48afa8dfc9e2",
+        "bytes": 2990
+      },
+      {
+        "path": "manifest.json",
+        "sha256": "af6291ac5b4813196aa7d349e696f4ef657236cc07dfda041f7ad79ced8c8fab",
+        "bytes": 9963
+      },
+      {
+        "path": "photographic-art-direction/README.md",
+        "sha256": "d8070dad1c251f6044b6544d353c303de6a75b20e6faa6f8f43fa9ba9ddabd94",
+        "bytes": 2576
+      },
+      {
+        "path": "photographic-art-direction/SKILL.md",
+        "sha256": "f1b58cfb978c33d56701ecd78fe174e50e8a8acf54f3037950bcb3fa9f0c0d75",
+        "bytes": 11920
+      },
+      {
+        "path": "photographic-art-direction/examples/night-studies.json",
+        "sha256": "dbf446c0bebc6c3fa475b7faa4e418e4002dd37b60b2bd777c24e4ccfe750c52",
+        "bytes": 6304
+      },
+      {
+        "path": "photographic-art-direction/references/camera-lighting.md",
+        "sha256": "b540c4f8184e924c55299bb956b900fa60de3ef13badb9b0c48b1e25d28941ae",
+        "bytes": 5499
+      },
+      {
+        "path": "photographic-art-direction/references/photographic-treatments.md",
+        "sha256": "d340def088691f63b8427b77246af094a08f3694af4df195fc4d875af8fcac3c",
+        "bytes": 5339
+      },
+      {
+        "path": "photographic-art-direction/references/shot-card-template.md",
+        "sha256": "be4cfa1ff0fcf3cbfd2382cb6624e7eabbcf590604a7a6d0134a57da34ff46e5",
+        "bytes": 3071
+      },
+      {
+        "path": "photographic-art-direction/scripts/shotboard.py",
+        "sha256": "b30fb56662004d97b8dbc6e2a5687e7316480aa97f3748550395dba4762c6c92",
+        "bytes": 14441
+      },
+      {
+        "path": "photographic-art-direction/scripts/tests/test_shotboard.py",
+        "sha256": "6114f99ed2f77dd6cfbb54d07686b8c1360ca54811ee1e5d59ccfe599aa63259",
+        "bytes": 3053
+      },
+      {
+        "path": "rhythmic-architectural-motion/README.md",
+        "sha256": "b5da3007e07d71327ba146de2f4fffbe5f3ed64d91ddf7cc68892531730775ed",
+        "bytes": 2081
+      },
+      {
+        "path": "rhythmic-architectural-motion/SKILL.md",
+        "sha256": "e9bc6dfdbbc2b0dde0f927b56e6f8c83a79fe18959ea78f0db48a660d7f7576d",
+        "bytes": 12651
+      },
+      {
+        "path": "rhythmic-architectural-motion/references/example-cues.json",
+        "sha256": "5c88032d7680906b39432cd39cea9bdf3d4608134c21ed46e1e0f40d06001b42",
+        "bytes": 7205
+      },
+      {
+        "path": "rhythmic-architectural-motion/references/sample-shot-plan.json",
+        "sha256": "0beee20ae5e11d0afccd96e75bde30cc9789ce437f32c982d2a264c937b8bce0",
+        "bytes": 1006
+      },
+      {
+        "path": "rhythmic-architectural-motion/references/shot-recipes.md",
+        "sha256": "3e7416cf60a79777accd72f875c1217beebb3f6df3efe0dcd20a1d88ba379f07",
+        "bytes": 6071
+      },
+      {
+        "path": "rhythmic-architectural-motion/references/timing-and-workflows.md",
+        "sha256": "88f7fddf79764483642d4a59cd225d22a0ea3ed7d0edf43fc163d4d04a555acd",
+        "bytes": 4550
+      },
+      {
+        "path": "rhythmic-architectural-motion/scripts/beatmap.py",
+        "sha256": "7ec519413b737c2981aa03a5f95df952b09a0e59fc3c91cc70fb9c426b700ae7",
+        "bytes": 9996
+      }
+    ],
+    "files": [
+      {
+        "source": "cinematic-composition/SKILL.md",
+        "destination": "skills/design/references/cinematic-composition.md",
+        "source_sha256": "6db9789b16ec25f102832e512a1c3f38d006aa02665bb675fdc5e2acce22809b",
+        "source_bytes": 7772,
+        "sections": [
+          {
+            "heading": "frontmatter / preamble",
+            "start_byte": 0,
+            "end_byte": 472,
+            "sha256": "68bf6d4434046f85be248e2bb5a981a6b86a0f296b56dd6058f9cf536e84262f"
+          },
+          {
+            "heading": "# Cinematic Composition",
+            "start_byte": 472,
+            "end_byte": 497,
+            "sha256": "892469868ff078445949e1972ac379a3db273b2b4f0888e2cd000e66a181331e"
+          },
+          {
+            "heading": "## Purpose",
+            "start_byte": 497,
+            "end_byte": 809,
+            "sha256": "aae6d2fb70cf4a826f32d93d504e338b76281fc093f0c8754a7de8f53754f673"
+          },
+          {
+            "heading": "## Activation",
+            "start_byte": 809,
+            "end_byte": 1021,
+            "sha256": "d56039706689342164619acfd5898e0ba03124827355167bb243021b77715397"
+          },
+          {
+            "heading": "## Inputs",
+            "start_byte": 1021,
+            "end_byte": 1363,
+            "sha256": "717632a02517325f5d3f09003830828accba532402e84395b0494191cbaf263e"
+          },
+          {
+            "heading": "## Composition selection",
+            "start_byte": 1363,
+            "end_byte": 2708,
+            "sha256": "34b71f247fddd27060450a4bf14a0c3bf41c057ac3eab6d0bbdffa9328b6b5a0"
+          },
+          {
+            "heading": "## Workflow",
+            "start_byte": 2708,
+            "end_byte": 4184,
+            "sha256": "27727b2f74082197c2d993190c70c7659c63c98e022ddc0efd3b3252c77dab21"
+          },
+          {
+            "heading": "## Output contract",
+            "start_byte": 4184,
+            "end_byte": 4994,
+            "sha256": "20e42d561ffd48e1f554c56f9411c7c0f29f40dded0dd5c49e442360a604c3b2"
+          },
+          {
+            "heading": "## Prompt pattern",
+            "start_byte": 4994,
+            "end_byte": 5408,
+            "sha256": "eccdf0ead50cd2bdc94011c3e34cced2257451875913b3f5b5a12c091acff69e"
+          },
+          {
+            "heading": "## Camera motion guidance",
+            "start_byte": 5408,
+            "end_byte": 6013,
+            "sha256": "07c6d2decbab006fc29f1611544202459197b83a0a4f47cc3cd8f2b403a08c2b"
+          },
+          {
+            "heading": "## Examples",
+            "start_byte": 6013,
+            "end_byte": 7284,
+            "sha256": "02803667d18d46f60f80c62b0ddd7d109ab0fd256edbd444c8efa096be538d5b"
+          },
+          {
+            "heading": "## Provenance",
+            "start_byte": 7284,
+            "end_byte": 7772,
+            "sha256": "64c0f0e40b34b7cef456751f5be291fc9801b7b39ee01aac8529836ede36bd48"
+          }
+        ]
+      },
+      {
+        "source": "cinematic-prompt-direction/SKILL.md",
+        "destination": "skills/design/references/cinematic-prompt-direction.md",
+        "source_sha256": "58d3795955883d641800f04291b671451ee2218ab892a7b75646d64652dc5fc4",
+        "source_bytes": 10643,
+        "sections": [
+          {
+            "heading": "frontmatter / preamble",
+            "start_byte": 0,
+            "end_byte": 463,
+            "sha256": "1178c9a15a75420f5429053920de8c504c7846bc8963cfd1a4062fcf7c5fd641"
+          },
+          {
+            "heading": "# Cinematic Prompt Direction",
+            "start_byte": 463,
+            "end_byte": 493,
+            "sha256": "7429a015e99c119b0d6da4c7eb20d8ed373940042abb5a5eee8c3f7e60c5dfe4"
+          },
+          {
+            "heading": "## Purpose",
+            "start_byte": 493,
+            "end_byte": 1325,
+            "sha256": "690f49f0feb688bfae9bd4d13432f16be44ed8e84f9b417ca712e3e320b7aeab"
+          },
+          {
+            "heading": "## When to use",
+            "start_byte": 1325,
+            "end_byte": 2125,
+            "sha256": "fee028b65c2362c1b2d9153b9774aa3d4c2c0b3b182322667432f0e380c44078"
+          },
+          {
+            "heading": "## Intake: establish the shot",
+            "start_byte": 2125,
+            "end_byte": 3382,
+            "sha256": "223d27612662e1792addda019e64fd1d9b2e2c121d4a209264c36aaeef3647b9"
+          },
+          {
+            "heading": "## Working method",
+            "start_byte": 3382,
+            "end_byte": 3401,
+            "sha256": "3004e9608a4bc89a5c8831da0fba5459aed7320fa5b05fb2255abf3f62848259"
+          },
+          {
+            "heading": "### 1. Replace empty style labels with observable decisions",
+            "start_byte": 3401,
+            "end_byte": 4189,
+            "sha256": "fad000c4351fd9060386137558e93f13322c81004e15bb370e2a0579b7308e79"
+          },
+          {
+            "heading": "### 2. Direct the frame",
+            "start_byte": 4189,
+            "end_byte": 5231,
+            "sha256": "4d69d449cec9a76b42a2c1c992c39ad268cbc7f343a0cf07780b74ce47c91eae"
+          },
+          {
+            "heading": "### 3. Add imperfection with purpose, not random degradation",
+            "start_byte": 5231,
+            "end_byte": 6065,
+            "sha256": "2bb3ae307bc5d6897f95f9860ae7c059af6383985b7a8b22649e394338856cce"
+          },
+          {
+            "heading": "### 4. Express negative constraints meaningfully",
+            "start_byte": 6065,
+            "end_byte": 7050,
+            "sha256": "7512902945390307c1e8609bf4003c59e59ba07d0e585550ddca21360dc5f474"
+          },
+          {
+            "heading": "### 5. For video, add a clear temporal plan",
+            "start_byte": 7050,
+            "end_byte": 7818,
+            "sha256": "9de654a8378a092a716d2e9ef495e6fb8d9df8f50dd30a67b43c4c73ffd84631"
+          },
+          {
+            "heading": "### 6. Emit a lean, production-ready prompt",
+            "start_byte": 7818,
+            "end_byte": 8842,
+            "sha256": "a32801127d985d0a5c3750ff9027a56e1f9596745a892e28c5efc4dc3d8b4d53"
+          },
+          {
+            "heading": "## Required output",
+            "start_byte": 8842,
+            "end_byte": 9861,
+            "sha256": "c558a1ac970bbf830b78be9daadea81f924f7d354858e2a62350bccf23fa7401"
+          },
+          {
+            "heading": "## Final QA gate",
+            "start_byte": 9861,
+            "end_byte": 10465,
+            "sha256": "43405cfa12377e73184bbff16039df4b936c124d7864592677b8d64e7ad78b13"
+          },
+          {
+            "heading": "## Examples and expanded reference",
+            "start_byte": 10465,
+            "end_byte": 10643,
+            "sha256": "2e9faf85e58214973d3a0793c7860969ee0d65495bbef1814ae2a4818152e614"
+          }
+        ]
+      },
+      {
+        "source": "cinematic-prompt-direction/references/prompt-examples.md",
+        "destination": "skills/design/references/cinematic-prompt-examples.md",
+        "source_sha256": "c5a627b39f54196720edeea4ced6919633be40c3f0d26fe3664b6df27957efd1",
+        "source_bytes": 4743,
+        "sections": [
+          {
+            "heading": "# Prompt examples and model-aware checks",
+            "start_byte": 0,
+            "end_byte": 226,
+            "sha256": "87c7d52ee5a27459bd3d45ada1679195954d60676530d024159743d9abfd6169"
+          },
+          {
+            "heading": "## 1. Still portrait: vague -> directed",
+            "start_byte": 226,
+            "end_byte": 267,
+            "sha256": "0b20e731576b866fc11cbafe611a4969d18e4fca8c3d720331dac15c2f42443d"
+          },
+          {
+            "heading": "### Vague",
+            "start_byte": 267,
+            "end_byte": 350,
+            "sha256": "96be90d2ea5713341ee738ae5aa33fa159875822553f49ef42bf24d44ca077c3"
+          },
+          {
+            "heading": "### Directed",
+            "start_byte": 350,
+            "end_byte": 1242,
+            "sha256": "df7199e9bd47b9697e925517edf80c6ac240e80e31a40f04004acda4af01ae95"
+          },
+          {
+            "heading": "## 2. Fashion still: stylized, not generic “photoreal”",
+            "start_byte": 1242,
+            "end_byte": 2207,
+            "sha256": "554e1ee2d7ee034959368415201865a1924ddc8580f950dae12c45498a925407"
+          },
+          {
+            "heading": "## 3. Six-second video: one plausible shot",
+            "start_byte": 2207,
+            "end_byte": 3246,
+            "sha256": "d5e254fe96b1c78c97f8fd350bad98aef5ba30fbeae4491620ed572e1dafa391"
+          },
+          {
+            "heading": "## 4. Prompt audit checklist",
+            "start_byte": 3246,
+            "end_byte": 4018,
+            "sha256": "6080071f172cc339f84357f8c6ee1f75c9406fcf42493db2c4ea7317b77c6637"
+          },
+          {
+            "heading": "## 5. Tool compatibility",
+            "start_byte": 4018,
+            "end_byte": 4743,
+            "sha256": "29a1e9316fcab05108382e27e38b938acde404bd165fa5f622b91f3acc49850a"
+          }
+        ]
+      },
+      {
+        "source": "code-animated-explainer/SKILL.md",
+        "destination": "skills/design/references/code-animated-explainer.md",
+        "source_sha256": "eee83d117633733d62d22afb5bf412d8f6343609131d7115f5d593f56fc08b52",
+        "source_bytes": 12250,
+        "sections": [
+          {
+            "heading": "frontmatter / preamble",
+            "start_byte": 0,
+            "end_byte": 599,
+            "sha256": "bf43f3d66c700e8643c66f40ec89eb24504e2b07aa425c615e435b78874ab7fa"
+          },
+          {
+            "heading": "# Code-Animated Explainer Studio",
+            "start_byte": 599,
+            "end_byte": 633,
+            "sha256": "4dbaf19b258e6620cdfb7e283453f20ecf7a083abc683d147ced9fd73c06e9a1"
+          },
+          {
+            "heading": "## What this skill does",
+            "start_byte": 633,
+            "end_byte": 1752,
+            "sha256": "ccb0a4804507e8e082a0c9df27d145ad0b75569b1f4bb3388a22c75659531c9d"
+          },
+          {
+            "heading": "## Activate when",
+            "start_byte": 1752,
+            "end_byte": 2598,
+            "sha256": "946d5a4c5be077f48d3fff9d314afb25d4119200a3f506acd4680f3cce10ff57"
+          },
+          {
+            "heading": "## Inputs and defaults",
+            "start_byte": 2598,
+            "end_byte": 3784,
+            "sha256": "dd1c9e60728edc4b20d44cebcca04323acbccaf57f360d991c420658bb9ab203"
+          },
+          {
+            "heading": "## Core creative workflow",
+            "start_byte": 3784,
+            "end_byte": 3811,
+            "sha256": "16d07fc8f83c50f8354f43101bc088af198aecd93757f829e015155e8f9292d7"
+          },
+          {
+            "heading": "### 1 — Script first: voice leads the edit",
+            "start_byte": 3811,
+            "end_byte": 4524,
+            "sha256": "cf77d55e71b7c4e20666d4d72bb698351428510d48685ed46326d226f93e637d"
+          },
+          {
+            "heading": "### 2 — Extract a *visual system*, not a copyrighted image template",
+            "start_byte": 4524,
+            "end_byte": 5171,
+            "sha256": "04791274f691b4fbc0e3f0f31ac1eea0b190adcc66c271d375959c7e0bf086a1"
+          },
+          {
+            "heading": "### 3 — Storyboard scenes, then decompose into layers",
+            "start_byte": 5171,
+            "end_byte": 6057,
+            "sha256": "10493d436c9078a6ec607eb71ece026690bf1a180ecf93e3cc381f7bc477e73c"
+          },
+          {
+            "heading": "### 4 — Generate or prepare still images (optional Higgsfield MCP)",
+            "start_byte": 6057,
+            "end_byte": 7050,
+            "sha256": "be8a105c07e98fed7e4db6891b3ea3199946ac0b5c4a8efa3340c04efa59d4f6"
+          },
+          {
+            "heading": "### 5 — Animate with a deterministic timeline",
+            "start_byte": 7050,
+            "end_byte": 7999,
+            "sha256": "cae69f385427760c89ac751984b46dfda4d00a27911aae54bf17d7c00e20c007"
+          },
+          {
+            "heading": "### 6 — Synchronize to the spoken story",
+            "start_byte": 7999,
+            "end_byte": 8865,
+            "sha256": "c9eb9b62a274ddd4520751092d301551af0f3944464115d1cb867c9ecd7408bd"
+          },
+          {
+            "heading": "### 7 — Render, inspect and iterate",
+            "start_byte": 8865,
+            "end_byte": 9792,
+            "sha256": "6a9093d6193633b8f858480c909bfa955e77bad6d230e96278a72adf8e169595"
+          },
+          {
+            "heading": "## Required response/output for an agent using this skill",
+            "start_byte": 9792,
+            "end_byte": 10860,
+            "sha256": "d255d4a66adca66a4d6439c8abb45e068db2a3905d86abc7fbbdeea47318b563"
+          },
+          {
+            "heading": "## Acceptance checks",
+            "start_byte": 10860,
+            "end_byte": 11648,
+            "sha256": "75b3a063c94f080ae7242f9f3d90a23fd80b8356b761567206f2f80b7a67f0a2"
+          },
+          {
+            "heading": "## References",
+            "start_byte": 11648,
+            "end_byte": 12250,
+            "sha256": "a59dbe34c49843cb27b57be19b8097c7cc1d5642752a786174de130935cd9957"
+          }
+        ]
+      },
+      {
+        "source": "code-animated-explainer/references/asset-and-art-direction.md",
+        "destination": "skills/design/references/explainer-asset-direction.md",
+        "source_sha256": "8aeed798f906b0a02125ee8622c2adcf9bdfe7fe59ddf372b2d9194c941e0500",
+        "source_bytes": 4783,
+        "sections": [
+          {
+            "heading": "# Style bible and layered still-asset preparation",
+            "start_byte": 0,
+            "end_byte": 51,
+            "sha256": "9564889ef513e6d7011bfe52ccbc86e70e630471ef7e9d7e36122add40a16bc3"
+          },
+          {
+            "heading": "## Reference-image intake",
+            "start_byte": 51,
+            "end_byte": 996,
+            "sha256": "87619c0619e773be3244cbfa4495ae994d4b9fbeacaa510c4d8f2fb873cc3c95"
+          },
+          {
+            "heading": "## Prepare assets as independent layers",
+            "start_byte": 996,
+            "end_byte": 1980,
+            "sha256": "f4ddb3c106969a08646f5196286cb04daa149368130569111907bbd69f81997a"
+          },
+          {
+            "heading": "## Original example: astronomy explainer",
+            "start_byte": 1980,
+            "end_byte": 2139,
+            "sha256": "aa6efe01738d849e29b64ec4cfecb5a6e4fbe8094a2af67f6fff0f509718aa8c"
+          },
+          {
+            "heading": "### Scene 1: A celestial visitor",
+            "start_byte": 2139,
+            "end_byte": 3174,
+            "sha256": "3674e2a2750d55bc360ba80209de121a27ab58f38a6623f3b74a7eb02fa21cf6"
+          },
+          {
+            "heading": "### Scene 2: Tracing an orbit",
+            "start_byte": 3174,
+            "end_byte": 3635,
+            "sha256": "2c1f27134676be442655acfde9c0c132fe7ca5044ea8b9e3003881bbe7cf3817"
+          },
+          {
+            "heading": "## For a generator with style-reference media",
+            "start_byte": 3635,
+            "end_byte": 4226,
+            "sha256": "25d5092d02550cde9a0d3f9e2910414d4d6322338d21f89cd54f5f1d0775d637"
+          },
+          {
+            "heading": "## Layering and motion pitfalls",
+            "start_byte": 4226,
+            "end_byte": 4783,
+            "sha256": "9dc2081a1e268e10a4480d012b2fd33ee271fe975409d41f5993cf11ebf53773"
+          }
+        ]
+      },
+      {
+        "source": "code-animated-explainer/references/production-playbook.md",
+        "destination": "skills/visual-assets/references/explainer-production.md",
+        "source_sha256": "7649198be0a53df34c2433389c7c1edd68acd90b8b98559e15377b81a46d5fa7",
+        "source_bytes": 6619,
+        "sections": [
+          {
+            "heading": "# Production playbook: code-based collage explainers",
+            "start_byte": 0,
+            "end_byte": 54,
+            "sha256": "19609fb375d81a2464f3950d416e9a9657ff6944e85d9b4146b43c9b98a34858"
+          },
+          {
+            "heading": "## The five steps actually shown in the Reel",
+            "start_byte": 54,
+            "end_byte": 655,
+            "sha256": "4df384fe6626474903373de64ccb17c9b6a1e7b21522e3c6d48577370ea2b598"
+          },
+          {
+            "heading": "## Example: script and edit beats",
+            "start_byte": 655,
+            "end_byte": 1666,
+            "sha256": "b10d6549ae9ee46f3be178c28a14e5685df347fd61e373f44b4fc95e40d10c57"
+          },
+          {
+            "heading": "## Layer-to-code handoff",
+            "start_byte": 1666,
+            "end_byte": 2177,
+            "sha256": "88b57ac2e6ee3c37d71e422b18fa8a1a30a167a696eb0cb72999758fbcc46604"
+          },
+          {
+            "heading": "## Example keyframe design",
+            "start_byte": 2177,
+            "end_byte": 2734,
+            "sha256": "a395f091ca3afe53c3c9af4fc2b7cd6750b959032db753e6e3bc8334e02d7995"
+          },
+          {
+            "heading": "## Python/FFmpeg reference path",
+            "start_byte": 2734,
+            "end_byte": 3544,
+            "sha256": "907c3449eece2e7693608c6a143ce5eb79c2ccbdb5a3ad4ed26b22e35fb11f78"
+          },
+          {
+            "heading": "## TypeScript/React alternative",
+            "start_byte": 3544,
+            "end_byte": 4233,
+            "sha256": "0c03a54dd93c28fcd56a622e068ebf191b373064059dbfa447e2cea634250bf3"
+          },
+          {
+            "heading": "## Higgsfield MCP handoff notes",
+            "start_byte": 4233,
+            "end_byte": 4869,
+            "sha256": "c0744fb00f4a30f5d4f4bc36239fb3bcc5755e3561d163b0e3b281d92e27296c"
+          },
+          {
+            "heading": "## Quality rubric",
+            "start_byte": 4869,
+            "end_byte": 5775,
+            "sha256": "0fda964f0e7a861529e475c29b0529397e58fd6541e768e9b1afe82bcae80d27"
+          },
+          {
+            "heading": "## Troubleshooting",
+            "start_byte": 5775,
+            "end_byte": 6619,
+            "sha256": "0934d7aae6f063cec20155f4c25a87362c96d78e5a5cf11428ba4f19ede4db51"
+          }
+        ]
+      },
+      {
+        "source": "code-animated-explainer/references/project-format.md",
+        "destination": "skills/visual-assets/references/explainer-project-format.md",
+        "source_sha256": "5df17831ecd00241cb494aec20ea2ce47d9e9e9280dfbb4d810fefa8c31d2abb",
+        "source_bytes": 4577,
+        "sections": [
+          {
+            "heading": "# JSON project input contract — `scripts/render.py`",
+            "start_byte": 0,
+            "end_byte": 313,
+            "sha256": "02668200a46f2da16ccd1fda52c9ad952e0661633441c67d645aef867e8465cc"
+          },
+          {
+            "heading": "## Top-level structure",
+            "start_byte": 313,
+            "end_byte": 1683,
+            "sha256": "906028c168a18ae1f6d51ee6e573525817704061728ee898ec3fdcbd9fb4cbab"
+          },
+          {
+            "heading": "## Top-level fields",
+            "start_byte": 1683,
+            "end_byte": 2198,
+            "sha256": "d51c22e66c1ac561c2078d311284c6ebb60ce574d37cec8b95c6bdcb5aa4610a"
+          },
+          {
+            "heading": "## Scene fields",
+            "start_byte": 2198,
+            "end_byte": 2756,
+            "sha256": "a20824e67cbaad4162b355d3084d7a00f3643affe3c6f5a8a02b6564ab9727c4"
+          },
+          {
+            "heading": "## Layer fields",
+            "start_byte": 2756,
+            "end_byte": 3557,
+            "sha256": "b0fe9fcec04e346c3432050d86f85328c4cf27e30b81ceb956fc9d06d1cc154a"
+          },
+          {
+            "heading": "## Caption fields",
+            "start_byte": 3557,
+            "end_byte": 4019,
+            "sha256": "14b94faa9147bdb66c9b89fb5a07a24ab78b1f68a5baa95d9cae30bf8f02aa3a"
+          },
+          {
+            "heading": "## Practical limitations",
+            "start_byte": 4019,
+            "end_byte": 4577,
+            "sha256": "d7262ce177f21ddee240c9dff25c424ce13eb521aa5967fd0672b2bc67df65f0"
+          }
+        ]
+      },
+      {
+        "source": "geometric-composition-director/SKILL.md",
+        "destination": "skills/design/references/geometric-composition-director.md",
+        "source_sha256": "da8f4a124cf142327b137de0d49bdcef524a7a2eda328a85150c64dbfaa6168e",
+        "source_bytes": 11918,
+        "sections": [
+          {
+            "heading": "frontmatter / preamble",
+            "start_byte": 0,
+            "end_byte": 565,
+            "sha256": "ce8c54911a512bfc7db06289d41017eb22e0a8d5a8951368e57daa8e2a61d35d"
+          },
+          {
+            "heading": "# Geometric Composition Director",
+            "start_byte": 565,
+            "end_byte": 599,
+            "sha256": "18ab66930b7bb9b11bf04068fda6f7336ada87506ce65ca96f0ec3ee285863c6"
+          },
+          {
+            "heading": "## Intent",
+            "start_byte": 599,
+            "end_byte": 1936,
+            "sha256": "7b3647b6180da85e3ae4b9ba53d683a6470413e5cc4cbd5591b90156ea8c4966"
+          },
+          {
+            "heading": "## Activation",
+            "start_byte": 1936,
+            "end_byte": 2829,
+            "sha256": "f1bef6fa23749414e4c95940f847a9c3fe844847080d1f330c4135b419407c3d"
+          },
+          {
+            "heading": "## Inputs",
+            "start_byte": 2829,
+            "end_byte": 3697,
+            "sha256": "ac6ce3f46c91179ab717c7b904e1d1d364d52e66639672f2b65a26f2e6d58623"
+          },
+          {
+            "heading": "## Choose the dominant composition",
+            "start_byte": 3697,
+            "end_byte": 5459,
+            "sha256": "9176e12e4a88826013358e2304c761f2dfb19719e904576f9a233804232d82ce"
+          },
+          {
+            "heading": "### Key distinctions",
+            "start_byte": 5459,
+            "end_byte": 6367,
+            "sha256": "3742ebfb083299e5ba545ab71aa5b5c5677e5ee7234385d5f17af7b509087cbe"
+          },
+          {
+            "heading": "## Working procedure",
+            "start_byte": 6367,
+            "end_byte": 7753,
+            "sha256": "db8a20c29595924f4278653fdd0709dd98a4d281bfa57545524110b3ebdc0ad3"
+          },
+          {
+            "heading": "## Deliverable contract",
+            "start_byte": 7753,
+            "end_byte": 8791,
+            "sha256": "b288bdb7e04c6e3ff612ad6a2ffcb684d956ccf26e464d13860c92cde0d901d4"
+          },
+          {
+            "heading": "## Example direction briefs",
+            "start_byte": 8791,
+            "end_byte": 10541,
+            "sha256": "0ae0d1c0e36137541c7a36ec40124333d892122d16f2a69eccb6d6fd7e85cb52"
+          },
+          {
+            "heading": "## Overlay tool",
+            "start_byte": 10541,
+            "end_byte": 11292,
+            "sha256": "2b4d658a178d62771bfc96f619545f7f14f0f3962b3d6ff0464dd7bd88ff85ff"
+          },
+          {
+            "heading": "## Final QA gate",
+            "start_byte": 11292,
+            "end_byte": 11918,
+            "sha256": "1138ae577d6c3c844ff5af5150d6431f700f3a180ed775abf3c593acc17005cf"
+          }
+        ]
+      },
+      {
+        "source": "geometric-composition-director/references/geometry-and-verification.md",
+        "destination": "skills/design/references/geometric-verification.md",
+        "source_sha256": "c6b7e2f25e5eda5f6d3395eb4722572be38c67a8dcfe55318e39b946c013b50c",
+        "source_bytes": 3207,
+        "sections": [
+          {
+            "heading": "# Geometry and verification notes",
+            "start_byte": 0,
+            "end_byte": 35,
+            "sha256": "708f9cb0072a45a70fb572f65a03372c88c50fde970a717c6e8553cf7a10d1bb"
+          },
+          {
+            "heading": "## Coordinates and phi",
+            "start_byte": 35,
+            "end_byte": 1229,
+            "sha256": "507643e2accbc5ba0fe4b235a7e2905b937d01f78fb07f5c007d6155f61adf03"
+          },
+          {
+            "heading": "## Thirds",
+            "start_byte": 1229,
+            "end_byte": 1440,
+            "sha256": "bdda2f573e5bddb93abe3808efd9266e57de6cd4b297578a46b132df64bc30cf"
+          },
+          {
+            "heading": "## Center and circular framing",
+            "start_byte": 1440,
+            "end_byte": 1892,
+            "sha256": "0c9238286240abf7f7a760d9d3458eb598757079a30ba38e8dc1859b0d91e79c"
+          },
+          {
+            "heading": "## Scale",
+            "start_byte": 1892,
+            "end_byte": 2301,
+            "sha256": "f8a1b50fadf27fe762bb48efac1e52efef32f5ff5ebbf3b3a2ca3119ff79190a"
+          },
+          {
+            "heading": "## Triangle",
+            "start_byte": 2301,
+            "end_byte": 2599,
+            "sha256": "41cf824cfaf33895c063bc4ac1115262bef642279275fac704ea64450f42b28a"
+          },
+          {
+            "heading": "## Real-world review procedure",
+            "start_byte": 2599,
+            "end_byte": 3207,
+            "sha256": "43d0976937b941b2923914fbc495ff243ddfb73125acc04ba5cdc2457801d685"
+          }
+        ]
+      },
+      {
+        "source": "geometric-composition-director/references/shot-recipes.md",
+        "destination": "skills/design/references/geometric-shot-recipes.md",
+        "source_sha256": "4b1dbf0cbb178d5605a0c431acd9a993fb81a3e6bf497a94ebb3140a6b35b016",
+        "source_bytes": 3197,
+        "sections": [
+          {
+            "heading": "# Six framing recipes",
+            "start_byte": 0,
+            "end_byte": 227,
+            "sha256": "79ebcce23eaa4f3d4608622c389048246672b818743a43d2d65c02cf84a717b4"
+          },
+          {
+            "heading": "## 1. Golden section with curved flow — revelation",
+            "start_byte": 227,
+            "end_byte": 875,
+            "sha256": "301e3419aa4ad28beac08ea1a5584d3b933721aae8d7949f0b662731bf5b6f8d"
+          },
+          {
+            "heading": "## 2. Rule of thirds — narrative asymmetry",
+            "start_byte": 875,
+            "end_byte": 1317,
+            "sha256": "6f3b76323b438d1d10238551008146b6d13dcc50118ace9fc799b39828a989ad"
+          },
+          {
+            "heading": "## 3. Circle — isolation",
+            "start_byte": 1317,
+            "end_byte": 1728,
+            "sha256": "49d8cd2af935b5aee97eb6e2f55093f034a0e6ae26c2ac227bf0be0f8ff0adc5"
+          },
+          {
+            "heading": "## 4. Center — anticipation",
+            "start_byte": 1728,
+            "end_byte": 2134,
+            "sha256": "b8a19adcfcf02b172eee503993519bfb701ad2674e620ece04e25335de6891f3"
+          },
+          {
+            "heading": "## 5. Scale — awe",
+            "start_byte": 2134,
+            "end_byte": 2541,
+            "sha256": "1500e75e02f0983f8fa69f657a55ed39182d996d7ef02a27b2415ddb8e7f3c81"
+          },
+          {
+            "heading": "## 6. Triangle — tension through relationships",
+            "start_byte": 2541,
+            "end_byte": 2948,
+            "sha256": "46862d22abbcf7690bb5462e4e1ccd0b886d9b1d91ca04747a852cc3eaea39c9"
+          },
+          {
+            "heading": "## When to use geometry vs story",
+            "start_byte": 2948,
+            "end_byte": 3197,
+            "sha256": "e90cc6ce5ea16766bbee540fe198897ca21067107c3686db92fb55ff00ee4864"
+          }
+        ]
+      },
+      {
+        "source": "photographic-art-direction/SKILL.md",
+        "destination": "skills/design/references/photographic-art-direction.md",
+        "source_sha256": "f1b58cfb978c33d56701ecd78fe174e50e8a8acf54f3037950bcb3fa9f0c0d75",
+        "source_bytes": 11920,
+        "sections": [
+          {
+            "heading": "frontmatter / preamble",
+            "start_byte": 0,
+            "end_byte": 614,
+            "sha256": "21f04c9ce09d9eeb6bad3b472a1953bdff17894c19311d4c9fabf86555ca72ae"
+          },
+          {
+            "heading": "# Photographic Art Direction",
+            "start_byte": 614,
+            "end_byte": 644,
+            "sha256": "b88ad15b721e4c7cae0ede3d1e44b788cf65cf3821a97715cbe7759d775915a9"
+          },
+          {
+            "heading": "## Role and distinctive purpose",
+            "start_byte": 644,
+            "end_byte": 1265,
+            "sha256": "622adbe31fe209f63befacead4d387001698b1e72cb23af44a52b9f0733e7936"
+          },
+          {
+            "heading": "### Source Reel and what is actually shown",
+            "start_byte": 1265,
+            "end_byte": 2135,
+            "sha256": "7830ae9079a65f38d250ad3b99fc77c838e4e9723197669bd5bcd49555d08044"
+          },
+          {
+            "heading": "## Use this when",
+            "start_byte": 2135,
+            "end_byte": 2824,
+            "sha256": "83da6f4621f5825cc7c16768e42134a00f9677ec7b709892f84cf6b3633b9787"
+          },
+          {
+            "heading": "## Input contract: six questions (infer where low risk)",
+            "start_byte": 2824,
+            "end_byte": 3912,
+            "sha256": "33eed0a24a971a7bcd0462612e1b37aaf4e25bea6e68f2e9e5a48a95068cd912"
+          },
+          {
+            "heading": "## Six-stage direction workflow",
+            "start_byte": 3912,
+            "end_byte": 3945,
+            "sha256": "e400e4ea34e2ea4e008cf70c18fea05c99f52c703e3cdc115d585fc6f7f75252"
+          },
+          {
+            "heading": "### 1. Translate intention into observable choices",
+            "start_byte": 3945,
+            "end_byte": 4308,
+            "sha256": "788719e10f0440318e7024ed482f79da165d7b6ec77ec85eb299ee2620d1166d"
+          },
+          {
+            "heading": "### 2. Choose one compositional grammar, then decide camera and subject blocking",
+            "start_byte": 4308,
+            "end_byte": 5631,
+            "sha256": "0ab354378461f40b0e82ecc312b6f138ecab9a6b2a3918b7cfb683a4563e7d53"
+          },
+          {
+            "heading": "### 3. Direct **motivated light**, not “dramatic lighting”",
+            "start_byte": 5631,
+            "end_byte": 6626,
+            "sha256": "5b6bde3f09bb1c07d78400d787bd8feb6e50e6583942df49c1dc8c89c6b85834"
+          },
+          {
+            "heading": "### 4. Direct the rest of the photographic world",
+            "start_byte": 6626,
+            "end_byte": 7254,
+            "sha256": "148968a7b80a8898609ba7f2cd0d1e0aca7ad9267bfbfe4fc6a265141f87e94b"
+          },
+          {
+            "heading": "### 5. Produce executable shot cards",
+            "start_byte": 7254,
+            "end_byte": 8511,
+            "sha256": "7fe7fd69bc393e5b47a63948e8f6bd09ece61bd36a4f8c212b324b052b2be099"
+          },
+          {
+            "heading": "### 6. Critique and iterate",
+            "start_byte": 8511,
+            "end_byte": 9225,
+            "sha256": "cbcd3ca0fbe644775b5d3c8e88b2aa5be2adcf7d252a52082e6614752c88ed3e"
+          },
+          {
+            "heading": "## Deliverable rules",
+            "start_byte": 9225,
+            "end_byte": 10199,
+            "sha256": "ee59151e6de48e559bf5f4faf591f998f911de4c837964f9dae39531d849a1d5"
+          },
+          {
+            "heading": "## Helper for production handoff",
+            "start_byte": 10199,
+            "end_byte": 10702,
+            "sha256": "a9eed781dc365b54f644e2faa3a09c79309e127d86d710819054a5b29ca81163"
+          },
+          {
+            "heading": "## Relationship to existing visual skills",
+            "start_byte": 10702,
+            "end_byte": 11347,
+            "sha256": "f1b589a63cae4342c37ed4f53cc73389b4b173c9a0f974f0ebea6e9b6bb2717c"
+          },
+          {
+            "heading": "## Quality gate before delivery",
+            "start_byte": 11347,
+            "end_byte": 11920,
+            "sha256": "79e25f9a8b2afa120fe59f5f28ca8d6b668999bb4883b1834af26370b431460c"
+          }
+        ]
+      },
+      {
+        "source": "photographic-art-direction/references/camera-lighting.md",
+        "destination": "skills/design/references/photographic-camera-lighting.md",
+        "source_sha256": "b540c4f8184e924c55299bb956b900fa60de3ef13badb9b0c48b1e25d28941ae",
+        "source_bytes": 5499,
+        "sections": [
+          {
+            "heading": "# Camera, exposure, perspective and lighting: responsible heuristics",
+            "start_byte": 0,
+            "end_byte": 267,
+            "sha256": "aeb01d77ef069fe6d88b38db7464fafbf10b7769328047d5ff6553b9f8bb7c0e"
+          },
+          {
+            "heading": "## Camera position is more important than claiming a lens number",
+            "start_byte": 267,
+            "end_byte": 1460,
+            "sha256": "ed7ba991c91828c676b633efe030ddfd4ef45512818a040d16b6778e04e1b610"
+          },
+          {
+            "heading": "## Depth of field and subject separation",
+            "start_byte": 1460,
+            "end_byte": 2214,
+            "sha256": "1f81921fc7e7d835e9b14d1b78278ffdfd757b2c7157e9fb150a5e0d9c3d9471"
+          },
+          {
+            "heading": "## Exposure and subject movement",
+            "start_byte": 2214,
+            "end_byte": 2832,
+            "sha256": "44ea07384f0ea094fc4eaaf9b69d8ed9bfd086502e66dc5de317d3b85251903e"
+          },
+          {
+            "heading": "## Motivated light design",
+            "start_byte": 2832,
+            "end_byte": 3722,
+            "sha256": "ff825808bca8a1ffd4e447d53c658ec7b0b128f5d7e15d85b442994b3942d871"
+          },
+          {
+            "heading": "### Example: dark passage / bright exterior",
+            "start_byte": 3722,
+            "end_byte": 4215,
+            "sha256": "7af5dee6f804e57c23fa1505cefaac4fed3496cfd80d8a069c81842e6e42bf22"
+          },
+          {
+            "heading": "### Example: central city street at night",
+            "start_byte": 4215,
+            "end_byte": 4559,
+            "sha256": "af75296a7072d89eef89715f994887ca2185f83cdc2cf27680cef9c35fd3231c"
+          },
+          {
+            "heading": "## Consistency for campaigns / multi-shot series",
+            "start_byte": 4559,
+            "end_byte": 5202,
+            "sha256": "d2d519f0c4a92c20e3a2637a521a0be1aa1e6d8f4d50418235ac6d5258eef0b7"
+          },
+          {
+            "heading": "## Production caveat",
+            "start_byte": 5202,
+            "end_byte": 5499,
+            "sha256": "b9a580b060231fe80c461b87edfd5b8c6fa9841af59d346feb325d8644d9ef7e"
+          }
+        ]
+      },
+      {
+        "source": "photographic-art-direction/references/photographic-treatments.md",
+        "destination": "skills/design/references/photographic-treatments.md",
+        "source_sha256": "d340def088691f63b8427b77246af094a08f3694af4df195fc4d875af8fcac3c",
+        "source_bytes": 5339,
+        "sections": [
+          {
+            "heading": "# Four photographic treatments: from graphic idea to directed photograph",
+            "start_byte": 0,
+            "end_byte": 308,
+            "sha256": "d469f3f3f1e608c30e2b8a34cb0b372cf22ef544a057720bb0b8e842792511f6"
+          },
+          {
+            "heading": "## 01 — Golden-spiral flow: intimate awe",
+            "start_byte": 308,
+            "end_byte": 1524,
+            "sha256": "01cc9e6161d3d6949388de68df0708a361f74de9d3ca6da3456530ccb6c639c4"
+          },
+          {
+            "heading": "## 02 — Radial: entrancement / revelation",
+            "start_byte": 1524,
+            "end_byte": 2664,
+            "sha256": "ba4ea4d684a6bed16b60be2dd0408b8725b5073b9827baf2dc4136994ee832fa"
+          },
+          {
+            "heading": "## 03 — Symmetry: ritual / institutional scale",
+            "start_byte": 2664,
+            "end_byte": 3767,
+            "sha256": "20e3d532b21308a1099f30537c9d66a3760c4c2c8705a179f9bae59fd5cc9887"
+          },
+          {
+            "heading": "## 04 — Frame within a frame: separation / threshold",
+            "start_byte": 3767,
+            "end_byte": 4860,
+            "sha256": "adbe3ba0ca89073c87cba1acd4bde5800307c91b5facc7c8e97ccc4b769f9e11"
+          },
+          {
+            "heading": "## How to select the pattern",
+            "start_byte": 4860,
+            "end_byte": 5339,
+            "sha256": "22671feff1dcf6f46b197f50ed8fbc134360a41de916cc4625d23fda93bbdbfa"
+          }
+        ]
+      },
+      {
+        "source": "photographic-art-direction/references/shot-card-template.md",
+        "destination": "skills/design/references/photographic-shot-card.md",
+        "source_sha256": "be4cfa1ff0fcf3cbfd2382cb6624e7eabbcf590604a7a6d0134a57da34ff46e5",
+        "source_bytes": 3071,
+        "sections": [
+          {
+            "heading": "# Photo-direction output templates",
+            "start_byte": 0,
+            "end_byte": 36,
+            "sha256": "8ce35272b5deb40598dcc2c11d1b65cb17d38025470a9ecf5faff0e11c81ccac"
+          },
+          {
+            "heading": "## Short director's treatment",
+            "start_byte": 36,
+            "end_byte": 883,
+            "sha256": "24bdcdcdefa8322e29aac5004f45dcd334e2aa7379d2f26036cda9d36155277b"
+          },
+          {
+            "heading": "## Photographic shot card",
+            "start_byte": 883,
+            "end_byte": 1541,
+            "sha256": "6e0ba3896a715fe0ffc2d797e55d9717e823e9863a8b1d9a37cd569cd65eff7f"
+          },
+          {
+            "heading": "## A compact production-ready generative still prompt",
+            "start_byte": 1541,
+            "end_byte": 2442,
+            "sha256": "9ead3d82e1d816b30cef63ac4617cba1689d932ad3638a9890c6dde7dd96a565"
+          },
+          {
+            "heading": "## Four-shot cohesive series matrix",
+            "start_byte": 2442,
+            "end_byte": 3071,
+            "sha256": "1fea0ddfec840b7892904fedeacc090aba8cf30960b975d09a58352482edeb89"
+          }
+        ]
+      },
+      {
+        "source": "rhythmic-architectural-motion/SKILL.md",
+        "destination": "skills/design/references/rhythmic-architectural-motion.md",
+        "source_sha256": "e9bc6dfdbbc2b0dde0f927b56e6f8c83a79fe18959ea78f0db48a660d7f7576d",
+        "source_bytes": 12651,
+        "sections": [
+          {
+            "heading": "frontmatter / preamble",
+            "start_byte": 0,
+            "end_byte": 507,
+            "sha256": "b30aedab233220222720316bf1552c2d6993047ee936f6abe2c87b5220fbc381"
+          },
+          {
+            "heading": "# Rhythmic Architectural Motion",
+            "start_byte": 507,
+            "end_byte": 540,
+            "sha256": "c9d301694de95dacea1456a02d5d3b16281c5d820805943cc74c938d93ce4b36"
+          },
+          {
+            "heading": "## Mission",
+            "start_byte": 540,
+            "end_byte": 896,
+            "sha256": "2ce6e12b0d1ec52079764d3e9fc0d2fd94cea1d116f79624afbbca7c0c54a043"
+          },
+          {
+            "heading": "### Source and scope",
+            "start_byte": 896,
+            "end_byte": 1719,
+            "sha256": "241eddac29e30b044bbfd2ad5fdadc1eb0598d8d6495a83602b898f41723e8e5"
+          },
+          {
+            "heading": "## Activate when",
+            "start_byte": 1719,
+            "end_byte": 2671,
+            "sha256": "62af995b7315d2c0da17e3983ea14bad52a40cd06b5d48c1d20c5466c1b77d54"
+          },
+          {
+            "heading": "## Gather / assume",
+            "start_byte": 2671,
+            "end_byte": 4058,
+            "sha256": "c220fc6a39aac805b8f238b29972dd53c54269eae03d5a51a4a91efad8f9bf5b"
+          },
+          {
+            "heading": "## Core principle: geometry follows rhythm",
+            "start_byte": 4058,
+            "end_byte": 4856,
+            "sha256": "e30784df583e89b56053caa0121c1beda0463ca58f206146b28b2a716155bafa"
+          },
+          {
+            "heading": "### Five recipes",
+            "start_byte": 4856,
+            "end_byte": 6268,
+            "sha256": "b1bcfdda3d208edb6284adedd4900eefea87ac526abcd36eb085fe00bcc8a59a"
+          },
+          {
+            "heading": "## Production workflow",
+            "start_byte": 6268,
+            "end_byte": 6292,
+            "sha256": "e72db55d24593c002d34cf2b62e5225dd1aa12ebe55b452516cd3f36d1f9cae4"
+          },
+          {
+            "heading": "### A. Creative treatment",
+            "start_byte": 6292,
+            "end_byte": 6803,
+            "sha256": "159766bdba21db2439aa641dba18ea66f95a2a68162f01af0f31f16670ded120"
+          },
+          {
+            "heading": "### B. Temporal design",
+            "start_byte": 6803,
+            "end_byte": 7645,
+            "sha256": "c18efac2807739986891596e5029ada18c1db2773dedfd5fc7597a620a031c1d"
+          },
+          {
+            "heading": "### C. Build repeatable geometry",
+            "start_byte": 7645,
+            "end_byte": 9200,
+            "sha256": "afaa2b2d53aff1df3bcc7d6499e8a96775568012a8cc10d94b89126f9bff7909"
+          },
+          {
+            "heading": "### D. Camera and visual continuity",
+            "start_byte": 9200,
+            "end_byte": 9769,
+            "sha256": "61d48b4eefbe4f08262df8293c3d8f311ec6a839bc3f3ca2293f333070917b8a"
+          },
+          {
+            "heading": "### E. QA: what to inspect in the rendered output",
+            "start_byte": 9769,
+            "end_byte": 10305,
+            "sha256": "d15cebeb420ed7d19517470ededf45d1e97432a76fc815f9c396fb96e478eef4"
+          },
+          {
+            "heading": "## Required output",
+            "start_byte": 10305,
+            "end_byte": 11180,
+            "sha256": "e548f8e58865582ea2204827b17c89aeaa3df41d9e48cbf2b8e2ba06a239a2d7"
+          },
+          {
+            "heading": "## Example short prompt",
+            "start_byte": 11180,
+            "end_byte": 11898,
+            "sha256": "6b4f59b3e7171f4b89e09a1ccfd506bb477af936b13e276a5edf02d2a63b6020"
+          },
+          {
+            "heading": "## Included resources",
+            "start_byte": 11898,
+            "end_byte": 12343,
+            "sha256": "e10a6fa51eb1de413be904f50e341df3b35d1100cb9b0117827a60de28dcf476"
+          },
+          {
+            "heading": "## Honest scope",
+            "start_byte": 12343,
+            "end_byte": 12651,
+            "sha256": "abbb64abeb7256ab8749aafd529ec144256403e516e8a97ea4865e561731dad4"
+          }
+        ]
+      },
+      {
+        "source": "rhythmic-architectural-motion/references/shot-recipes.md",
+        "destination": "skills/design/references/rhythmic-shot-recipes.md",
+        "source_sha256": "3e7416cf60a79777accd72f875c1217beebb3f6df3efe0dcd20a1d88ba379f07",
+        "source_bytes": 6071,
+        "sections": [
+          {
+            "heading": "# Five architectural rhythm recipes",
+            "start_byte": 0,
+            "end_byte": 189,
+            "sha256": "7610b5eaf69b65f8f169bd5444d215450f942ce5860ddf29c7cc405b62077d82"
+          },
+          {
+            "heading": "## Shared look bible",
+            "start_byte": 189,
+            "end_byte": 877,
+            "sha256": "9919ba5e69dd904a575f51051c43fd69d396eeeb6784721966d213790d7cbb1c"
+          },
+          {
+            "heading": "## 1. Stack / accumulative architecture",
+            "start_byte": 877,
+            "end_byte": 1770,
+            "sha256": "e0ba5f354d50883de77dbc5c6815af45215b9f643d79b8542e198d6d77c5fd82"
+          },
+          {
+            "heading": "## 2. Architecture recursion / sky-tunnel",
+            "start_byte": 1770,
+            "end_byte": 2787,
+            "sha256": "c35d754410085e16431aa69b72f760c57a893362a7a3f8d21b7bca236cabc2d4"
+          },
+          {
+            "heading": "## 3. Window-grid reveal",
+            "start_byte": 2787,
+            "end_byte": 3623,
+            "sha256": "233e47de6dd824749c8ab4a01f29506b818ae3c36d00946c39eb0bb708c088e8"
+          },
+          {
+            "heading": "## 4. Receding cyan lamps",
+            "start_byte": 3623,
+            "end_byte": 4485,
+            "sha256": "557abd47a179c6bfd1b5c7b9845d69330696d417b3eefd06811f44c9e6ea66d8"
+          },
+          {
+            "heading": "## 5. Downward balcony cascade",
+            "start_byte": 4485,
+            "end_byte": 5337,
+            "sha256": "5869588e859a64367e372f3778b2c389aad2af77ea46499b82f7f5bbd0a09df4"
+          },
+          {
+            "heading": "## Montage order and dynamic arc",
+            "start_byte": 5337,
+            "end_byte": 5739,
+            "sha256": "1f638cb9076218162011b5d01b23bdf773b8e8ade9d285fb8e91710d90accca3"
+          },
+          {
+            "heading": "## Optional website/portfolio hero adaptation",
+            "start_byte": 5739,
+            "end_byte": 6071,
+            "sha256": "d6e04286787e7721af77d901e07b236632a1cb72cd81367a5ae3009d569ecace"
+          }
+        ]
+      },
+      {
+        "source": "rhythmic-architectural-motion/references/timing-and-workflows.md",
+        "destination": "skills/visual-assets/references/beatmap-workflow.md",
+        "source_sha256": "88f7fddf79764483642d4a59cd225d22a0ea3ed7d0edf43fc163d4d04a555acd",
+        "source_bytes": 4550,
+        "sections": [
+          {
+            "heading": "# Timing, cue generation and production workflows",
+            "start_byte": 0,
+            "end_byte": 51,
+            "sha256": "0fcb669ef7b8a50d6d3f64c415ac6abc28bb3aee3b045e17365c04c5171c5b55"
+          },
+          {
+            "heading": "## Do not infer the reference track's exact BPM",
+            "start_byte": 51,
+            "end_byte": 407,
+            "sha256": "539473313d8aa34ba856c562125e661f76242c7f1e14b12d29deb26951d36388"
+          },
+          {
+            "heading": "## Manual tempo cue sheet",
+            "start_byte": 407,
+            "end_byte": 1610,
+            "sha256": "233e2d9727c65b8eb3ad848f902e7f9a63a37582fcfab1efec456f6c3d59964f"
+          },
+          {
+            "heading": "### How to map beats to transformations",
+            "start_byte": 1610,
+            "end_byte": 2105,
+            "sha256": "872bd30767d403a054ee0f96a29030516eaf04687c44ec3ad702af2a6dfe068d"
+          },
+          {
+            "heading": "## Software-specific realization",
+            "start_byte": 2105,
+            "end_byte": 2139,
+            "sha256": "7fc6067a318880f4b609505b9806c9a61038620a16cf5798d0b21c599646942e"
+          },
+          {
+            "heading": "### Editing / compositing",
+            "start_byte": 2139,
+            "end_byte": 2559,
+            "sha256": "acbb40b8e06d95be4e2c6e747a9ea07ff210301631a899126976402702814690"
+          },
+          {
+            "heading": "### Blender / 3D",
+            "start_byte": 2559,
+            "end_byte": 2972,
+            "sha256": "a0690e64116a99c9c22eecb51440b815ddd0a6875942e4342794f3b7a17a84f6"
+          },
+          {
+            "heading": "### Generative video",
+            "start_byte": 2972,
+            "end_byte": 3447,
+            "sha256": "5276f2522a97276299c06979401c865cb7f8d50a70ac2ec7f907f02888810474"
+          },
+          {
+            "heading": "## QA & troubleshooting",
+            "start_byte": 3447,
+            "end_byte": 4550,
+            "sha256": "031bdd3fb2c8223140851a82b9fa302e9d70b8158e9d74a8fc1d0cf07a1e39c3"
+          }
+        ]
+      }
+    ],
+    "protected_references": [
+      {
+        "path": "skills/design/references/awwwards-adaptation.md",
+        "sha256": "d185ea938476e07de5bd58a4946fb189b5225dc0428aaccb7918e9b5b17750f3"
+      },
+      {
+        "path": "skills/design/references/awwwards-adaptations.json",
+        "sha256": "1804150963a1be3252923252811b7b5fbf87837be3ddd89eb7696fe9a639aa3e"
+      },
+      {
+        "path": "skills/design/references/awwwards-anatomy.md",
+        "sha256": "cb20c49b70d9901fc9320c4b0ff8250d685218336d68f0147b23900568b8f2ef"
+      },
+      {
+        "path": "skills/design/references/awwwards-art-direction.md",
+        "sha256": "b311f381c3efcc7a682f345485c80b43b47c13634d76088abe0bc4135ce57e3d"
+      },
+      {
+        "path": "skills/design/references/awwwards-astro.md",
+        "sha256": "cae176ef771cba2c0e4dd793639ba7aa526c81099a05ee4b2768e9c7a811d8d2"
+      },
+      {
+        "path": "skills/design/references/awwwards-concepts.md",
+        "sha256": "bd0b18b11078cfcbbfa775c09cd93b82d41b7fff954fc6fb0d5f66b1b296468f"
+      },
+      {
+        "path": "skills/design/references/awwwards-content.md",
+        "sha256": "ce4143e50a870886f396dfee7816cb39d496d961c8cd16f7313f72bd7840737c"
+      },
+      {
+        "path": "skills/design/references/awwwards-engine.md",
+        "sha256": "415379c10a3ef0f8c53d571cbe9f62c3521a41c63463a338458d84c87c05f30f"
+      },
+      {
+        "path": "skills/design/references/awwwards-layout.md",
+        "sha256": "17f9e41f4af1012180c7ec6e2e73a9e576dff31a24d4153a3f3e894b2b81f8dc"
+      },
+      {
+        "path": "skills/design/references/awwwards-motion.md",
+        "sha256": "5e1600e82001b764c99af2c3aa9912806f25e7c9ff4ce2522ee9b77e2da34824"
+      },
+      {
+        "path": "skills/design/references/awwwards-nextjs.md",
+        "sha256": "e27d7eac57bbeba514cbaef59fe208a32fd359dcdbd6f5046f2581ce186906d3"
+      },
+      {
+        "path": "skills/design/references/awwwards-patterns.md",
+        "sha256": "117e8cd08aae880cb6ffce1173a22642cb5bda29a910643510845c70b453a631"
+      },
+      {
+        "path": "skills/design/references/awwwards-quality-bar.md",
+        "sha256": "567826ba4fbf1daa4636c8658aa18ab14c3480202d4dc78ab69f04af919f357a"
+      },
+      {
+        "path": "skills/design/references/awwwards-quality.md",
+        "sha256": "5a0ce9ea48b8ef7b791c31857bc6c3dd499370241d9f7bbae36ed44b8a4bfb1f"
+      },
+      {
+        "path": "skills/design/references/awwwards-ship.md",
+        "sha256": "7e3c23b044af73ec727dea63560d02944c850037d98722cdce3bc83f26f2ac79"
+      },
+      {
+        "path": "skills/design/references/awwwards-source-lock.json",
+        "sha256": "2dd9d241913307cc2edbbeb7dafaae20b8d02c79f809fcd4da339f391950c046"
+      },
+      {
+        "path": "skills/design/references/awwwards-typography.md",
+        "sha256": "4887dfb22ee4f8670c4078fa21207343c53dafe2ea48d5606aadc4c7f8ac5a5a"
+      },
+      {
+        "path": "skills/design/references/awwwards-webgl.md",
+        "sha256": "e13113f2e0267011a8cc617e95542a15c8bd0933192d7ddf4620a19614014c6c"
+      },
+      {
+        "path": "skills/design/references/awwwards.md",
+        "sha256": "2bbf6f980ce6c330858bc442366d956878e618ac7231e369bd50344548cf3f60"
+      },
+      {
+        "path": "skills/design/references/cultural-digging.md",
+        "sha256": "a612ed61dc85bfeeec3e81d1a533022e0dc918a5e0c12684c569d56b0f2dac06"
+      },
+      {
+        "path": "skills/design/references/framing.md",
+        "sha256": "9c25665d5d0244aed7cbe831b7fe33de047c80a46c95a53e0b1835bcdf29e421"
+      },
+      {
+        "path": "skills/design/references/implementation.md",
+        "sha256": "6394d431e2ae6974a72752c5d72c5c2d4a1c7581bc59b2513960cd03b7d7532d"
+      },
+      {
+        "path": "skills/design/references/jury-calibration.md",
+        "sha256": "8b719ea864d762fe123223d25c82b6f6ee2fd81092c88c1d40845f21d3ffbc43"
+      },
+      {
+        "path": "skills/design/references/jury.md",
+        "sha256": "67d8387ac05c0dd8a8939666918ba336c2972f49f68ac350414cb6a4f906e6da"
+      },
+      {
+        "path": "skills/design/references/review.md",
+        "sha256": "d46722bd6a3677a13a4c06041d78a51d216ccf3094200676155c032790d2299c"
+      },
+      {
+        "path": "skills/visual-assets/references/brand-assets.md",
+        "sha256": "42e4d27d0a69159e4f25b6cc7a9b97040204bf91a0a6d6553657535b2eae6a09"
+      },
+      {
+        "path": "skills/visual-assets/references/threading-source-lock.json",
+        "sha256": "e42850640871142e96fbdd529e740f21f3eb51bfb9bd4e8f67dfb0f5bee69843"
+      },
+      {
+        "path": "skills/visual-assets/references/threading.md",
+        "sha256": "6e3fe59b25fc6f70e238120fe705fb684dc78c98a692348a327cdf66121391a3"
+      }
+    ],
+    "protected_capabilities": [
+      {
+        "id": "threading",
+        "expected_record": {
+          "id": "threading",
+          "kind": "local-algorithm",
+          "domain": "image stylization",
+          "effect": "string art using segments between pegs",
+          "input": {
+            "role": "material",
+            "formats": [
+              "png",
+              "jpeg"
+            ],
+            "rights_basis_required": true
+          },
+          "output": {
+            "format": "svg",
+            "native_vector": true,
+            "grammar": "threading-specific rect/g/circle/line and one fixed style"
+          },
+          "controls": [
+            "shape",
+            "pegs",
+            "lines",
+            "opacity",
+            "thickness",
+            "display_pegs"
+          ],
+          "initial_profile": {
+            "quality": 1,
+            "mode": 0,
+            "invert_colors": false,
+            "blur": 0
+          },
+          "availability": {
+            "status": "requires-current-inspection",
+            "command": [
+              "node",
+              "scripts/pulse-threading-svg.mjs",
+              "inspect",
+              "--profile",
+              "<absolute-local-profile>"
+            ]
+          },
+          "runtime": {
+            "source": "operator-supplied external directory",
+            "node": "v24.15.0",
+            "chrome": "155.0.8059.79",
+            "platform": "linux-x64",
+            "automatic_install": false
+          },
+          "provenance": {
+            "repository": "https://github.com/piellardj/image-stylization-threading",
+            "commit": "ef93733b28248340958c5843b5d882e6f4f5fef1",
+            "license": "GPL-3.0",
+            "runtime_bundled": false,
+            "lock": "threading-source-lock.json"
+          },
+          "limits": [
+            "closed local job and profile",
+            "admitted operation required",
+            "60-second deadline",
+            "no universal determinism claim",
+            "input-image permission is separate from program licence"
+          ],
+          "reference": "threading.md"
+        },
+        "review_digest": "eb7a2b7d87f1ee8751d9eba92b1a1e46af9e6548faf3dae8b616beb6f296f8a2",
+        "comparison": "deep structural equality; canonical source-map bytes are pinned independently"
+      },
+      {
+        "id": "primitive",
+        "expected_record": {
+          "id": "primitive",
+          "kind": "local-algorithm",
+          "domain": "image approximation",
+          "effect": "geometric approximation with supported shape exporters",
+          "input": {
+            "role": "material",
+            "formats": [
+              "png",
+              "jpeg"
+            ],
+            "rights_basis_required": true
+          },
+          "output": {
+            "format": "svg",
+            "native_vector": true,
+            "grammar": "existing Primitive-specific exporter grammar"
+          },
+          "controls": [
+            "mode",
+            "shapes",
+            "alpha",
+            "workers",
+            "resize",
+            "output_size"
+          ],
+          "availability": {
+            "status": "requires-current-inspection",
+            "command": [
+              "node",
+              "scripts/pulse-primitive-svg.mjs",
+              "inspect",
+              "--profile",
+              "<absolute-local-profile>"
+            ]
+          },
+          "provenance": {
+            "owner": "existing Pulse Primitive adapter and its build lock",
+            "reference": "../../../docs/evaluation/frontend-primitive-svg.md"
+          },
+          "limits": [
+            "different effect from string art",
+            "existing job/profile/grammar unchanged",
+            "no new exporter admitted by this catalogue"
+          ]
+        },
+        "review_digest": "29a433e25a97c9e293417675865613f28ce73c6d3408f05feae368bcfbaed3c6",
+        "comparison": "deep structural equality; canonical source-map bytes are pinned independently"
+      },
+      {
+        "id": "nonflowers",
+        "expected_record": {
+          "id": "nonflowers",
+          "kind": "external-reference",
+          "domain": "procedural organic drawing",
+          "effect": "seeded plant and floral drawing",
+          "input": {
+            "role": "parameters",
+            "controls": [
+              "seed"
+            ]
+          },
+          "output": {
+            "format": "raster",
+            "native_vector": false
+          },
+          "availability": {
+            "status": "no-pulse-local-adapter",
+            "inspection": "Inspect the external source and actual output for a separately scoped task."
+          },
+          "provenance": {
+            "repository": "https://github.com/LingDong-/nonflowers",
+            "commit": "03b653d220f16c6bed7ea9c7edc852f7e91846cb",
+            "license": "MIT",
+            "runtime_bundled": false
+          },
+          "limits": [
+            "not image-to-SVG",
+            "Canvas/paper-background export",
+            "upstream replaces global Math.random; a future runtime must be isolated",
+            "no newly generated output is claimed by this reference"
+          ]
+        },
+        "review_digest": "11a995292e012a9938ffd90841db9a7a654ff1c7278440ae929e0238455e8c5d",
+        "comparison": "deep structural equality; canonical source-map bytes are pinned independently"
+      },
+      {
+        "id": "book-of-shapes",
+        "expected_record": {
+          "id": "book-of-shapes",
+          "kind": "external-reference",
+          "domain": "parametric motifs",
+          "effect": "external shape and pattern authoring",
+          "input": {
+            "role": "parameters",
+            "controls": [
+              "external motif-specific controls"
+            ]
+          },
+          "output": {
+            "format": "svg",
+            "native_vector": null
+          },
+          "availability": {
+            "status": "external-tool-only",
+            "inspection": "Inspect the chosen motif, current access, final exported bytes and applicable licence."
+          },
+          "provenance": {
+            "url": "https://bookofshapes.com/",
+            "license_url": "https://bookofshapes.com/license",
+            "runtime_bundled": false
+          },
+          "limits": [
+            "final assets only under the applicable licence",
+            "no redistribution of motif packs, libraries, node definitions or derived generator",
+            "excluded artwork recreations must not be published/sold",
+            "no collection or generator imported into Pulse"
+          ]
+        },
+        "review_digest": "efda01b231faf810c5ef74759ba81acde444763916c52e3016a5436a037ed709",
+        "comparison": "deep structural equality; canonical source-map bytes are pinned independently"
+      }
+    ]
+  },
+  "helper_execution_or_installation": false,
+  "external_profile": {
+    "source": "operator-supplied pinned archive and preserved read-only extraction",
+    "archive_sha256": "f6b84201b0214e68fddc294709f97ffcfd6a2fad53bde6056d4641a9e6b5622b",
+    "resources_preserved": 49,
+    "automatic_install": false,
+    "license": "No new archive licence is declared by this integration."
+  },
+  "text_sources": [
+    {
+      "source": "cinematic-composition/SKILL.md",
+      "destination": "skills/design/references/cinematic-composition.md",
+      "source_sha256": "6db9789b16ec25f102832e512a1c3f38d006aa02665bb675fdc5e2acce22809b",
+      "source_bytes": 7772,
+      "destination_sha256": "1864f37fac9e273a20426b8a6ec9f39fb9427715f4eb61169513fc1aa9913bda",
+      "destination_bytes": 8165
+    },
+    {
+      "source": "cinematic-prompt-direction/SKILL.md",
+      "destination": "skills/design/references/cinematic-prompt-direction.md",
+      "source_sha256": "58d3795955883d641800f04291b671451ee2218ab892a7b75646d64652dc5fc4",
+      "source_bytes": 10643,
+      "destination_sha256": "08a3b6a9a19d6d0c15b83b814c7ef6769372442d2e769e8f833793ad68b9eb3b",
+      "destination_bytes": 11097
+    },
+    {
+      "source": "cinematic-prompt-direction/references/prompt-examples.md",
+      "destination": "skills/design/references/cinematic-prompt-examples.md",
+      "source_sha256": "c5a627b39f54196720edeea4ced6919633be40c3f0d26fe3664b6df27957efd1",
+      "source_bytes": 4743,
+      "destination_sha256": "8d734e0154e1b6ca9719fc76e04558adaad031a4897943ca33043c56e839fe81",
+      "destination_bytes": 5013
+    },
+    {
+      "source": "code-animated-explainer/SKILL.md",
+      "destination": "skills/design/references/code-animated-explainer.md",
+      "source_sha256": "eee83d117633733d62d22afb5bf412d8f6343609131d7115f5d593f56fc08b52",
+      "source_bytes": 12250,
+      "destination_sha256": "15861226cd6ba4e180010faab2be29bc75557a552f974eacf1cb33ffb28c61cd",
+      "destination_bytes": 13296
+    },
+    {
+      "source": "code-animated-explainer/references/asset-and-art-direction.md",
+      "destination": "skills/design/references/explainer-asset-direction.md",
+      "source_sha256": "8aeed798f906b0a02125ee8622c2adcf9bdfe7fe59ddf372b2d9194c941e0500",
+      "source_bytes": 4783,
+      "destination_sha256": "1117ee1ed70d1c19f800d4971accd5d50425d6d3565905e2e2665416995324cf",
+      "destination_bytes": 5233
+    },
+    {
+      "source": "code-animated-explainer/references/production-playbook.md",
+      "destination": "skills/visual-assets/references/explainer-production.md",
+      "source_sha256": "7649198be0a53df34c2433389c7c1edd68acd90b8b98559e15377b81a46d5fa7",
+      "source_bytes": 6619,
+      "destination_sha256": "1ff7960a8aa73bad20748c6d3e61fa4e337079511cc4a294f17c2468a8734e8b",
+      "destination_bytes": 7515
+    },
+    {
+      "source": "code-animated-explainer/references/project-format.md",
+      "destination": "skills/visual-assets/references/explainer-project-format.md",
+      "source_sha256": "5df17831ecd00241cb494aec20ea2ce47d9e9e9280dfbb4d810fefa8c31d2abb",
+      "source_bytes": 4577,
+      "destination_sha256": "8639de288eac259852e4de17e761cd703798ac30d75972c956f7c59b0758a56a",
+      "destination_bytes": 6115
+    },
+    {
+      "source": "geometric-composition-director/SKILL.md",
+      "destination": "skills/design/references/geometric-composition-director.md",
+      "source_sha256": "da8f4a124cf142327b137de0d49bdcef524a7a2eda328a85150c64dbfaa6168e",
+      "source_bytes": 11918,
+      "destination_sha256": "916c9f819fbe60afa64938de7207299aa2656457ef1a1adf7a9439efcb168c58",
+      "destination_bytes": 12829
+    },
+    {
+      "source": "geometric-composition-director/references/geometry-and-verification.md",
+      "destination": "skills/design/references/geometric-verification.md",
+      "source_sha256": "c6b7e2f25e5eda5f6d3395eb4722572be38c67a8dcfe55318e39b946c013b50c",
+      "source_bytes": 3207,
+      "destination_sha256": "693d7689b0454cdf7fcaaeaefab337629877b83dae8485242bc5b28e8123c2e5",
+      "destination_bytes": 3491
+    },
+    {
+      "source": "geometric-composition-director/references/shot-recipes.md",
+      "destination": "skills/design/references/geometric-shot-recipes.md",
+      "source_sha256": "4b1dbf0cbb178d5605a0c431acd9a993fb81a3e6bf497a94ebb3140a6b35b016",
+      "source_bytes": 3197,
+      "destination_sha256": "2f5741dac234e6ce18deca89500962d20a93e6cdb410b37f0e36634069232122",
+      "destination_bytes": 3468
+    },
+    {
+      "source": "photographic-art-direction/SKILL.md",
+      "destination": "skills/design/references/photographic-art-direction.md",
+      "source_sha256": "f1b58cfb978c33d56701ecd78fe174e50e8a8acf54f3037950bcb3fa9f0c0d75",
+      "source_bytes": 11920,
+      "destination_sha256": "1013ecdbfe15015b4c577625ff6fb61717b967f1051435b1ae5d4938304f17b2",
+      "destination_bytes": 12971
+    },
+    {
+      "source": "photographic-art-direction/references/camera-lighting.md",
+      "destination": "skills/design/references/photographic-camera-lighting.md",
+      "source_sha256": "b540c4f8184e924c55299bb956b900fa60de3ef13badb9b0c48b1e25d28941ae",
+      "source_bytes": 5499,
+      "destination_sha256": "86cf3b3743645d98aa978adef14a864863551fc5669c6dc24f4c1cd4dd2fbd81",
+      "destination_bytes": 5769
+    },
+    {
+      "source": "photographic-art-direction/references/photographic-treatments.md",
+      "destination": "skills/design/references/photographic-treatments.md",
+      "source_sha256": "d340def088691f63b8427b77246af094a08f3694af4df195fc4d875af8fcac3c",
+      "source_bytes": 5339,
+      "destination_sha256": "02bf9aacb602e455eec997aabf7ae0fdff7185a554db45c9dcdc32c493b40e1c",
+      "destination_bytes": 5617
+    },
+    {
+      "source": "photographic-art-direction/references/shot-card-template.md",
+      "destination": "skills/design/references/photographic-shot-card.md",
+      "source_sha256": "be4cfa1ff0fcf3cbfd2382cb6624e7eabbcf590604a7a6d0134a57da34ff46e5",
+      "source_bytes": 3071,
+      "destination_sha256": "73b4d0a760ddd24b970d6dbeadb5478f656f38d1fece263c3de835a2c5f88ea3",
+      "destination_bytes": 3344
+    },
+    {
+      "source": "rhythmic-architectural-motion/SKILL.md",
+      "destination": "skills/design/references/rhythmic-architectural-motion.md",
+      "source_sha256": "e9bc6dfdbbc2b0dde0f927b56e6f8c83a79fe18959ea78f0db48a660d7f7576d",
+      "source_bytes": 12651,
+      "destination_sha256": "fafddd48d44a161a05a44684d0759c77641fc55b1e3a9646ecdba8e98094402c",
+      "destination_bytes": 14027
+    },
+    {
+      "source": "rhythmic-architectural-motion/references/shot-recipes.md",
+      "destination": "skills/design/references/rhythmic-shot-recipes.md",
+      "source_sha256": "3e7416cf60a79777accd72f875c1217beebb3f6df3efe0dcd20a1d88ba379f07",
+      "source_bytes": 6071,
+      "destination_sha256": "f5bf4d204005239d6e4f513b6fc9439fdf226c0c83e9338647d0edfe5abf8458",
+      "destination_bytes": 6341
+    },
+    {
+      "source": "rhythmic-architectural-motion/references/timing-and-workflows.md",
+      "destination": "skills/visual-assets/references/beatmap-workflow.md",
+      "source_sha256": "88f7fddf79764483642d4a59cd225d22a0ea3ed7d0edf43fc163d4d04a555acd",
+      "source_bytes": 4550,
+      "destination_sha256": "ca86284f6ef5520f2a9ab2d773cc26b0dc464cd597eaefffe908a565e4df0f14",
+      "destination_bytes": 5478
+    }
+  ],
+  "preserved_members": [
+    {
+      "path": "SKILLPACK-README.md",
+      "sha256": "2af45cd9a79f75429c15b5b7b0e7bdf281f7383732b2f749d29d55a001dcc9df",
+      "bytes": 2853,
+      "role": "external-document"
+    },
+    {
+      "path": "cinematic-composition/README.md",
+      "sha256": "4d77392119ce81d17c54e9c2b666da2d292559430cfcbbcfe27a4959040806c2",
+      "bytes": 670,
+      "role": "external-document"
+    },
+    {
+      "path": "cinematic-composition/SKILL.md",
+      "sha256": "6db9789b16ec25f102832e512a1c3f38d006aa02665bb675fdc5e2acce22809b",
+      "bytes": 7772,
+      "role": "retained-text"
+    },
+    {
+      "path": "cinematic-prompt-direction/README.md",
+      "sha256": "5460864d0b295a53047cef45dafe1cf326d4a1131ad0e81a194019960574e63b",
+      "bytes": 2159,
+      "role": "external-document"
+    },
+    {
+      "path": "cinematic-prompt-direction/SKILL.md",
+      "sha256": "58d3795955883d641800f04291b671451ee2218ab892a7b75646d64652dc5fc4",
+      "bytes": 10643,
+      "role": "retained-text"
+    },
+    {
+      "path": "cinematic-prompt-direction/references/prompt-examples.md",
+      "sha256": "c5a627b39f54196720edeea4ced6919633be40c3f0d26fe3664b6df27957efd1",
+      "bytes": 4743,
+      "role": "retained-text"
+    },
+    {
+      "path": "code-animated-explainer/README.md",
+      "sha256": "7d37d192998b88a96d4b7e65a094dc800956df676bba0aab2587e30b35d341c9",
+      "bytes": 2475,
+      "role": "external-document"
+    },
+    {
+      "path": "code-animated-explainer/SKILL.md",
+      "sha256": "eee83d117633733d62d22afb5bf412d8f6343609131d7115f5d593f56fc08b52",
+      "bytes": 12250,
+      "role": "retained-text"
+    },
+    {
+      "path": "code-animated-explainer/examples/assets/comet.png",
+      "sha256": "c55f79945ee473f7e96f9bd7201b5de53fe66ccbc7283f8856042fc828124e79",
+      "bytes": 3380,
+      "role": "external-asset"
+    },
+    {
+      "path": "code-animated-explainer/examples/assets/compass.png",
+      "sha256": "a2c597ff7a243a764dd5cf71caa68c1e532aa168e5c5da99d0fa7702c5e79449",
+      "bytes": 12619,
+      "role": "external-asset"
+    },
+    {
+      "path": "code-animated-explainer/examples/assets/desert.png",
+      "sha256": "fc72872d68b56892e3717d7c9ad898c93031b22644fb65c700e3d3af66044cec",
+      "bytes": 5163,
+      "role": "external-asset"
+    },
+    {
+      "path": "code-animated-explainer/examples/assets/moon.png",
+      "sha256": "3a11b2d681ca1dc428bb24118522ea7dce404bc1dd4c50c3023c43e215505e96",
+      "bytes": 6051,
+      "role": "external-asset"
+    },
+    {
+      "path": "code-animated-explainer/examples/assets/paper.png",
+      "sha256": "5f0c1b96309e1f6646abceacf040c645d0624b0885eb06b3e0af7a9084f456e6",
+      "bytes": 215033,
+      "role": "external-asset"
+    },
+    {
+      "path": "code-animated-explainer/examples/demo-project.json",
+      "sha256": "76429a72d6ab128440cdc1ce5bdc632730875b88384288f3148aa2be3e3f292b",
+      "bytes": 2220,
+      "role": "external-example"
+    },
+    {
+      "path": "code-animated-explainer/references/asset-and-art-direction.md",
+      "sha256": "8aeed798f906b0a02125ee8622c2adcf9bdfe7fe59ddf372b2d9194c941e0500",
+      "bytes": 4783,
+      "role": "retained-text"
+    },
+    {
+      "path": "code-animated-explainer/references/production-playbook.md",
+      "sha256": "7649198be0a53df34c2433389c7c1edd68acd90b8b98559e15377b81a46d5fa7",
+      "bytes": 6619,
+      "role": "retained-text"
+    },
+    {
+      "path": "code-animated-explainer/references/project-format.md",
+      "sha256": "5df17831ecd00241cb494aec20ea2ce47d9e9e9280dfbb4d810fefa8c31d2abb",
+      "bytes": 4577,
+      "role": "retained-text"
+    },
+    {
+      "path": "code-animated-explainer/scripts/make_demo_assets.py",
+      "sha256": "c90ec7ef33d9fff7d3cd9d29b659499178b37645c3da09209c0393404bb45268",
+      "bytes": 3707,
+      "role": "external-script"
+    },
+    {
+      "path": "code-animated-explainer/scripts/render.py",
+      "sha256": "4094582e154ffa1758f65afe95918269358dc3a886da6b721e07ed2df0b475f5",
+      "bytes": 21189,
+      "role": "external-script"
+    },
+    {
+      "path": "code-animated-explainer/scripts/test_render.py",
+      "sha256": "ee12123976f1150f9a43831460779870d6737d695681d3c57be61d6c691baaa1",
+      "bytes": 2531,
+      "role": "external-script"
+    },
+    {
+      "path": "geometric-composition-director/README.md",
+      "sha256": "6b317eb6c545322f332ed59a14cae7fddbd017e46fcaf35269fdc61137d421ac",
+      "bytes": 2600,
+      "role": "external-document"
+    },
+    {
+      "path": "geometric-composition-director/SKILL.md",
+      "sha256": "da8f4a124cf142327b137de0d49bdcef524a7a2eda328a85150c64dbfaa6168e",
+      "bytes": 11918,
+      "role": "retained-text"
+    },
+    {
+      "path": "geometric-composition-director/examples/guides/center.svg",
+      "sha256": "7272d9025bc95b772243531c476eeac49d60722656dafb816a2a65494489f1d0",
+      "bytes": 1196,
+      "role": "external-asset"
+    },
+    {
+      "path": "geometric-composition-director/examples/guides/circle.svg",
+      "sha256": "2acf6a2e8eebb99fd649de97c90673e0535617eeeddd7c8f16ee9bd6a26b0630",
+      "bytes": 1107,
+      "role": "external-asset"
+    },
+    {
+      "path": "geometric-composition-director/examples/guides/golden.svg",
+      "sha256": "e230e27e72670f3d94a2d17510017f7772eadd1cec2b24db3f93fa6666548155",
+      "bytes": 10339,
+      "role": "external-asset"
+    },
+    {
+      "path": "geometric-composition-director/examples/guides/scale.svg",
+      "sha256": "82898c7a782907a3691b6b142c0b0592dff11fcdd08b22705f0d64b82fd00112",
+      "bytes": 1526,
+      "role": "external-asset"
+    },
+    {
+      "path": "geometric-composition-director/examples/guides/thirds.svg",
+      "sha256": "2660903d98426d311fc9e8665a964dc1b1c4fd0d24f7eef6fbcdd41ae1d93c7d",
+      "bytes": 1286,
+      "role": "external-asset"
+    },
+    {
+      "path": "geometric-composition-director/examples/guides/triangle.svg",
+      "sha256": "d56fd5d902a40cdafe19c4e3ae5c29a73569c214b885257d32d37f470e604612",
+      "bytes": 910,
+      "role": "external-asset"
+    },
+    {
+      "path": "geometric-composition-director/examples/sample-shot-plan.json",
+      "sha256": "13996b4d5119effebbc7016d3f894c985315ee7d2ce722fb8c837f9f1c05678f",
+      "bytes": 1240,
+      "role": "external-example"
+    },
+    {
+      "path": "geometric-composition-director/references/geometry-and-verification.md",
+      "sha256": "c6b7e2f25e5eda5f6d3395eb4722572be38c67a8dcfe55318e39b946c013b50c",
+      "bytes": 3207,
+      "role": "retained-text"
+    },
+    {
+      "path": "geometric-composition-director/references/shot-recipes.md",
+      "sha256": "4b1dbf0cbb178d5605a0c431acd9a993fb81a3e6bf497a94ebb3140a6b35b016",
+      "bytes": 3197,
+      "role": "retained-text"
+    },
+    {
+      "path": "geometric-composition-director/scripts/composition_guides.py",
+      "sha256": "073182219ec0844c08f68e3ca2313af86fb2da25b663b90e6b328094567779eb",
+      "bytes": 11882,
+      "role": "external-script"
+    },
+    {
+      "path": "geometric-composition-director/tests/test_guides.py",
+      "sha256": "86ef88df27619ced6f241d1c0db60237e98aa422cef59f917efd48afa8dfc9e2",
+      "bytes": 2990,
+      "role": "external-test"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "af6291ac5b4813196aa7d349e696f4ef657236cc07dfda041f7ad79ced8c8fab",
+      "bytes": 9963,
+      "role": "manifest"
+    },
+    {
+      "path": "photographic-art-direction/README.md",
+      "sha256": "d8070dad1c251f6044b6544d353c303de6a75b20e6faa6f8f43fa9ba9ddabd94",
+      "bytes": 2576,
+      "role": "external-document"
+    },
+    {
+      "path": "photographic-art-direction/SKILL.md",
+      "sha256": "f1b58cfb978c33d56701ecd78fe174e50e8a8acf54f3037950bcb3fa9f0c0d75",
+      "bytes": 11920,
+      "role": "retained-text"
+    },
+    {
+      "path": "photographic-art-direction/examples/night-studies.json",
+      "sha256": "dbf446c0bebc6c3fa475b7faa4e418e4002dd37b60b2bd777c24e4ccfe750c52",
+      "bytes": 6304,
+      "role": "external-example"
+    },
+    {
+      "path": "photographic-art-direction/references/camera-lighting.md",
+      "sha256": "b540c4f8184e924c55299bb956b900fa60de3ef13badb9b0c48b1e25d28941ae",
+      "bytes": 5499,
+      "role": "retained-text"
+    },
+    {
+      "path": "photographic-art-direction/references/photographic-treatments.md",
+      "sha256": "d340def088691f63b8427b77246af094a08f3694af4df195fc4d875af8fcac3c",
+      "bytes": 5339,
+      "role": "retained-text"
+    },
+    {
+      "path": "photographic-art-direction/references/shot-card-template.md",
+      "sha256": "be4cfa1ff0fcf3cbfd2382cb6624e7eabbcf590604a7a6d0134a57da34ff46e5",
+      "bytes": 3071,
+      "role": "retained-text"
+    },
+    {
+      "path": "photographic-art-direction/scripts/shotboard.py",
+      "sha256": "b30fb56662004d97b8dbc6e2a5687e7316480aa97f3748550395dba4762c6c92",
+      "bytes": 14441,
+      "role": "external-script"
+    },
+    {
+      "path": "photographic-art-direction/scripts/tests/test_shotboard.py",
+      "sha256": "6114f99ed2f77dd6cfbb54d07686b8c1360ca54811ee1e5d59ccfe599aa63259",
+      "bytes": 3053,
+      "role": "external-test"
+    },
+    {
+      "path": "rhythmic-architectural-motion/README.md",
+      "sha256": "b5da3007e07d71327ba146de2f4fffbe5f3ed64d91ddf7cc68892531730775ed",
+      "bytes": 2081,
+      "role": "external-document"
+    },
+    {
+      "path": "rhythmic-architectural-motion/SKILL.md",
+      "sha256": "e9bc6dfdbbc2b0dde0f927b56e6f8c83a79fe18959ea78f0db48a660d7f7576d",
+      "bytes": 12651,
+      "role": "retained-text"
+    },
+    {
+      "path": "rhythmic-architectural-motion/references/example-cues.json",
+      "sha256": "5c88032d7680906b39432cd39cea9bdf3d4608134c21ed46e1e0f40d06001b42",
+      "bytes": 7205,
+      "role": "external-example"
+    },
+    {
+      "path": "rhythmic-architectural-motion/references/sample-shot-plan.json",
+      "sha256": "0beee20ae5e11d0afccd96e75bde30cc9789ce437f32c982d2a264c937b8bce0",
+      "bytes": 1006,
+      "role": "external-example"
+    },
+    {
+      "path": "rhythmic-architectural-motion/references/shot-recipes.md",
+      "sha256": "3e7416cf60a79777accd72f875c1217beebb3f6df3efe0dcd20a1d88ba379f07",
+      "bytes": 6071,
+      "role": "retained-text"
+    },
+    {
+      "path": "rhythmic-architectural-motion/references/timing-and-workflows.md",
+      "sha256": "88f7fddf79764483642d4a59cd225d22a0ea3ed7d0edf43fc163d4d04a555acd",
+      "bytes": 4550,
+      "role": "retained-text"
+    },
+    {
+      "path": "rhythmic-architectural-motion/scripts/beatmap.py",
+      "sha256": "7ec519413b737c2981aa03a5f95df952b09a0e59fc3c91cc70fb9c426b700ae7",
+      "bytes": 9996,
+      "role": "external-script"
+    }
+  ]
+}
