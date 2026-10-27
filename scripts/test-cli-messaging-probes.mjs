@@ -77,7 +77,7 @@ createInterface({input:process.stdin}).on('line',line=>{
 
 test('Antigravity probe queues its second prompt only after a terminal native result', { timeout: 5000 }, async t => {
   const report = await argonDouble(t, true);
-  assert.equal(report.status, 'two_ordered_turns_observed');
+  assert.equal(report.status, 'two_ordered_turns_observed', JSON.stringify({ error: report.error, exit: report.exit, stderrBytes: report.stderrBytes }));
   assert.equal(report.promptsEmitted, 2);
   assert.equal(report.exit.code, 0);
 });

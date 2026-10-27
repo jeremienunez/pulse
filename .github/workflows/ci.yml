@@ -28,6 +28,13 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.14.4'
+      - name: Prepare Linux isolation required by CLI tests
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes bubblewrap
+          bwrap --version
+          bwrap --ro-bind / / -- node --version
       - name: Prepare explicitly locked tools outside the source
         shell: bash
         run: |
