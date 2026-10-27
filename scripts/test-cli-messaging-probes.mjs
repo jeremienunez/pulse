@@ -60,7 +60,7 @@ async function argonDouble(t, identity) {
   fs.chmodSync(directory, 0o700);
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const binary = path.join(directory, 'fake-argon.mjs');
-  fs.writeFileSync(binary, `#!/usr/bin/node
+  fs.writeFileSync(binary, `#!${process.execPath}
 import {createInterface} from 'node:readline';
 const identity = ${JSON.stringify(identity)};
 if(identity)console.log(JSON.stringify({event:'init',conversation_id:'owned-test-conversation',init:{model:'test-double'}}));
@@ -86,6 +86,8 @@ test('Antigravity probe with missing native identity must stop before its second
   const report = await argonDouble(t, false);
   assert.equal(report.status, 'blocked_unknown');
   assert.equal(report.promptsEmitted, 1);
+  assert.equal(report.results.length, 1, 'The negative case must execute the fake process, not merely fail to spawn.');
+  assert.equal(report.exit.error, undefined);
 });
 
 test('Antigravity probe settles when the native executable cannot be started', { timeout: 3000 }, async t => {
