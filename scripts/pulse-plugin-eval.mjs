@@ -1262,7 +1262,7 @@ function runStaticChecks(results) {
     results,
     "static",
     "mcp-servers-parse",
-    ["gitnexus", "MCP_DOCKER", "morph-mcp"].every((name) => mcpServers.includes(name)) ? "PASS" : "FAIL",
+    ["MCP_DOCKER", "morph-mcp"].every((name) => mcpServers.includes(name)) && !mcpServers.includes("gitnexus") ? "PASS" : "FAIL",
     `servers=${mcpServers.join(", ") || "none"}`,
   );
 }

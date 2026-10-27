@@ -145,6 +145,40 @@ test("status normalization distinguishes partial denial and process success from
   assert.equal(normalizeOutput("antigravity", { stdout: '{"status":', exitCode: 0 }).status, "invalid_output");
 });
 
+test("native Antigravity denied_actions overrides SUCCESS and preserves uncertainty and partial output", () => {
+  for (const response of ["", "Some steps completed before the refusal"]) {
+    const result = normalizeOutput("antigravity", {
+      stdout: JSON.stringify({ status: "SUCCESS", response, denied_actions: [{ action: "read_file", display_name: "ReadFile" }] }), exitCode: 0,
+    });
+    assert.equal(result.status, "denied");
+    assert.equal(result.tool_denied, true);
+    assert.equal(result.effect_uncertain, true);
+    assert.equal(result.task_verified, false);
+    assert.equal(result.response, response);
+    assert.equal(result.exit_code, 0);
+  }
+});
+
+test("native Antigravity refusal keeps terminal process evidence", () => {
+  const result = normalizeOutput("antigravity", {
+    stdout: JSON.stringify({ status: "ERROR", response: "partial", denied_actions: [{ action: "run_command" }] }), exitCode: 3, signal: "SIGTERM",
+  });
+  assert.equal(result.status, "denied");
+  assert.equal(result.effect_uncertain, true);
+  assert.equal(result.response, "partial");
+  assert.equal(result.exit_code, 3);
+  assert.equal(result.signal, "SIGTERM");
+});
+
+test("empty or malformed Antigravity denied_actions does not invent a refusal", () => {
+  for (const denied_actions of [undefined, [], {}, "denied"]) {
+    const result = normalizeOutput("antigravity", { stdout: JSON.stringify({ status: "SUCCESS", response: "ok", denied_actions }), exitCode: 0 });
+    assert.equal(result.status, "completed");
+    assert.equal(result.tool_denied, false);
+    assert.equal(result.effect_uncertain, false);
+  }
+});
+
 test("retired CLI names and aliases are rejected even when matching binaries exist in PATH", async () => {
   const f = fixture();
   try {

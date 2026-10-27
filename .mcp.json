@@ -1,24 +1,5 @@
 {
   "mcpServers": {
-    "gitnexus": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "gitnexus@1.6.10",
-        "mcp"
-      ],
-      "includeTools": [
-        "list_repos",
-        "query",
-        "context",
-        "impact",
-        "api_impact",
-        "route_map",
-        "shape_check",
-        "detect_changes"
-      ]
-    },
     "MCP_DOCKER": {
       "type": "stdio",
       "command": "docker",

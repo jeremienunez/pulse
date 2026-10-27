@@ -137,6 +137,10 @@ export function normalizeOutput(target, { stdout = "", stderr = "", exitCode, si
       if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid envelope");
       if (target === "antigravity") {
         result.response = typeof value.response === "string" ? value.response : "";
+        if (Array.isArray(value.denied_actions) && value.denied_actions.length > 0) {
+          result.tool_denied = true;
+          result.effect_uncertain = true;
+        }
         result.status = value.status === "SUCCESS" && result.response.trim() ? "completed" : "failed";
       } else if (target === "claude") {
         result.response = typeof value.result === "string" ? value.result : "";

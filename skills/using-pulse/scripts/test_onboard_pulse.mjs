@@ -106,7 +106,7 @@ test("applyRepo creates repo-local Pulse helpers under .pulse/scripts", () => {
     assert.ok(
       installedStatus.dependency_health.mcp_sources
         .find((source) => source.key === "plugin_mcp_manifest")
-        ?.server_names.includes("gitnexus"),
+        ?.server_names.includes("morph-mcp"),
     );
 
     fs.rmSync(path.join(root, ".pulse", "dependency-inventory.json"));
@@ -2015,7 +2015,6 @@ test("preflight has only an explicit user-request edge into the Pulse workflow",
     "skills/executing/SKILL.md",
     "skills/reviewing/SKILL.md",
     "skills/compounding/SKILL.md",
-    "skills/gitnexus/SKILL.md",
   ]) {
     const text = fs.readFileSync(path.join(LOCAL_REPO_ROOT, relativePath), "utf8");
     assert.doesNotMatch(text, /invoke `pulse:preflight`|route to preflight/i, relativePath);
@@ -2044,19 +2043,8 @@ test("packaged Pulse inventory has full dependency coverage", () => {
   assert.equal(usingPulse.coverage_status, "declared_dependencies");
   assert.equal(usingPulse.dependencies[0].id, "node-runtime");
   assert.match(skillText, /kind: command/);
-  assert.equal(mcpServers.gitnexus.type, "stdio");
-  assert.equal(mcpServers.gitnexus.command, "npx");
-  assert.deepEqual(mcpServers.gitnexus.args, ["-y", "gitnexus@1.6.10", "mcp"]);
-  assert.deepEqual(mcpServers.gitnexus.includeTools, [
-    "list_repos",
-    "query",
-    "context",
-    "impact",
-    "api_impact",
-    "route_map",
-    "shape_check",
-    "detect_changes",
-  ]);
+  assert.equal(Object.hasOwn(mcpServers, "gitnexus"), false);
+  assert.equal(fs.existsSync(path.join(LOCAL_REPO_ROOT, "skills", "gitnexus")), false);
   assert.equal(mcpServers.MCP_DOCKER.command, "docker");
   assert.equal(mcpServers["morph-mcp"].command, "npx");
 });

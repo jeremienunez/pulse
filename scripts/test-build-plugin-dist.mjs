@@ -71,7 +71,7 @@ test('extracted design/assets package carries contracts and adapters, without ex
   try{
     const packaged=path.join(root,'package');buildPluginDist(REPO_ROOT,packaged);
     for(const file of ['skills/design/references/cultural-digging.md','skills/design/references/motion.md','skills/visual-assets/SKILL.md','skills/visual-assets/references/capabilities.json','skills/visual-assets/references/threading.md','skills/visual-assets/references/threading-source-lock.json','scripts/lib/pulse-culture-tree.mjs','scripts/pulse-threading-svg.mjs','scripts/lib/pulse-threading-svg.mjs','scripts/lib/pulse-threading-cdp.mjs','scripts/lib/pulse-threading-svg-check.py','docs/design/design-expression-provenance.md','docs/evaluation/design-expression-assets.md','docs/evaluation/frontend-threading-svg.md'])assert.ok(fs.existsSync(path.join(packaged,file)),file);
-    const catalog=JSON.parse(fs.readFileSync(path.join(packaged,'skill-catalog.json')));assert.equal(catalog.skillCount,27);assert.ok(catalog.skills.some(s=>s.name==='visual-assets'));assert.ok(catalog.skills.some(s=>s.name==='cli-bridge'));assert.equal(catalog.skills.filter(s=>s.name==='reverse-engineering').length,1);
+    const catalog=JSON.parse(fs.readFileSync(path.join(packaged,'skill-catalog.json')));assert.equal(catalog.skillCount,26);assert.ok(catalog.skills.some(s=>s.name==='visual-assets'));assert.ok(catalog.skills.some(s=>s.name==='cli-bridge'));assert.equal(catalog.skills.filter(s=>s.name==='reverse-engineering').length,1);
     for(const file of ['SKILL.md','LICENSE','NOTICE','CREATION-LOG.md','references/javascript-applications.md','references/native-and-artifacts.md','references/runtime-observation.md','references/evidence-workflows.md','references/connection-and-recovery.md','references/rea-source-lock.json'])assert.ok(fs.existsSync(path.join(packaged,'skills/reverse-engineering',file)),file);
     for(const file of ['pressure-corpus.json','pilot-briefs.json','pilot-policy.json'])assert.ok(fs.readFileSync(path.join(packaged,'docs/evaluation/design-expression-assets',file)).equals(fs.readFileSync(path.join(REPO_ROOT,'docs/evaluation/design-expression-assets',file))));
     const lock=JSON.parse(fs.readFileSync(path.join(packaged,'skills/visual-assets/references/threading-source-lock.json')));assert.equal(lock.required_files.length,20);for(const file of lock.required_files.filter(f=>f.served))assert.equal(fs.existsSync(path.join(packaged,file.path)),false,'external engine '+file.path);
@@ -122,7 +122,7 @@ test("plugin distribution contains only reviewed runtime surfaces and a replayab
     }
 
     const mcp = JSON.parse(fs.readFileSync(path.join(output, ".mcp.json"), "utf8"));
-    assert.deepEqual(Object.keys(mcp.mcpServers).sort(), ["MCP_DOCKER", "gitnexus", "morph-mcp", "opencode-models"]);
+    assert.deepEqual(Object.keys(mcp.mcpServers).sort(), ["MCP_DOCKER", "morph-mcp", "opencode-models"]);
     assert.deepEqual(comparePluginDist(output, output), { ok: true, differences: [] });
   } finally {
     fs.rmSync(outputRoot, { recursive: true, force: true });

@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { verifyMessagingRuntime } from "./build-cli-messaging-runtime.mjs";
 
 const RUNTIME_DIRECTORIES = [
   ".agents",
@@ -79,7 +80,7 @@ export function refreshDistManifest(root) {
   return manifest;
 }
 
-export function buildPluginDist(sourceRoot, outputRoot) {
+export function buildPluginDist(sourceRoot, outputRoot, { messagingRuntime = process.env.PULSE_MESSAGING_RUNTIME_BUNDLE } = {}) {
   const source = path.resolve(sourceRoot);
   const output = path.resolve(outputRoot);
   if (output === source || output.startsWith(`${source}${path.sep}`)) {
@@ -88,13 +89,22 @@ export function buildPluginDist(sourceRoot, outputRoot) {
   if (fs.existsSync(output)) {
     throw new Error(`Distribution output already exists: ${output}`);
   }
+  const runtime = verifyMessagingRuntime(source, messagingRuntime);
   fs.mkdirSync(output, { recursive: true });
 
   for (const directory of RUNTIME_DIRECTORIES) {
     const from = path.join(source, directory);
     if (!fs.statSync(from).isDirectory()) throw new Error(`Missing runtime directory: ${directory}`);
-    fs.cpSync(from, path.join(output, directory), { recursive: true, errorOnExist: true });
+    fs.cpSync(from, path.join(output, directory), { recursive: true, errorOnExist: true, filter: target => {
+      const relative = path.relative(source, target).split(path.sep).join("/");
+      return !/^scripts\/(?:cli-messaging(?:\/|$)|cli-messaging-tools(?:\/|$)|test-cli-messaging-|test-build-cli-messaging-dist\.mjs$)/u.test(relative);
+    } });
   }
+  const messaging = path.join(output, "scripts", "cli-messaging");
+  fs.mkdirSync(messaging, { recursive: true });
+  for (const name of ["setup.mjs", "THIRD_PARTY_NOTICES.md"]) fs.copyFileSync(path.join(source, "scripts", "cli-messaging", name), path.join(messaging, name));
+  fs.copyFileSync(runtime.file, path.join(output, "scripts", "cli-messaging-runtime.mjs"));
+  fs.copyFileSync(runtime.file + ".manifest.json", path.join(output, "scripts", "cli-messaging-runtime.mjs.manifest.json"));
   for (const file of RUNTIME_FILES) {
     const from = path.join(source, file);
     if (!fs.statSync(from).isFile()) throw new Error(`Missing runtime file: ${file}`);

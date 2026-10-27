@@ -126,7 +126,7 @@ test('extracted package retains both owners and all method text without archive 
     const output = path.join(root, 'package'); buildPluginDist(ROOT, output);
     assert.equal(verifyVisualCorpus(output).sources, 17);
     const catalog = json(output, 'skill-catalog.json');
-    assert.equal(catalog.skillCount, 27);
+    assert.equal(catalog.skillCount, 26);
     assert.equal(catalog.skills.find(row => row.name === 'design').metadata.version, '1.2');
     assert.equal(catalog.skills.find(row => row.name === 'visual-assets').metadata.version, '1.1');
     assert.equal(fs.existsSync(path.join(output, 'history')), false);

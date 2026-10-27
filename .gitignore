@@ -30,3 +30,7 @@ pulse-eval-workspace/benchmark*.json
 # Explicitly versioned development toolchain; installs stay outside the repo.
 !scripts/code-quality/tools/package.json
 !scripts/code-quality/tools/package-lock.json
+
+# Messaging build declarations only; dependencies are installed outside source.
+!scripts/cli-messaging-tools/package.json
+!scripts/cli-messaging-tools/package-lock.json

@@ -72,7 +72,7 @@ test("a retired optional MCP can be excluded without changing the common Pulse s
     const result = buildAntigravityDist(source, output, { installRoot: path.join(root, "final"), excludeMcpServers: ["opencode-models"] });
     const mcp = JSON.parse(fs.readFileSync(path.join(output, "mcp_config.json")));
     assert.equal(Object.hasOwn(mcp.mcpServers, "opencode-models"), false);
-    assert.deepEqual(Object.keys(mcp.mcpServers).sort(), ["MCP_DOCKER", "gitnexus", "morph-mcp"]);
+    assert.deepEqual(Object.keys(mcp.mcpServers).sort(), ["MCP_DOCKER", "morph-mcp"]);
     assert.deepEqual(result.metadata.excluded_mcp_servers, ["opencode-models"]);
     assert.ok(before.equals(fs.readFileSync(path.join(source, ".mcp.json"))));
     assert.throws(() => buildAntigravityDist(source, path.join(root, "invalid"), { installRoot: root, excludeMcpServers: ["missing"] }), /existing canonical/u);

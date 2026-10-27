@@ -45,5 +45,23 @@ jobs:
           PY
           rustup toolchain install 1.93.1 --profile minimal --component clippy
           cargo install tokei --version 15.0.0 --locked --root "$PULSE_QUALITY_TOOLCHAIN/native"
+      - name: Prepare locked messaging artifacts outside source
+        shell: bash
+        run: |
+          export PULSE_MESSAGING_TOOLCHAIN="$RUNNER_TEMP/pulse-messaging-tools"
+          export PULSE_MESSAGING_PROBE_BUILD="$RUNNER_TEMP/pulse-messaging-built"
+          mkdir -p "$PULSE_MESSAGING_TOOLCHAIN" "$PULSE_MESSAGING_PROBE_BUILD"
+          cp scripts/cli-messaging-tools/package.json scripts/cli-messaging-tools/package-lock.json "$PULSE_MESSAGING_TOOLCHAIN/"
+          npm ci --prefix "$PULSE_MESSAGING_TOOLCHAIN" --ignore-scripts --no-audit --no-fund
+          node scripts/build-cli-messaging-runtime.mjs --toolchain "$PULSE_MESSAGING_TOOLCHAIN" --out "$PULSE_MESSAGING_PROBE_BUILD"
+          for entry in mcp-component channel-fixture native-feasibility codex-owner-launcher; do
+            node scripts/build-cli-messaging-runtime.mjs --toolchain "$PULSE_MESSAGING_TOOLCHAIN" --out "$PULSE_MESSAGING_PROBE_BUILD" --entry "$entry"
+          done
+          echo "PULSE_MESSAGING_TOOLCHAIN=$PULSE_MESSAGING_TOOLCHAIN" >> "$GITHUB_ENV"
+          echo "PULSE_MESSAGING_PROBE_BUILD=$PULSE_MESSAGING_PROBE_BUILD" >> "$GITHUB_ENV"
+          echo "PULSE_MESSAGING_RUNTIME_BUNDLE=$PULSE_MESSAGING_PROBE_BUILD/cli-messaging-runtime.mjs" >> "$GITHUB_ENV"
+          echo "PULSE_MESSAGING_MCP_BUILD=$PULSE_MESSAGING_PROBE_BUILD/mcp-component.mjs" >> "$GITHUB_ENV"
+      - name: Verify deterministic messaging and extracted distributions without accounts
+        run: node --test scripts/test-cli-messaging-*.mjs scripts/test-build-cli-messaging-dist.mjs scripts/test-cli-bridge.mjs
       - name: Verify the indexed candidate with the shared CI profile
         run: node scripts/pulse-quality.mjs --profile ci

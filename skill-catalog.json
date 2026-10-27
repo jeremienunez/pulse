@@ -4,7 +4,7 @@
   "generatedFiles": [
     "skill-catalog.json"
   ],
-  "skillCount": 27,
+  "skillCount": 26,
   "skills": [
     {
       "directory": "architecture-rescue",
@@ -148,19 +148,6 @@
       "hasScriptsDir": false,
       "hasAgentsDir": false,
       "skillPath": "skills/exploring/SKILL.md"
-    },
-    {
-      "directory": "gitnexus",
-      "name": "gitnexus",
-      "description": "Use when Pulse planning or discovery needs graph-based architecture context, execution-flow tracing, symbol relationships, or blast-radius analysis beyond plain file search.",
-      "metadata": {
-        "version": "1.0",
-        "position": null
-      },
-      "hasReferencesDir": false,
-      "hasScriptsDir": false,
-      "hasAgentsDir": false,
-      "skillPath": "skills/gitnexus/SKILL.md"
     },
     {
       "directory": "governed-feature",

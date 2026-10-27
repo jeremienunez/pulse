@@ -12,7 +12,7 @@
   </a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
   <a href="skills">
-    <img alt="Skills" src="https://img.shields.io/badge/skills-27-8B5CF6?style=flat-square" />
+    <img alt="Skills" src="https://img.shields.io/badge/skills-26-8B5CF6?style=flat-square" />
   </a>
 </p>
 
@@ -204,3 +204,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for skill structure, versioning, and PR p
 MIT License
 
 </div>
+
+## Optional inter-CLI messaging
+
+The [standalone messaging service](docs/cli-messaging.md) connects explicitly enrolled Claude Code, Codex and Antigravity sessions without Compagnion. [Verified profiles and limits](docs/cli-messaging-compatibility.md) distinguish native receipts, model declarations and recovery without replay. Setup prepares private launchers and preserves global profiles and the skill catalog.

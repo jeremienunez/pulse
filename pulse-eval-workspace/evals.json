@@ -73,20 +73,6 @@
       ]
     },
     {
-      "id": 6,
-      "skill": "gitnexus",
-      "skill_path": "skills/gitnexus",
-      "prompt": "Use pulse:gitnexus to find all files related to authentication in the current codebase and give me an architecture snapshot.",
-      "expected_output": "Agent checks the scout or dependency report for GitNexus readiness, uses GitNexus tools when configured (or rg fallback otherwise), summarizes architecture findings, and notes where results are saved (discovery.md).",
-      "files": [],
-      "expectations": [
-        "Agent checks for GitNexus availability before running discovery commands",
-        "Agent uses GitNexus tools (query, context, impact, route analysis) or falls back to rg if unavailable",
-        "Agent produces an architecture summary or discovery notes",
-        "Agent saves or describes saving findings to history/<feature>/discovery.md"
-      ]
-    },
-    {
       "id": 7,
       "skill": "planning",
       "skill_path": "skills/planning",

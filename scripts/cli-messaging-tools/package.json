@@ -1,0 +1,11 @@
+{
+  "name": "pulse-cli-messaging-build-tools",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.15.0" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.31.0",
+    "esbuild": "0.28.2"
+  }
+}
