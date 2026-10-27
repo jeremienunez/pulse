@@ -2,6 +2,8 @@
 
 Pulse 4 applies Interpretable Context Methodology to software delivery: folder structure defines the stages, plain files carry context, deterministic scripts handle mechanics, and humans approve the irreversible boundaries.
 
+For day-to-day operation, start with the [workflow guide](workflow.md). See [installation](installation.md) for runtime setup and the [documentation index](README.md) for specialist evidence.
+
 ## Five Context Layers
 
 1. **Identity** — `AGENTS.md` and `CLAUDE.md` explain the repository and durable rules.
@@ -70,27 +72,30 @@ Strong-fit governance uses the active runtime's approved intent: `stages/01_expl
 
 `work-graph.json` is a small DAG. Nodes declare `id`, `title`, `depends_on`, exact repo-relative `files`, and `verification`. It contains no execution status.
 
-Validation rejects cycles, missing dependencies, unsafe paths, duplicate IDs, and missing file or verification scopes. Strategy recommendation uses only conservative connectivity:
+Validation rejects cycles, missing dependencies, unsafe paths, duplicate IDs, and missing file or verification scopes. Every valid graph receives a cost-first `single-worker` recommendation. Connectivity determines swarm eligibility separately:
 
-- one weak component → single worker;
-- two or more weak components with disjoint file scopes → swarm candidate;
-- any cross-component file overlap → single worker;
+- one weak component → swarm-ineligible;
+- two or more weak components with disjoint file scopes → swarm-eligible;
+- any cross-component file overlap → swarm-ineligible;
 - swarm is capped at four workers and still requires Gate 3 approval.
 
 `execution-state.json` records mutable completion. Beads may mirror approved swarm work for coordination but never replace the approved graph.
 
 ## Deterministic Runtime
 
-`skills/using-pulse/scripts/pulse_icm.mjs` owns mechanical operations:
+`workflow/scripts/pulse_icm.mjs` is the source-facing entrypoint; it delegates to the packaged implementation in `skills/using-pulse/scripts/pulse_icm.mjs`. That helper owns mechanical operations:
 
 - initialize a run;
 - validate and analyze a graph;
 - approve a gate and bind hashes;
 - detect stale approvals;
+- archive and reopen work through recorded revisions and binding-checked recovery;
 - advance execution and compounding stages;
 - distinguish v2, legacy v1, idle, and conflicting runtime surfaces.
 
 `pulse_status.mjs` dispatches v2 to this runtime and leaves the existing legacy state implementation untouched. V2 status and optional onboarding never write legacy mirrors or checkpoints.
+
+Run outputs are not an automatic audit publication mechanism. This source repository ignores `.pulse/` and `history/`; downstream repositories choose their evidence retention policy. A Gate 4 approval changes workflow state, without performing a Git merge, push or deployment. Root-owned review remains the default; specialist review agents require an explicit operator request.
 
 ## Legacy Compatibility
 
@@ -100,7 +105,7 @@ An active v2 run plus an active legacy handoff is a conflict. Pulse stops and as
 
 ## Plugin Boundary
 
-Pulse Tuned packages 27 skills. The source retains four optional MCP definitions: GitNexus, Docker MCP, Morph and the historical OpenCode models route. The maintained Antigravity package excludes the retired OpenCode route and retains three definitions. Configuration does not prove a live server connection. Pulse intentionally packages no lifecycle hooks. Startup, status, preflight, onboarding, and worker launch are explicit actions.
+Pulse Tuned packages 26 skills, including the historical `opencode-models` entry. The source retains three optional MCP definitions: Docker MCP, Morph and the historical OpenCode models route. The maintained Antigravity package excludes the retired OpenCode route and retains two definitions. GitNexus is retired and absent from the current source catalog and MCP manifest. Configuration does not prove a live server connection. Pulse intentionally packages no lifecycle hooks. Startup, preflight, onboarding, and worker launch are explicit actions; status is read-only. The [skill guide](skills.md) distinguishes maintained task routes from the historical entry.
 
 The maintained distribution is `jeremienunez/pulse` on `tuned/main`. Catalogs retain the `pulse` plugin and `pulse-dev` marketplace identities. Portable CI covers deterministic contracts and package construction; native CLI, transport and model-behavior evidence are separate checks.
 
@@ -108,7 +113,7 @@ The `design` support skill owns on-demand framing, realization, review, cultural
 
 The same design owner retains the substantive awwwards/jury corpus as one-level topic references: concept, art direction, typography, layout, content, motion, patterns, quality and critique, including the two masters' distinct directions. Optional engine/WebGL/Next/Astro recipes remain reference text. Source hashes and reversible local operations detect undeclared changes; exact adaptation review judges meaning. The [provenance](design/awwwards-provenance.md) and [evaluation](evaluation/awwwards-design-integration.md) state the approved human source-adoption scope and behavioural limits. No additional skill entry, lifecycle, model qualification rule or helper runtime is introduced.
 
-The [Visual Direction corpus](design/visual-direction-provenance.md) keeps 14 full direction references in `design` and three production/timing/project references in `visual-assets`. The catalogue stays at 27 skills. Each of the 17 original texts and 176 sections is reconstructible from a pinned source map and ordered byte edits; 28 prior references and four prior capability records are protected. This verifier is read-only and independent of archive programs or providers. Semantic fidelity remains a separate review. Composition guides, shotboard, beatmap and layered-explainer records are external references with no Pulse local adapter; creative vocabulary is kept distinct from the source renderer's implemented subset and actual runtime admission.
+The [Visual Direction corpus](design/visual-direction-provenance.md) keeps 14 full direction references in `design` and three production/timing/project references in `visual-assets`. These references belong to the two existing skills. Each of the 17 original texts and 176 sections is reconstructible from a pinned source map and ordered byte edits; 28 prior references and four prior capability records are protected. This verifier is read-only and independent of archive programs or providers. Semantic fidelity remains a separate review. Composition guides, shotboard, beatmap and layered-explainer records are external references with no Pulse local adapter; creative vocabulary is kept distinct from the source renderer's implemented subset and actual runtime admission.
 
 Native creative sessions use the [1.1 evidence contract](evaluation/frontend-creative.md): a verified manifest selects the version, a cultural tree resolves existing inspected supports and two causal research chains, and root substance review remains distinct from structural validation. Frozen1.0 evidence follows its original rules. The optional [Threading adapter](evaluation/frontend-threading-svg.md) consumes external pinned source under an existing reservation, preserves native SVG bytes and requires actual cleanup. Primitive retains its own job and grammar. [Provenance and limits](design/design-expression-provenance.md) accompany the package. No delivery stage, mandatory project document or automatic media provider is added.
 

@@ -1,5 +1,7 @@
 # Antigravity and inter-CLI integration
 
+See [installation](installation.md) for the complete install commands and the [workflow guide](workflow.md) for the shared stage and approval model.
+
 Pulse keeps one source for its contracts and skills. The Antigravity constructor
 uses the common distributor, adds the native `plugin.json` and `mcp_config.json`,
 and records source identity in `pulse-package.json`. The explicit `--install-root`
@@ -7,7 +9,9 @@ binds the packaged OpenCode MCP script to its final location. Rebuild for a
 different installation directory; a staged package is not path-independent.
 Use `--exclude-mcp opencode-models` for the current installation, where the
 operator retired OpenCode. The exclusion is recorded in package metadata and
-leaves the common Pulse source intact.
+leaves the common Pulse source intact. The current source declares Docker MCP,
+Morph and the historical OpenCode route; that exclusion leaves two native MCP
+definitions. GitNexus is retired and is absent from the current source manifest.
 
 Install with `agy plugin install <native-package>` after strict validation.
 Verify the directory reported by `agy plugin list --json`, then the payload

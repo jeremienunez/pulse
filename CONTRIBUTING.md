@@ -2,6 +2,8 @@
 
 This repo packages one plugin, `pulse`, with its package surface rooted at the repository top level. Use this guide when creating or editing skills, updating manifests, or changing the public workflow contract.
 
+Start with the [documentation index](docs/README.md), [architecture](docs/ARCHITECTURE.md) and [workflow guide](docs/workflow.md). The distribution branch is `tuned/main`; plugin and marketplace identifiers remain `pulse` and `pulse-dev`.
+
 ## Repository Truth
 
 These paths matter most:
@@ -39,22 +41,25 @@ skills/
 ├── brainstorming/
 ├── cli-bridge/                references/ scripts/
 ├── compounding/               references/
+├── design/                    references/
 ├── dev-note/
 ├── dev-note-distil/
 ├── dream/                     references/
 ├── executing/
 ├── exploring/                 references/
-├── gitnexus/
 ├── governed-feature/          references/ scripts/
+├── opencode-models/           historical source entry
 ├── planning/                  mcp.json references/
 ├── preflight/                 agents/ references/
 ├── prompt-leverage/           agents/ references/ scripts/
 ├── refresh-project-docs/      agents/ references/
 ├── reviewing/                 references/
+├── reverse-engineering/       references/
 ├── swarming/                  references/
 ├── systematic-debug-fix/      agents/ references/
 ├── using-pulse/               references/ scripts/ templates/
 ├── validating/                references/
+├── visual-assets/             references/
 ├── worktree-isolation/
 └── writing-pulse-skills/      references/
 ```
@@ -64,6 +69,8 @@ Folder names are filesystem-safe and unprefixed. Frontmatter names should also s
 - folder: `planning`
 - frontmatter name: `planning`
 - surfaced skill label: `pulse:planning`
+
+The current catalog has 26 entries. `opencode-models` is retained as a historical source entry; OpenCode and Gemini CLI are retired from the maintained local workflow. GitNexus is retired and absent from the current catalog. Do not invoke or restore these tools as a documentation or testing fallback.
 
 ## SKILL.md Format
 
@@ -177,7 +184,7 @@ pulse:exploring -> pulse:planning -> pulse:validating -> pulse:executing -> puls
 
 `pulse:swarming` is an approved execution strategy inside Stage 04, not a chain stage.
 
-Support routing may also invoke `pulse:systematic-debug-fix`, `pulse:worktree-isolation`, `pulse:governed-feature`, `pulse:gitnexus`, or `pulse:dream`. `governed-feature` remains an overlay owned by the Pulse lifecycle, while `worktree-isolation` protects user state and establishes a clean implementation baseline.
+Support routing may also invoke `pulse:systematic-debug-fix`, `pulse:worktree-isolation`, `pulse:governed-feature`, or `pulse:dream`. `governed-feature` remains an overlay owned by the Pulse lifecycle, while `worktree-isolation` protects user state and establishes a clean implementation baseline.
 
 `pulse:design` owns design/cultural/motion methods; `pulse:visual-assets` owns capability selection and the brand-family recipe. Keep each entry below 600 words and first-level guide below 1,000. Share one cultural method and task research, and preserve conditional activation. A catalogue record does not prove a local engine/export. Keep native SVG grammars separate and external runtime/private catalogues outside the package. Update [provenance](docs/design/design-expression-provenance.md) and the [evaluation record](docs/evaluation/design-expression-assets.md), preserving frozen scenarios, omissions, unknown metadata and passing regression constraints. New native creative sessions use approved1.1 inputs; historical1.0 evidence is read without migration.
 
@@ -211,7 +218,7 @@ Execution state is a separate Stage 04 artifact. Beads may project the approved 
 
 Public docs and skill changes should preserve these current behaviors:
 
-- `pulse:reviewing` includes specialist review, artifact verification, review intake, and human UAT
+- `pulse:reviewing` is root-owned by default, with specialist agents only on explicit operator request; artifact verification, review intake and human UAT remain part of review
 - verification evidence is a first-class artifact, not a vague claim in prose
 - `pulse:systematic-debug-fix` keeps blocked or failing work root-cause-first and adds regression lock-down before the work is considered done
 
@@ -243,9 +250,9 @@ Public docs and skill changes should preserve these current behaviors:
 
 Minimum check:
 
-1. Add the marketplace and install the skill you changed:
-   - **Codex:** add the repo marketplace from [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json), restart, then install `pulse`
-   - **Claude Code:** `/plugin marketplace add quanpersie2001/pulse`, then `/plugin install <skill>@pulse`
+1. Build or install the exact candidate you changed. Follow the [installation guide](docs/installation.md) for runtime-specific commands and verify the installed payload. A remote marketplace install can still point to published bytes rather than local edits:
+   - **Codex:** the catalog at [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) identifies `pulse@pulse-dev` and pins its source to `tuned/main`.
+   - **Claude Code:** register the intended local checkout and install the whole `pulse@pulse-dev` plugin, then verify the resulting cache against the candidate.
 2. Start a fresh session
 3. Ask for something that should trigger the skill
 4. Verify the right skill is discovered and the body instructions are followed
@@ -289,7 +296,20 @@ For repo-level verification, also run:
 
 ```bash
 bash scripts/sync-skills.sh --dry-run
+node scripts/build-workflow-skills.mjs --check
+node scripts/build-skill-catalog.mjs --check
 ```
+
+The Markdown link checker covers a selected set of entry docs and examples. When editing other guides, also check their relative links and heading anchors. Keep the [documentation index](docs/README.md) current when adding a public guide.
+
+For the source quality gate, use the shared profiles described in [Git quality checks](docs/git-quality-hooks.md):
+
+```bash
+node scripts/pulse-quality.mjs --profile commit
+node scripts/pulse-quality.mjs --profile ci --json
+```
+
+These commands inspect the Git index, not unstaged working files. Stage the intended candidate first. Prepare the declared external toolchain as documented in [code quality](docs/code-quality.md); checks do not install missing tools. Receipts establish the checks performed on that tree, not live CLI or model acceptance.
 
 ### Scout-First Startup
 

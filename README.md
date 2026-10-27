@@ -1,108 +1,41 @@
 <div align="center">
 
-<img src="assets/logo-combination.svg" alt="Pulse logo" width="420" />
+<img src="assets/logo-combination.svg" alt="Pulse logo" width="320" />
 
 # Pulse Tuned
 
-<p><strong>A gated delivery workflow for Claude Code, Codex and Antigravity CLI</strong></p>
+### From request to reviewed work.
+
+A gated delivery workflow for Claude Code, Codex and Antigravity CLI.
 
 <p>
-  <a href=".codex-plugin/plugin.json">
-    <img alt="Version" src="https://img.shields.io/badge/version-4.1.0-0F766E?style=flat-square" />
-  </a>
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" />
-  <a href="skills">
-    <img alt="Skills" src="https://img.shields.io/badge/skills-26-8B5CF6?style=flat-square" />
-  </a>
+  <a href=".codex-plugin/plugin.json"><img alt="Version" src="https://img.shields.io/badge/version-4.1.0-C96442?style=flat-square" /></a>
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-141413?style=flat-square" />
+  <a href="docs/skills.md"><img alt="Skills" src="https://img.shields.io/badge/skills-26-141413?style=flat-square" /></a>
 </p>
 
-<p><em>Keep decisions, approvals and verification evidence visible throughout delivery.</em></p>
+[Install Pulse](docs/installation.md) · [Follow one run](docs/examples/golden-path.md) · [Browse the docs](docs/README.md)
 
 </div>
 
----
+## What Pulse does
 
-## What is Pulse?
+Pulse gives coding agents a shared way to turn a request into reviewed work. The agent records decisions, builds a plan, verifies it against the repository, implements the approved scope, and returns evidence for review. Human approvals bind the exact artifacts being approved.
 
-Pulse gives AI agents a **gated, filesystem-visible delivery chain**. The workflow calls for approved decisions before planning, an approved plan and execution graph before implementation, and review before merge. The ICM helpers check stage transitions and content-bound approvals; the agent and reviewer supply the actual verification evidence.
+Everything is inspectable: Markdown carries the reasoning, JSON carries run and execution state, and local Node.js helpers check paths, hashes, gates and graph structure. Pulse ships as a skill plugin; it runs inside your coding agent without a separate orchestration service.
 
-Pulse ships as a **skills package**. Numbered contracts under `workflow/stages/` are the canonical source; lean `SKILL.md` adapters are generated for plugin discovery. Plain Markdown and JSON files carry stage context, while local Node helpers perform only mechanical validation, hashing, and graph analysis. There is no orchestration service or automatic lifecycle hook.
+Use it when you want to:
 
-## The Delivery Chain
+- agree on the outcome before implementation starts;
+- resume work from explicit files instead of reconstructing a chat;
+- keep one approved plan across single-worker and parallel execution;
+- distinguish implementation claims from tests, runtime checks and human acceptance.
 
-```text
-using-pulse → explore → plan → validate → execute → review → compound
-```
+Small changes and prototypes use the same cycle with shorter decisions, plans and checks. Preflight and onboarding are explicit diagnostics, so unrelated tooling does not become an automatic prerequisite.
 
-`pulse:preflight` is an explicit operator diagnostic. Brainstorming is optional. Swarming is an approved execution strategy, not a delivery stage.
+## Get started
 
-[`pulse:design`](skills/design/SKILL.md) brings selected Impeccable methods, cultural enquiry and domain-specific motion guidance into the existing chain. An open expressive direction develops inspected works into research branches and concrete brief decisions. [`pulse:visual-assets`](skills/visual-assets/SKILL.md) selects specialized methods by effect, input and output: the optional local Threading adapter produces native string-art SVG; Primitive keeps its geometric SVG path. Brand asset families use the same accepted brief and admission.
-
-The design module also retains the substantive [awwwards/jury directions](skills/design/references/awwwards.md): concept tests, precise typography/layout/content prescriptions, interaction and implementation recipes, detailed critique and quality criteria. Topic guides load the full text, examples, numbers and exceptions when needed. [Source mapping and local adaptations](docs/design/awwwards-provenance.md) distinguish preservation checks, semantic review, historical data and optional technical recipes.
-
-The supplied [Visual Direction pack](docs/design/visual-direction-provenance.md) adds complete methods for cinematic/geometric framing, shot prompts, photographic direction, rhythmic architecture and narrated layered explainers. Its 17 retained texts preserve recipes, values, examples and exceptions under the two existing owners. Four distinct preparation/production contracts remain external references: SVG guides, symbolic shotboards, beat/cut cues and code-rendered layered media. Their programs and providers are not bundled or made available by these references. [Evaluation and limits](docs/evaluation/visual-direction-skillpack.md) separate response qualification, semantic review, byte conservation and actual media effects.
-
-Guides load on demand; Pulse retains the task, gates and evidence. Backend work, exact copy corrections and covered extensions keep their proportional scope. Skillry, Book of Shapes and Nonflowers have explicit [provenance and distribution boundaries](docs/design/design-expression-provenance.md). See the [design/assets evaluation](docs/evaluation/design-expression-assets.md) for actual local results, incomplete pressure diagnostics and human-adoption limits.
-
-[`pulse:reverse-engineering`](skills/reverse-engineering/SKILL.md) contributes shipped-artifact and runtime investigation through on-demand guides. The REA CLI/MCP engine remains external and optional; its original Evidence supports the current Pulse stage. Ordinary source-repository analysis uses the existing repository tools. See the [local evaluation and limits](docs/evaluation/reverse-engineering.md).
-
-Pulse turns a vague request into a reviewed delivery trail:
-
-1. `pulse:exploring` writes `01_explore/output/decisions.md`
-2. `pulse:planning` writes one `plan.md` and immutable `work-graph.json`
-3. `pulse:validating` verifies feasibility and recommends strategy from weak graph connectivity
-4. `pulse:executing` implements the approved graph, optionally through `pulse:swarming`
-5. `pulse:reviewing` blocks weak merges
-6. `pulse:compounding` captures durable learnings for future work
-
-### The 4 Human Gates
-
-| Gate | What it approves |
-| --- | --- |
-| **Gate 1** | Decisions |
-| **Gate 2** | Plan and immutable work graph |
-| **Gate 3** | Validated feasibility and execution strategy |
-| **Gate 4** | Merge after review and UAT |
-
-## Why use pulse
-
-| Problem | Pulse response |
-| --- | --- |
-| Requirements drift inside chat | Lock decisions in a stage output |
-| Plans look plausible but are brittle | Validate before execution starts |
-| Parallel agents step on each other | Recommend swarm only for file-disjoint graph components |
-| Work is hard to audit later | Keep artifacts, evidence, and review trail in the repo |
-
-## Lineage
-
-This repository is [jeremienunez's Pulse Tuned fork](https://github.com/jeremienunez/pulse/tree/tuned/main), based on [quanpersie2001/Pulse](https://github.com/quanpersie2001/pulse). Plugin identifiers remain `pulse` and `pulse-dev`; original author credits are retained.
-
-Pulse is downstream of several strong agentic-development systems and distills the parts that fit this repo owner's actual workflow:
-
-- **[Khuym](https://github.com/hoangnb24/skills/tree/main)**, which provides most of the validate-first chain and Flywheel-style bead workflow
-- **[Superpowers](https://github.com/obra/superpowers)** 5.1.3 contributes selected, adapted practices for worktree isolation, debugging references, and controlled skill evaluation—not a wholesale copy of its lifecycle.
-- **SPDD Codex Skills** 1.0.0 contributes selected fitness/change routing, REASONS, `OP-n`, safeguard, and traceability concepts through Pulse's single `governed-feature` overlay—not a competing lifecycle.
-- **[Flywheel](https://agent-flywheel.com/complete-guide)** contributes Beads and reservation patterns used as an optional swarm projection rather than the canonical plan graph.
-- **[Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin)** contributes parallel review, severity-based findings, and the compound-learning loop that feeds future work.
-- **[GSD](https://github.com/gsd-build/get-shit-done)** contributes the philosophy: discuss first, research second, plan third, and do not execute until the plan has been verified.
-- **[Impeccable](https://github.com/pbakaus/impeccable)** 4.5.2 contributes selected web design methods through `pulse:design`, adapted under Apache-2.0 with [source hashes and adaptation boundaries](docs/design/impeccable-provenance.md).
-
-- **[REA](https://github.com/morluto/rea)** contributes selected investigation and Evidence methods through `pulse:reverse-engineering`, adapted under MIT with a [pinned source lock](skills/reverse-engineering/references/rea-source-lock.json). The engine and providers are not bundled.
-
-See the [lineage record](references/lineage/README.md) for the exact adaptation boundaries and source licenses.
-
-## Installation
-
-### Claude Code
-
-Clone the distribution branch, then register that local checkout:
-
-```bash
-git clone --branch tuned/main --single-branch https://github.com/jeremienunez/pulse.git pulse-tuned
-cd pulse-tuned
-claude plugin marketplace add "$PWD"
-claude plugin install pulse@pulse-dev --scope user
-```
+Install the plugin for your coding agent. The distribution branch is **`tuned/main`**, the plugin is **`pulse`**, and the marketplace is **`pulse-dev`**.
 
 ### Codex
 
@@ -111,99 +44,98 @@ codex plugin marketplace add jeremienunez/pulse --ref tuned/main
 codex plugin add pulse@pulse-dev
 ```
 
-Codex reads the marketplace name from [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json), so the installed plugin key is `pulse@pulse-dev`. Both the marketplace command and its plugin source select `tuned/main`; the repository's default branch can contain an older release. In the desktop app, select `Pulse Tuned` from the `pulse-dev` marketplace.
-
-If you previously added an older Pulse marketplace named `pulse`, remove it before reinstalling:
+### Claude Code
 
 ```bash
-codex plugin marketplace remove pulse
+git clone --branch tuned/main --single-branch https://github.com/jeremienunez/pulse.git pulse-tuned
+cd pulse-tuned
+claude plugin marketplace add "$PWD"
+claude plugin install pulse@pulse-dev --scope user
 ```
 
 ### Antigravity CLI
 
-Build a native package from the common source into a fresh directory, then validate and install it:
+Build and install the native package from the same source. The [installation guide](docs/installation.md) covers its destination-bound configuration, validation and optional MCP servers.
 
-```bash
-pulse_dist="$(mktemp -d)/pulse"
-node scripts/build-antigravity-dist.mjs --source . --output "$pulse_dist" --install-root "$HOME/.gemini/config/plugins/pulse" --exclude-mcp opencode-models
-agy plugin validate "$pulse_dist" --strict --json
-agy plugin install "$pulse_dist"
-agy plugin list --json
+### Your first task
+
+Open the target repository in a fresh agent session and ask:
+
+```text
+Use pulse:using-pulse to add a CSV export to this project.
+Resolve the current repository state, keep the scope small,
+and present the decisions for approval before planning.
 ```
 
-The native package retains Pulse's workflow, helpers and skill references. Its metadata records the source version, commit, content digest and explicitly excluded MCP servers. Antigravity 1.4 installs this native package in the shared location above; verify the actual path with `agy plugin list --json` and rebuild with that `--install-root` when a runtime uses another location. This installation excludes the retired OpenCode route and retains three optional MCP definitions; listing them does not establish a live connection.
+The router initializes a run or resumes the matching work. Review each gate's actual artifacts before approving. See the [workflow guide](docs/workflow.md) and [worked example](docs/examples/golden-path.md) for the full path.
 
-### Calls between coding CLIs
+## The delivery cycle
 
-[`cli-bridge`](skills/cli-bridge/SKILL.md) supplies bounded calls between Antigravity, Claude Code and Codex, with the direct DeepSeek MCP route retained. To expose this skill independently to the maintained CLI surfaces:
-
-```bash
-node scripts/install-cli-bridge.mjs --dry-run
-node scripts/install-cli-bridge.mjs
+```text
+using-pulse → explore → plan → validate → execute → review → compound
 ```
 
-The installer links only this skill and preserves foreign destinations. The current process adapter uses Linux, Node.js and `bwrap`. See [CLI integration](docs/cli-integration.md) for requests, installed paths and verification boundaries.
+| Stage | Result | Human gate |
+| --- | --- | --- |
+| Explore | Decisions about the outcome and boundaries | **1:** approve decisions |
+| Plan | One implementation plan and work graph | **2:** approve plan and graph |
+| Validate | Repository evidence, feasibility and execution strategy | **3:** approve execution |
+| Execute | Implemented graph nodes and verification evidence | — |
+| Review | Findings and human acceptance evidence | **4:** approve merge |
+| Compound | Durable learnings from the completed work | — |
 
-### After Install
+**Single-worker is the default recommendation.** Separate graph components with disjoint file scopes can qualify for swarm, capped at four workers. Gate 3 explicitly selects the strategy. Beads can coordinate approved swarm work; the JSON graph stays authoritative.
 
-Installing the plugin makes the packaged skills and selected MCP server definitions available. Pulse 4 intentionally installs no lifecycle hooks. Start every project task with `pulse:using-pulse`, including small changes and disposable prototypes: initialize ICM first or resume the matching run. Keep preparation and verification proportionate within the cycle. Run `pulse:preflight` only when you explicitly want a readiness/onboarding diagnostic; its v2 checks depend on the selected work, so unrelated Beads or swarm tooling does not block a single-worker prototype.
+Approvals record artifact hashes. If the approved content changes, the helper blocks downstream progress until the relevant stage is revised and approved again. Open P1 findings block Gate 4. These checks validate workflow mechanics; the agent and reviewer still have to establish that the implementation works.
 
-## Deterministic Code Quality
+## Beyond the core workflow
 
-The optional source hook and CI also enforce a tracked code policy: LOC/complexity signals, native naming and ownership contracts, baseline non-regression and frontend design tokens. The core is language-independent, with native adapters and explicit JSON/SARIF bindings. It never creates helpers/classes automatically or claims a SOLID score. See [code quality](docs/code-quality.md) for prepared tools, coverage, source-preserving checks and adoption.
-
-## Project Docs
-
-| Read this when you want... | Link |
+| Need | Pulse support |
 | --- | --- |
-| The architecture and runtime model | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
-| A concrete walkthrough | [docs/examples/golden-path.md](docs/examples/golden-path.md) |
-| The evaluation workflow | [docs/evaluation/pulse-plugin-eval.md](docs/evaluation/pulse-plugin-eval.md) |
-| The Pulse 4 ICM evaluation | [docs/evaluation/pulse-4-icm/creation-log.md](docs/evaluation/pulse-4-icm/creation-log.md) |
-| Historical Pulse 3.6.0 certification | [docs/evaluation/certifications/pulse-3.6.0.md](docs/evaluation/certifications/pulse-3.6.0.md) |
+| Understand a repository or refresh its docs | `bootstrap-project-context`, `refresh-project-docs` |
+| Diagnose a failure or protect existing changes | `systematic-debug-fix`, `worktree-isolation` |
+| Assess architecture or govern a cross-cutting change | `architecture-rescue`, `governed-feature` |
+| Shape an interface, direct an image or choose visual production | `design`, `visual-assets` |
+| Investigate a shipped app or runtime | `reverse-engineering` |
+| Hand a bounded task between maintained coding CLIs | `cli-bridge` |
+| Capture notes or consolidate runtime learnings | `dev-note`, `dev-note-distil`, `dream` |
 
-## Maintainer Notes
+The [skill guide](docs/skills.md) lists the full catalog and its activation rules. Design references retain selected Impeccable, awwwards and Visual Direction methods; specialized media engines and REA remain separate capabilities with their own availability and evidence requirements.
 
-The [portable CI](https://github.com/jeremienunez/pulse/blob/tuned/main/.github/workflows/ci.yml) runs on pushes and pull requests to `tuned/main`. It calls the same [quality entrypoint](scripts/pulse-quality.mjs) as the optional Git pre-commit hook. The `commit` profile checks syntax, static contracts, Markdown links and core workflow/helper behavior; `ci` adds the package and evidence suites. Both verify a copy of the active Git index, preserving uncommitted working files. They require no installed coding CLI, model credentials or paid calls. Native App Server and Bubblewrap integration tests remain separate local checks.
+## Documentation
 
-To inspect or install the hook explicitly in a Pulse source checkout:
+| Start here | What it covers |
+| --- | --- |
+| [Installation](docs/installation.md) | Prerequisites, each CLI, discovery checks and MCP boundaries |
+| [Workflow](docs/workflow.md) | Artifacts, approvals, strategy, resume and revision |
+| [Skills](docs/skills.md) | The 26 packaged entries and when to use them |
+| [Architecture](docs/ARCHITECTURE.md) | Source ownership, helper guarantees and package boundaries |
+| [CLI integration](docs/cli-integration.md) | Native Antigravity packaging and standalone CLI bridge |
+| [Contributing](CONTRIBUTING.md) | Skill authoring, generation and repository checks |
+| [All documentation](docs/README.md) | Design provenance, evaluations and maintainer references |
 
-```bash
-node scripts/install-git-hooks.mjs --dry-run
-node scripts/install-git-hooks.mjs
-node scripts/pulse-quality.mjs --profile commit
-```
+## Developing Pulse
 
-The installer preserves foreign hooks and configuration. Multiple worktrees need an explicitly configured worktree-specific hooks path. See the [Git quality contract](docs/git-quality-hooks.md) for candidate identity, receipts, supported files, CI scope and installation limits. This is the Pulse repository pilot; it does not install hooks into other projects through onboarding.
-
-When public docs or skill metadata change:
+Core routing and stage contracts live in [`workflow/`](workflow); their skill adapters are generated. Support skills live in [`skills/`](skills). For documentation and metadata checks:
 
 ```bash
 bash scripts/check-markdown-links.sh
 bash scripts/sync-skills.sh --dry-run
+node scripts/build-workflow-skills.mjs --check
+node scripts/build-skill-catalog.mjs --check
 ```
 
-Run evaluations through the canonical entrypoint:
+The optional Git hook and CI share `scripts/pulse-quality.mjs`. Its `commit` and `ci` profiles check the **Git index**, so stage the intended candidate before using them. See [Git quality checks](docs/git-quality-hooks.md) and [code quality](docs/code-quality.md) for tool preparation, receipts and coverage. Plugin lifecycle hooks are not installed by Pulse.
 
-```bash
-node scripts/pulse-plugin-eval.mjs run
-```
+## Credits and license
 
-More evaluation material:
+Pulse Tuned is [jeremienunez's fork](https://github.com/jeremienunez/pulse/tree/tuned/main) of [quanpersie2001/Pulse](https://github.com/quanpersie2001/pulse). Plugin identities and original author credits are retained.
 
-- [docs/evaluation/pulse-plugin-eval.md](docs/evaluation/pulse-plugin-eval.md)
-- [docs/evaluation/pulse-swarming-hardening.md](docs/evaluation/pulse-swarming-hardening.md)
-- [docs/evaluation/how-to-read-results.md](docs/evaluation/how-to-read-results.md)
+The project draws selected practices from [Khuym](https://github.com/hoangnb24/skills/tree/main), [Superpowers](https://github.com/obra/superpowers), SPDD Codex Skills, [Flywheel](https://agent-flywheel.com/complete-guide), [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin), [GSD](https://github.com/gsd-build/get-shit-done), [Impeccable](https://github.com/pbakaus/impeccable) and [REA](https://github.com/morluto/rea).
 
-## Contributing
+See the [lineage record](references/lineage/README.md) and [design provenance](docs/README.md#design-and-visual-assets) for source versions, licenses and adaptation boundaries.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for skill structure, versioning, and PR process.
-
-<div align="center">
-
-MIT License
-
-</div>
+MIT License. Retained third-party material follows its documented source license.
 
 ## Optional inter-CLI messaging
 
