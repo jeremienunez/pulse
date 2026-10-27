@@ -12,7 +12,9 @@ permissions:
 
 jobs:
   portable:
-    runs-on: ubuntu-latest
+    # CLI isolation fixtures require unprivileged user namespaces.
+    # Pin a compatible hosted image instead of disabling host AppArmor policy.
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     env:
       RUSTUP_TOOLCHAIN: '1.93.1'
