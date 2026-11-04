@@ -41,6 +41,7 @@ Additional technical records cover [creative sessions](evaluation/frontend-creat
 
 ## Investigation and integration evidence
 
+- [Pulse / Onii discovery closure](evaluation/pulse-onii-discovery-closure.md): accepted study scope, historical evidence, prototype limits and deferred product work.
 - [Reverse engineering](evaluation/reverse-engineering.md): external REA ownership and the local investigation pilot.
 - [CLI bridge creation log](evaluation/cli-bridge/CREATION-LOG.md): decision checks, subprocess fixtures and installed CLI evidence.
 - [Revision verification](evaluation/using-pulse-revise/runtime-verification.md): recorded lifecycle corrections and recovery checks.
