@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { listTargets, normalizeOutput, prepareRequest, runRequest } from "../skills/cli-bridge/scripts/cli_bridge.mjs";
+import { cliArguments, listTargets, normalizeOutput, prepareRequest, runRequest } from "../skills/cli-bridge/scripts/cli_bridge.mjs";
 
 const fakeCli = `#!/usr/bin/env node
 const fs = require('node:fs'), path = require('node:path');
@@ -72,6 +72,30 @@ test("consult filesystem refuses writes while explicitly isolated work permits t
     assert.equal(work.task_verified, false);
     assert.equal(fs.readFileSync(path.join(f.cwd, "changed.txt"), "utf8"), "authorized isolated work");
   } finally { f.cleanup(); }
+});
+
+test("Claude evaluate mode is tool-free, short-lived, and unavailable to other CLI targets", () => {
+  const f = fixture();
+  try {
+    const prepared = prepareRequest({ ...f.request("claude", "fixture:evaluate", "evaluate"), mode: "evaluate", effort: "low" }, { env: f.env, ownerCwd: f.owner });
+    const { args } = cliArguments(prepared, "frozen case");
+    assert.ok(args.includes("--safe-mode"));
+    assert.deepEqual(args.slice(args.indexOf("--tools"), args.indexOf("--tools") + 2), ["--tools", ""]);
+    assert.ok(args.includes("--strict-mcp-config"));
+    assert.ok(args.includes("--no-session-persistence"));
+    assert.deepEqual(args.slice(args.indexOf("--max-turns"), args.indexOf("--max-turns") + 2), ["--max-turns", "1"]);
+    assert.deepEqual(args.slice(args.indexOf("--effort"), args.indexOf("--effort") + 2), ["--effort", "low"]);
+    assert.throws(() => prepareRequest({ ...f.request("codex"), mode: "evaluate" }, { env: f.env, ownerCwd: f.owner }), /only for Claude/u);
+    assert.throws(() => prepareRequest({ ...f.request("claude"), mode: "evaluate", effort: "tiny" }, { env: f.env, ownerCwd: f.owner }), /effort/u);
+  } finally { f.cleanup(); }
+});
+
+test("Claude model usage canonically identifies one effective model", () => {
+  const result = normalizeOutput("claude", {
+    stdout: JSON.stringify({ type: "result", is_error: false, result: "answer", permission_denials: [], modelUsage: { "alias": { canonicalModel: "claude-opus-5-5" } } }),
+    stderr: "", exitCode: 0,
+  });
+  assert.equal(result.model_reported, "claude-opus-5-5");
 });
 
 test("submitted operations are preserved and cannot be replayed after a timeout", async () => {

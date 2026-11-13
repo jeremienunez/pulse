@@ -1,0 +1,11 @@
+[Unit]
+Description=Pulse shared-instincts deferred worker
+ConditionPathExists=/media/jerem/ubuntu2/agent-instincts/jerem
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/pulse-instincts/pulse_instincts.py drain --root /media/jerem/ubuntu2/agent-instincts/jerem
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=read-only
+ReadWritePaths=/media/jerem/ubuntu2/agent-instincts/jerem

@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {"case_id": "naming-trigger", "role": "trigger", "prompt": "Introduce a name for a new domain responsibility after reading the local vocabulary.", "expectations": ["inspect existing vocabulary", "choose a precise responsibility name"]},
+    {"case_id": "decomposition-neighbor", "role": "negative", "prompt": "Make a one-line copy correction in a stable component.", "expectations": ["do not fragment the simple edit"]},
+    {"case_id": "action-unrelated", "role": "unrelated", "prompt": "Report the current repository branch.", "expectations": ["answer without unnecessary investigation"]}
+  ]
+}

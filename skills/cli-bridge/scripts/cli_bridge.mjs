@@ -41,7 +41,7 @@ export function listTargets({ env = process.env } = {}) {
 
 export function prepareRequest(request, { env = process.env, ownerCwd = process.cwd() } = {}) {
   if (!request || typeof request !== "object" || Array.isArray(request)) throw new Error("Request must be a JSON object.");
-  const allowed = new Set(["caller", "target", "cwd", "prompt", "mode", "output_dir", "timeout_ms", "model"]);
+  const allowed = new Set(["caller", "target", "cwd", "prompt", "mode", "output_dir", "timeout_ms", "model", "effort"]);
   if (Object.keys(request).some((key) => !allowed.has(key))) throw new Error("Unknown request field.");
   const caller = canonical(request.caller), target = canonical(request.target);
   const names = [...Object.keys(COMMANDS), ...Object.keys(MCP)];
@@ -50,7 +50,8 @@ export function prepareRequest(request, { env = process.env, ownerCwd = process.
     throw new Error("A nonempty prompt of at most 64 KiB is required.");
   }
   const mode = request.mode ?? "consult";
-  if (!["consult", "work"].includes(mode)) throw new Error("Mode must be consult or explicitly authorized work.");
+  if (!["consult", "work", "evaluate"].includes(mode)) throw new Error("Mode must be consult, evaluate, or explicitly authorized work.");
+  if (mode === "evaluate" && target !== "claude") throw new Error("Evaluate mode is supported only for Claude.");
   if (typeof request.cwd !== "string" || !path.isAbsolute(request.cwd)) throw new Error("cwd must be an absolute existing workspace path.");
   const cwd = fs.realpathSync(request.cwd);
   if (!fs.statSync(cwd).isDirectory()) throw new Error("cwd must be a directory.");
@@ -61,6 +62,9 @@ export function prepareRequest(request, { env = process.env, ownerCwd = process.
   if (!Number.isInteger(timeout) || timeout < 100 || timeout > 900000) throw new Error("timeout_ms must be between 100 and 900000.");
   if (request.model !== undefined && (typeof request.model !== "string" || !request.model.trim() || request.model.length > 160)) {
     throw new Error("model must be a nonempty model identifier of at most 160 characters.");
+  }
+  if (request.effort !== undefined && !["low", "medium", "high", "xhigh", "max"].includes(request.effort)) {
+    throw new Error("effort must be one of low, medium, high, xhigh, or max.");
   }
   let chain = env.PULSE_CLI_BRIDGE_CHAIN ? JSON.parse(env.PULSE_CLI_BRIDGE_CHAIN) : [caller];
   if (!Array.isArray(chain) || !chain.length || !chain.every((n) => names.includes(n)) || chain.at(-1) !== caller) {
@@ -86,28 +90,32 @@ export function prepareRequest(request, { env = process.env, ownerCwd = process.
   if (runtime.some((p) => inside(cwd, p))) throw new Error("Workspace overlaps writable CLI runtime state; choose a separate project directory.");
   return {
     status: "prepared", caller, target, mode, cwd, output_dir: output, timeout_ms: timeout,
-    model: request.model ?? null, chain, binary, launcher, runtime, task_verified: false,
+    model: request.model ?? null, effort: request.effort ?? null, chain, binary, launcher, runtime, task_verified: false,
   };
 }
 
 function delegationPrompt(prepared, prompt) {
   return [
     `Bounded delegation from ${prepared.caller}; workspace: ${prepared.cwd}.`,
-    prepared.mode === "consult" ? "Consultation only: return analysis or a proposal, without project edits or external effects." : "Execute only the explicitly authorized task in this isolated workspace.",
+    prepared.mode === "evaluate"
+      ? "Evaluation only: answer the supplied case. Do not use tools, read files, access MCP servers, invoke skills, or claim work outside the supplied text."
+      : prepared.mode === "consult" ? "Consultation only: return analysis or a proposal, without project edits or external effects." : "Execute only the explicitly authorized task in this isolated workspace.",
     "The caller owns acceptance and any existing Pulse run. Do not initialize a second delivery lifecycle or approve human gates.",
     "Keep the inherited PULSE_CLI_BRIDGE_CHAIN for any authorized follow-on CLI call. Report uncertainty and denied tools to the caller.",
     "TASK AND SUPPLIED DATA:", prompt,
   ].join("\n\n");
 }
 
-function cliArguments(prepared, prompt) {
+export function cliArguments(prepared, prompt) {
   const consult = prepared.mode === "consult";
+  const evaluate = prepared.mode === "evaluate";
   let args, input = null;
   if (prepared.target === "antigravity") {
     args = ["--print", prompt, "--output-format", "json", "--mode", consult ? "plan" : "accept-edits"];
   } else if (prepared.target === "claude") {
-    args = ["--print", prompt, "--output-format", "json", "--permission-mode", consult ? "plan" : "acceptEdits", "--no-session-persistence", "--no-chrome"];
+    args = ["--print", prompt, "--output-format", "json", "--permission-mode", consult || evaluate ? "plan" : "acceptEdits", "--no-session-persistence", "--no-chrome"];
     if (consult) args.push("--tools", "Read,Glob,Grep", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands");
+    if (evaluate) args.push("--safe-mode", "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--disable-slash-commands", "--max-turns", "1");
   } else if (prepared.target === "codex") {
     args = ["--no-daemon", "exec", "--json", "--color", "never", "--sandbox", consult ? "read-only" : "workspace-write", "--cd", prepared.cwd, "--skip-git-repo-check", "--ephemeral"];
     input = prompt;
@@ -115,6 +123,7 @@ function cliArguments(prepared, prompt) {
     throw new Error("Unsupported CLI transport.");
   }
   if (prepared.model) args.push("--model", prepared.model);
+  if (prepared.effort) args.push("--effort", prepared.effort);
   if (input !== null) args.push("-");
   return { args, input };
 }
@@ -148,6 +157,13 @@ export function normalizeOutput(target, { stdout = "", stderr = "", exitCode, si
         result.tool_denied = Array.isArray(value.permission_denials) && value.permission_denials.length > 0;
       }
       if (typeof value.model === "string") result.model_reported = value.model;
+      if (!result.model_reported && value.modelUsage && typeof value.modelUsage === "object" && !Array.isArray(value.modelUsage)) {
+        const reported = Object.entries(value.modelUsage);
+        if (reported.length === 1) {
+          const [model, usage] = reported[0];
+          result.model_reported = typeof usage?.canonicalModel === "string" ? usage.canonicalModel : model;
+        }
+      }
     }
   } catch {
     result.status = "invalid_output";
@@ -195,7 +211,17 @@ export async function runRequest(request, { env = process.env, ownerCwd = proces
     const terminal = await new Promise((resolve) => {
       child = spawn(prepared.launcher, wrapper, {
         cwd: prepared.cwd, detached: true, shell: false,
-        env: { ...env, TMPDIR: tmp, PULSE_CLI_BRIDGE_CHAIN: JSON.stringify(prepared.chain) },
+        env: {
+          ...env,
+          TMPDIR: tmp,
+          PULSE_CLI_BRIDGE_CHAIN: JSON.stringify(prepared.chain),
+          ...(prepared.mode === "evaluate" ? {
+            CLAUDE_CODE_MAX_RETRIES: "0",
+            CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES: "0",
+            CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: "1",
+            CLAUDE_CODE_RETRY_WATCHDOG: "0",
+          } : {}),
+        },
         stdio: ["pipe", "pipe", "pipe"],
       });
       const capture = (chunk, channel, fd) => {
@@ -218,7 +244,7 @@ export async function runRequest(request, { env = process.env, ownerCwd = proces
     });
     const result = {
       id, caller: prepared.caller, target: prepared.target, cwd: prepared.cwd, mode: prepared.mode,
-      model_requested: prepared.model, chain: prepared.chain,
+      model_requested: prepared.model, effort_requested: prepared.effort, chain: prepared.chain,
       ...normalizeOutput(prepared.target, { stdout: Buffer.concat(stdoutChunks).toString("utf8"), stderr: Buffer.concat(stderrChunks).toString("utf8"), ...terminal, stopped }),
       duration_ms: Date.now() - start, output_dir: prepared.output_dir, retry_performed: false,
       filesystem: { launcher: "bwrap", project: prepared.mode === "consult" ? "read-only" : "writable", writable_paths: writable },

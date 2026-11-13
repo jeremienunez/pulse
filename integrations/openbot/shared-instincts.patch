@@ -1,0 +1,65 @@
+diff --git a/src/backend/agent/thread-lifecycle.ts b/src/backend/agent/thread-lifecycle.ts
+index 7a88af6..fdee5aa 100644
+--- a/src/backend/agent/thread-lifecycle.ts
++++ b/src/backend/agent/thread-lifecycle.ts
+@@ -52,1 +52,2 @@ import type { ConversationRuntime } from "./conversation-runtime";
+ import { agentNamesById } from "./delivery-content";
++import { NO_SHARED_INSTINCTS_BRIDGE, type SharedInstinctsBridge } from "../shared-instincts-bridge";
+@@ -174,1 +175,3 @@ export interface ThreadLifecycleOptions {
+   channelThread?: (threadId: string) => boolean;
++  /** Optional local bridge. The default is deliberately inert. */
++  sharedInstincts?: SharedInstinctsBridge;
+@@ -207,1 +210,2 @@ export class ThreadLifecycle {
+   readonly #channelThread: (threadId: string) => boolean;
++  readonly #sharedInstincts: SharedInstinctsBridge;
+@@ -241,1 +245,2 @@ export class ThreadLifecycle {
+     this.#channelThread = options.channelThread ?? (() => false);
++    this.#sharedInstincts = options.sharedInstincts ?? NO_SHARED_INSTINCTS_BRIDGE;
+@@ -1072,2 +1077,2 @@ export class ThreadLifecycle {
+-    const instructions = developerInstructions(
++    const baseInstructions = developerInstructions(
+       agent,
+@@ -1079,2 +1084,4 @@ export class ThreadLifecycle {
+     );
++    const sharedInstructions = this.#sharedInstincts.instructions({ agentId: agent.id, provider: client.provider });
++    const instructions = sharedInstructions ? `${baseInstructions}\n\n${sharedInstructions}` : baseInstructions;
+     return options.memoriesInTurns
+@@ -1101,2 +1108,6 @@ export class ThreadLifecycle {
+     return (yield* listHomeSkills()).filter((skill) => !read.has(skill.slug));
+   });
++  recordSharedInstinctThreadClosed(agentId: string, threadId: string): void {
++    this.#sharedInstincts.threadClosed({ agentId, threadId });
++  }
++
+diff --git a/src/backend/agent-service.ts b/src/backend/agent-service.ts
+index 5ef5bc1..f564bc3 100644
+--- a/src/backend/agent-service.ts
++++ b/src/backend/agent-service.ts
+@@ -4303,3 +4303,4 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+     });
+     this.#tasks.close(task);
+     yield* this.#memoryReview.threadClosed(task.agentId, task.threadId);
++    this.#threads.recordSharedInstinctThreadClosed(task.agentId, task.threadId);
+diff --git a/src/backend/shared-instincts-bridge.ts b/src/backend/shared-instincts-bridge.ts
+new file mode 100644
+index 0000000..847cc9b
+--- /dev/null
++++ b/src/backend/shared-instincts-bridge.ts
+@@ -0,0 +1,17 @@
++import type { AgentProvider } from "./agent-client";
++
++/**
++ * Boundary for an optional, locally-owned shared-instincts integration.
++ * The default implementation intentionally contributes no instructions and
++ * records no event. A host must provide a source-bound implementation before
++ * OpenBot can claim shared-instinct coverage.
++ */
++export interface SharedInstinctsBridge {
++  instructions(input: { agentId: string; provider: AgentProvider }): string | null;
++  threadClosed(input: { agentId: string; threadId: string }): void;
++}
++
++export const NO_SHARED_INSTINCTS_BRIDGE: SharedInstinctsBridge = {
++  instructions: () => null,
++  threadClosed: () => {},
++};

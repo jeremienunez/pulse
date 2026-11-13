@@ -41,6 +41,8 @@ test("native package retains the full Pulse runtime and binds MCP to the final i
     assert.equal(status.status, 0, status.stderr);
     assert.equal(JSON.parse(status.stdout).runtime, "none");
     assert.ok(fs.existsSync(path.join(installed, "skills/using-pulse/SKILL.md")));
+    assert.ok(fs.existsSync(path.join(installed, "scripts/instincts/contracts.py")));
+    assert.ok(fs.existsSync(path.join(installed, "docs/shared-instincts.md")));
     assert.ok(fs.existsSync(mcp.mcpServers["opencode-models"].args[0]));
   } finally {
     fs.rmSync(root, { recursive: true, force: true });

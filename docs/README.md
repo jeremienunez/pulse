@@ -12,6 +12,7 @@ Pulse Tuned is a skill plugin for gated software delivery. Start with installati
 | [Skill guide](skills.md) | The packaged skills and their activation boundaries |
 | [Architecture](ARCHITECTURE.md) | Canonical state, source ownership and helper guarantees |
 | [CLI integration](cli-integration.md) | Antigravity package construction and bounded inter-CLI calls |
+| [Shared instincts](shared-instincts.md) | Bounded behavioural guidance, Dream qualification and runtime coverage |
 
 ## Contribute and verify
 

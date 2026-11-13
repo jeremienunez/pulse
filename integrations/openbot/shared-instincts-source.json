@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "source_root": "/media/jerem/ubuntu2/onii-white-label/2026-10-31/source",
+  "source_head": "8d1db276a248302fd0ef38cc2c01a7ba9dca04b5",
+  "patch": "integrations/openbot/shared-instincts.patch",
+  "files": [
+    {
+      "path": "src/backend/shared-instincts-bridge.ts",
+      "sha256": null,
+      "state": "new-file"
+    },
+    {
+      "path": "src/backend/agent/thread-lifecycle.ts",
+      "sha256": "272fb0575c7111059966fdd83471c6e582d92a649db57325190a97733c1d6830"
+    },
+    {
+      "path": "src/backend/agent-service.ts",
+      "sha256": "e93f6063752a51f38b902637f71cc7532c5f703129bcdf671083ac1c1af0623f"
+    }
+  ],
+  "constraints": [
+    "The patch is inert without an explicit SharedInstinctsBridge implementation.",
+    "Only explicit task close reaches the bridge; provider replacement, turn completion and compaction do not.",
+    "The source checkout is dirty and must not be modified by applying this patch directly."
+  ]
+}

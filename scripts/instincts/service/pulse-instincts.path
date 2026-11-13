@@ -1,0 +1,9 @@
+[Unit]
+Description=Wake Pulse shared-instincts worker for durable queue changes
+
+[Path]
+PathChanged=/media/jerem/ubuntu2/agent-instincts/jerem/inbox/closures
+Unit=pulse-instincts.service
+
+[Install]
+WantedBy=default.target

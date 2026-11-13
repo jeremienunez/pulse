@@ -144,3 +144,23 @@ Action:
 ## Exact-One-Owner Rewrite Rule
 
 Rewrite existing content only when exactly one owner is clear. If more than one target is plausible, treat as `pending-ambiguous` and require explicit operator choice or queue-mode preservation.
+
+## Shared-Instinct Routing
+
+Use this routing only for the optional shared-instinct controller, not for a
+manual fact-consolidation pass. A behavioural candidate needs an attributable
+trigger, chosen action, observable outcome and a counterexample where the rule
+should not apply. Classify it separately from a learning file:
+
+- `pending-instinct` — evidence or ownership incomplete; preserve review data.
+- `candidate-instinct` — a narrow proposed rule with one clear scope.
+- `qualified-instinct` — frozen baseline/candidate cases pass on the exact
+  consumer profile, with no required-case regression.
+- `critical-instinct` — affects approvals, permissions, destructive actions,
+  evidence requirements, sharing boundaries or an existing project invariant;
+  explicit user approval remains required.
+
+An explicit user preference is attributed project/context data, not automatic
+evidence that a globally reusable instinct exists. Repeated summaries of the
+same source are not independent support. A result from a fixture, a different
+runtime or a transport-only smoke cannot activate an instinct.
