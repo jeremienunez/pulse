@@ -68,7 +68,9 @@ class OpenBotPatchTests(unittest.TestCase):
             self.assertEqual(lifecycle.count('client.request(method, prepared, decoder)'), 2)
             self.assertIn('this.#memoryReview.threadClosed(task.agentId, task.threadId);\n    yield* this.#threads.recordSharedInstinctThreadClosed', service)
             self.assertIn('this.#memoryReview.chatCleared(agentId);\n    yield* this.#threads.recordSharedInstinctThreadClosed', service)
-            self.assertEqual(service.count('this.#threads.recordSharedInstinctThreadClosed('), 2)
+            self.assertIn('this.#memoryReview.threadClosed(agentId, task.threadId);\n            yield* this.#threads.recordSharedInstinctThreadClosed', service)
+            self.assertIn('this.#memoryReview.chatCleared(agentId);\n    yield* this.#threads.recordSharedInstinctThreadClosed(agentId, target.threadId, "chat_cleared")', service)
+            self.assertEqual(service.count('this.#threads.recordSharedInstinctThreadClosed('), 4)
         finally:
             shutil.rmtree(temporary)
 

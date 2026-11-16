@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -36,6 +37,16 @@ REQUEST = {"project_id": "pulse", "profile": "claude-opus-5-5", "event": "before
 
 
 class RecallTests(unittest.TestCase):
+    def test_legacy_preference_secrets_are_masked_in_delivery_without_mutating_the_input(self) -> None:
+        preference = {"id": "legacy", "scope": "common", "source": "user",
+                      "text": json.dumps({"api_key": "legacy-text-secret"}),
+                      "source_ref": json.dumps({"password": "legacy-reference-secret"})}
+        original = json.dumps(preference)
+        result = select_context(definitions=[], registry=[], preferences=[preference], request=REQUEST)
+        self.assertNotIn("legacy-text-secret", result["items"][0]["text"])
+        self.assertNotIn("legacy-reference-secret", result["items"][0]["source_ref"])
+        self.assertEqual(json.dumps(preference), original)
+
     def test_context_refresh_routes_accented_task_terms_across_consumers(self) -> None:
         record = definition("jerem/decomposition")
         record["watched_events"] = ["before_architecture_change"]

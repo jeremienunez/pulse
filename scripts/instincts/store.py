@@ -349,7 +349,8 @@ class Store:
             value = self._read_json(self._path(row["path"]))
             if digest(value) != row["digest"]:
                 raise StoreError("observation bytes changed after admission")
-            values.append(value)
+            # Immutable evidence may predate expanded redaction patterns.
+            values.append(redact_observation(value))
         return values
 
     def update_closure(self, identifier: str, *, expected_status: str, **changes) -> dict:

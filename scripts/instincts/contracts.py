@@ -44,7 +44,11 @@ def redact_observation(record: dict) -> dict:
     patterns = [
         (r"-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----", "[private key removed]"),
         (r"(?i)\b(?:Bearer\s+|sk-(?:ant-)?)[A-Za-z0-9_.-]{12,}", "[credential removed]"),
-        (r"(?i)\b(?:password|passwd|api[_-]?key|secret|access[_-]?token)\s*[:=]\s*[^\s,;]+", "[secret removed]"),
+        (
+            r'''(?i)\b(?:password|passwd|api[_-]?key|secret|access[_-]?token)["']?\s*[:=]\s*'''
+            r'''(?:"(?:\\[\s\S]|[^"\\])*(?:"|$)|'(?:\\[\s\S]|[^'\\])*(?:'|$)|[^\s,;]+)''',
+            "[secret removed]",
+        ),
         (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "[email removed]"),
     ]
     for field in ("summary", "evidence_excerpt", "action", "outcome"):

@@ -7,7 +7,7 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any
 
-from .contracts import canonical_json, digest, validate_definition
+from .contracts import canonical_json, digest, redact_observation, validate_definition
 
 
 MAX_INSTINCTS = 6
@@ -82,10 +82,14 @@ def _preference_items(preferences: list[dict[str, Any]], project_id: str) -> tup
             continue
         if identifier in selected and selected[identifier]["scope"] == scope:
             raise RecallError("preference ids must be unique within their scope")
+        text = redact_observation({"summary": text})["summary"]
         item = {"kind": "preference", "id": identifier, "scope": scope, "text": text,
                 "source": preference.get("source", "user")}
         if preference.get("source_ref"):
-            item["source_ref"] = preference["source_ref"]
+            reference = preference["source_ref"]
+            if isinstance(reference, str):
+                reference = redact_observation({"evidence_refs": [reference]})["evidence_refs"][0]
+            item["source_ref"] = reference
         selected[identifier] = item
     return sorted(selected.values(), key=lambda item: (item["scope"] != "project", item["id"])), omitted
 

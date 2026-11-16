@@ -12,7 +12,7 @@ from pathlib import Path
 SCRIPTS_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(SCRIPTS_ROOT))
 
-from instincts.contracts import ContractError, canonical_json, digest, validate_definition, validate_definition_set, validate_definition_text, validate_record
+from instincts.contracts import ContractError, canonical_json, digest, redact_observation, validate_definition, validate_definition_set, validate_definition_text, validate_record
 
 
 def definition() -> dict[str, object]:
@@ -39,6 +39,20 @@ def definition() -> dict[str, object]:
 
 
 class ContractTests(unittest.TestCase):
+    def test_quoted_json_and_shell_credentials_are_redacted_completely(self) -> None:
+        for key in ("api_key", "apiKey", "password", "access_token"):
+            values = [json.dumps({key: 'synthetic-secret-prefix" synthetic-secret-tail'}),
+                      f"'{key}': 'synthetic-secret-prefix synthetic-secret-tail'",
+                      f'{key}="synthetic-secret-prefix synthetic-secret-tail']
+            for value in values:
+                with self.subTest(key=key, value=value):
+                    original = {"summary": value, "evidence_excerpt": value, "evidence_refs": [value]}
+                    result = redact_observation(original)
+                    self.assertNotIn("synthetic-secret-prefix", canonical_json(result))
+                    self.assertNotIn("synthetic-secret-tail", canonical_json(result))
+                    self.assertIn("[secret removed]", result["summary"])
+                    self.assertEqual(original["summary"], value)
+
     def test_stdio_mcp_normal_entry_point_selects_and_records_with_fixed_store(self) -> None:
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder) / "store"
@@ -187,7 +201,9 @@ class ContractTests(unittest.TestCase):
         refused = subprocess.run(command, input="{}", text=True, capture_output=True, check=False)
         self.assertEqual(refused.returncode, 2)
         self.assertEqual(json.loads(refused.stdout)["status"], "rejected")
-        status = subprocess.run([sys.executable, str(SCRIPTS_ROOT / "pulse_instincts.py"), "status"], text=True, capture_output=True, check=True)
+        with tempfile.TemporaryDirectory() as folder:
+            status = subprocess.run([sys.executable, str(SCRIPTS_ROOT / "pulse_instincts.py"), "status",
+                "--root", str(Path(folder) / "store")], text=True, capture_output=True, check=True)
         self.assertEqual(json.loads(status.stdout)["activation"], "not-installed")
 
 

@@ -1,46 +1,48 @@
 {
   "schema_version": "1.0",
-  "source_root": "/media/jerem/ubuntu2/pulse-tuned/history/shared-agent-memory-icm-dream/stages/04_execute/output/verification/openbot-0.60.0-source",
-  "source_head": "0c7753fa622c38419939cd230657f40e5883d098",
-  "source_tag": "v0.60.0",
+  "source_root": "/media/jerem/ubuntu2/pulse-tuned/history/shared-agent-memory-icm-dream/stages/04_execute/output/verification/openbot-0.71.0-source",
+  "source_head": "a0b754f8baa8fb49fb200ffb3759b17429a962a9",
+  "source_tag": "v0.71.0",
   "patch": "integrations/openbot/shared-instincts.patch",
-  "patch_sha256": "9095cc03b7932ca84f91c711df0a993752fc7043abfdf417ac9f7bc5ad0615ac",
-  "installed_official_appimage_sha256": "sha256:30d0861af7c7bbe84311bcf29a6291055cd3605bdd4bc07157db0f1bd1e0d26b",
-  "official_release_url": "https://github.com/nightly-labs/openbot/releases/tag/v0.60.0",
+  "patch_sha256": "9c24f0e6f5b16a7407f8a115eaf8afc7111efa806b6e305a4d44e1311128394a",
+  "installed_official_appimage_sha256": "sha256:95cea900a1793afd250f71b6a9d36e7069e70fb652ad94145b63ea86d9563bde",
+  "official_release_url": "https://github.com/nightly-labs/openbot/releases/tag/v0.71.0",
+  "host_license": "PolyForm Noncommercial 1.0.0, with the original application LICENSE and NOTICE retained.",
   "files": [
     {
       "path": "src/backend/agent/thread-lifecycle.ts",
-      "sha256": "2fcbcc1eedb086b7bef33e18b6ed1008afca8023a442b81dd94ef2986c692737",
       "state": "existing-file",
-      "postimage_sha256": "f7084ce155d33523773b19c6787d57de5ec2bac13d9ed05363ffca2cc231b4d1"
+      "sha256": "d89dec8330d0caddb7eb7a6a2f4ff9890f5519f7306592f924b0490c1dd25f46",
+      "postimage_sha256": "7af3e51846a579d4ce2c24143ba0f841f805c29aa59e441d2ded7fc4a455b0c6"
     },
     {
       "path": "src/backend/agent-service.ts",
-      "sha256": "f892a430932266cc768e7cab6082712add47be6d6960c6a43801c46ebb8e4c46",
       "state": "existing-file",
-      "postimage_sha256": "eaad8cf3d007a479c7f8616c960cd9c6debe444b35cbfed628f42ad85c6882d4"
+      "sha256": "ea12caed098f50905f6171a8837ff6653d4ce0300dd6cd3fb8eb4c04ace119bb",
+      "postimage_sha256": "5efa4d3f81da02b8990a84e41815c0a68f9a470ae1097d1fe27c3cb10bfa106a"
     },
     {
       "path": "src/backend/shared-instincts-bridge.ts",
-      "sha256": null,
       "state": "new-file",
+      "sha256": null,
       "postimage_sha256": "2e23c732c19639722bb8f079eea1050a3e086909e5f00f6f59b610e2ea740dd2"
     },
     {
       "path": "src/backend/shared-instincts-bridge.test.ts",
-      "sha256": null,
       "state": "new-file",
+      "sha256": null,
       "postimage_sha256": "d47d9a82eb70819f6cef405e1553d28e12f4d0a713b6089814fcf4ffa40222f3"
     }
   ],
   "constraints": [
-    "Verify exact preimages and postimages before applying this zero-context patch.",
-    "Concrete local controller is disabled until the operator sets PULSE_SHARED_INSTINCTS_ENABLED=1.",
-    "Only explicit task close and chat clear reach the bridge, after native memory handling.",
-    "Provider replacement, compaction, routine completion and turn completion never close the canonical chat.",
-    "Installed AppImage digest matches the official v0.60.0 release. Rebuilding and activation need the reviewed deployment candidate.",
-    "Current turn inputs are decorated once and retained across archived-thread recovery.",
-    "Hosted provider processes carry PULSE_INSTINCTS_ORIGIN=openbot.",
-    "The fixed stdio MCP data server is injected only when PULSE_SHARED_INSTINCTS_ENABLED=1."
+    "Verify exact preimages and postimages before applying the zero-context patch.",
+    "The bridge is enabled by PULSE_SHARED_INSTINCTS_ENABLED=1 in the local candidate launcher.",
+    "Canonical current-turn input is retained across archived-provider recovery.",
+    "Native provider processes carry PULSE_INSTINCTS_ORIGIN=openbot.",
+    "Explicit task close, automatic archival and chat/history clear follow native memory handling.",
+    "Provider idle release, replacement, compaction and ordinary turn completion preserve the canonical session boundary.",
+    "Per-agent MCP filtering and proxied-server tracking retain their 0.71.0 owners.",
+    "The fixed local MCP data server is an opt-in host capability.",
+    "Application activation awaits review of the current candidate."
   ]
 }

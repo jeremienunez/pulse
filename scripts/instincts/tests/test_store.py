@@ -44,6 +44,20 @@ def closure(identifier: str = "close:1", upper: int = 0) -> dict[str, object]:
 
 
 class StoreTests(unittest.TestCase):
+    def test_legacy_evidence_is_redacted_on_read_after_its_immutable_digest_check(self) -> None:
+        record = observation()
+        record["summary"] = json.dumps({"api_key": "legacy-secret-marker"})
+        with patch("instincts.store.redact_observation", side_effect=lambda value: value):
+            self.store.admit_observation(record)
+        self.store.close_range(closure())
+        metadata = self.store.snapshot()["observations"][record["observation_id"]]
+        path = self.store.root / metadata["path"]
+        original = path.read_bytes()
+        selected = self.store.observations_for(self.store.snapshot()["closures"]["close:1"])
+        self.assertNotIn("legacy-secret-marker", selected[0]["summary"])
+        self.assertEqual(path.read_bytes(), original)
+        self.assertIn("legacy-secret-marker", json.loads(original)["summary"])
+
     def test_concurrent_agent_templates_receive_atomic_sequences(self) -> None:
         errors = []
         def add(index):

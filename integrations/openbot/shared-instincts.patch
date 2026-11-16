@@ -1,10 +1,12 @@
 diff --git a/src/backend/agent-service.ts b/src/backend/agent-service.ts
-index acebd74..3cee23f 100644
+index 72bedb4..8b6d0ff 100644
 --- a/src/backend/agent-service.ts
 +++ b/src/backend/agent-service.ts
-@@ -252,0 +253 @@ import { type RoutineDueSource, RoutineTimer } from "./routine-timer";
+@@ -315,0 +316 @@ import { type RoutineDueSource, RoutineTimer } from "./routine-timer";
 +import { withSharedInstinctsServer } from "./shared-instincts-bridge";
-@@ -851,8 +852,6 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+@@ -779,0 +781 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
++            yield* this.#threads.recordSharedInstinctThreadClosed(agentId, task.threadId, "task_closed");
+@@ -1115,8 +1117,6 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 -        ...(credentials.serverEnvironment
 -          ? {
 -              agentEnvironment: (inherited) => ({
@@ -19,40 +21,46 @@ index acebd74..3cee23f 100644
 +          ...credentials.agentEnvironment?.(inherited),
 +          PULSE_INSTINCTS_ORIGIN: "openbot",
 +        }),
-@@ -879 +878 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
--        mcpServers: () => this.#mcp.record(credentials.mcpServers()),
-+        mcpServers: () => this.#mcp.record(withSharedInstinctsServer(credentials.mcpServers())),
-@@ -1047 +1046 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
--      mcpServers: () => this.#mcp.enabled(),
-+      mcpServers: () => withSharedInstinctsServer(this.#mcp.enabled()),
-@@ -1051 +1050,4 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+@@ -1146 +1146,2 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+-        mcpServers: (agentId) => this.#mcp.record(this.#mcpServersFor(credentials.mcpServers(), agentId)),
++        mcpServers: (agentId) =>
++          this.#mcp.record(this.#mcpServersFor(withSharedInstinctsServer(credentials.mcpServers()), agentId)),
+@@ -1337 +1338 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+-      mcpServers: (agentId) => this.#mcpServersFor(this.#mcp.enabled(), agentId),
++      mcpServers: (agentId) => this.#mcpServersFor(withSharedInstinctsServer(this.#mcp.enabled()), agentId),
+@@ -1342 +1343,4 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 -      ...(credentials.agentEnvironment ? { agentEnvironment: credentials.agentEnvironment } : {}),
 +      agentEnvironment: (inherited?: NodeJS.ProcessEnv) => ({
 +        ...credentials.agentEnvironment?.(inherited),
 +        PULSE_INSTINCTS_ORIGIN: "openbot",
 +      }),
-@@ -3373,0 +3376 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+@@ -4375,0 +4380 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 +    yield* this.#threads.recordSharedInstinctThreadClosed(agentId, threadId, "chat_cleared");
-@@ -4501,0 +4505 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+@@ -4441,0 +4447 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
++    yield* this.#threads.recordSharedInstinctThreadClosed(agentId, target.threadId, "chat_cleared");
+@@ -6050,0 +6057 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
 +    yield* this.#threads.recordSharedInstinctThreadClosed(task.agentId, task.threadId, "task_closed");
 diff --git a/src/backend/agent/thread-lifecycle.ts b/src/backend/agent/thread-lifecycle.ts
-index ff6b2f1..f1bc8e6 100644
+index 6f6c93d..f0797e2 100644
 --- a/src/backend/agent/thread-lifecycle.ts
 +++ b/src/backend/agent/thread-lifecycle.ts
-@@ -46,0 +47,6 @@ import { decodeRecordResponse, decodeThreadResponse, getString, type ResponseDec
+@@ -51,0 +52,6 @@ import { decodeRecordResponse, decodeThreadResponse, getRecord, getString, type
 +import {
 +  createSharedInstinctsBridge,
 +  type SharedInstinctsBridge,
 +  type SharedInstinctsCloseKind,
 +  withSharedInstinctsTurn,
 +} from "../shared-instincts-bridge";
-@@ -170,0 +177 @@ export interface ThreadLifecycleOptions {
+@@ -75 +81 @@ import { sessionSettingsIdentity } from "./session-settings";
+-import { isArchivedThreadError, isMissingProviderSessionError, providerLabel } from "./thread-items";
++import { isArchivedThreadError, isMissingProviderSessionError, providerForAgent, providerLabel } from "./thread-items";
+@@ -182,0 +189 @@ export interface ThreadLifecycleOptions {
 +  sharedInstincts?: SharedInstinctsBridge;
-@@ -215,0 +223 @@ export class ThreadLifecycle {
+@@ -244,0 +252 @@ export class ThreadLifecycle {
 +  readonly #sharedInstincts: SharedInstinctsBridge;
-@@ -250,0 +259 @@ export class ThreadLifecycle {
+@@ -303,0 +312 @@ export class ThreadLifecycle {
 +    this.#sharedInstincts = options.sharedInstincts ?? createSharedInstinctsBridge();
-@@ -842,0 +852,13 @@ export class ThreadLifecycle {
+@@ -1048,0 +1058,13 @@ export class ThreadLifecycle {
 +    const memoryConfig = configs.find((config) => config.id === "pulse-shared-instincts-v1");
 +    const memoryKey = memoryConfig ? codexMcpServerKey(memoryConfig, own.transports) : "";
 +    const memoryServer = mcpServers[memoryKey];
@@ -66,10 +74,10 @@ index ff6b2f1..f1bc8e6 100644
 +          },
 +        }
 +      : mcpServers;
-@@ -845 +867 @@ export class ThreadLifecycle {
+@@ -1051 +1073 @@ export class ThreadLifecycle {
 -        ...(Object.keys(mcpServers).length > 0 ? { mcp_servers: mcpServers } : {}),
 +        ...(Object.keys(configuredMcpServers).length > 0 ? { mcp_servers: configuredMcpServers } : {}),
-@@ -1171,0 +1194,18 @@ export class ThreadLifecycle {
+@@ -1524,0 +1547,18 @@ export class ThreadLifecycle {
 +  recordSharedInstinctThreadClosed(
 +    agentId: string,
 +    threadId: string,
@@ -80,7 +88,7 @@ index ff6b2f1..f1bc8e6 100644
 +      {
 +        threadId,
 +        workspacePath: agent.workspacePath,
-+        provider: agent.provider,
++        provider: providerForAgent(agent),
 +        model: agent.model,
 +        effort: agent.reasoningEffort ?? null,
 +      },
@@ -88,7 +96,7 @@ index ff6b2f1..f1bc8e6 100644
 +    );
 +  }
 +
-@@ -1357 +1397,16 @@ export class ThreadLifecycle {
+@@ -1765 +1805,16 @@ export class ThreadLifecycle {
 -      const response = yield* Effect.result(client.request(method, params, decoder).pipe(toThreadOperationFailed));
 +      const externalThreadId = getString(params, "threadId");
 +      const prepared =
@@ -106,7 +114,7 @@ index ff6b2f1..f1bc8e6 100644
 +            )
 +          : params;
 +      const response = yield* Effect.result(client.request(method, prepared, decoder).pipe(toThreadOperationFailed));
-@@ -1363 +1418 @@ export class ThreadLifecycle {
+@@ -1771 +1826 @@ export class ThreadLifecycle {
 -      return yield* client.request(method, params, decoder).pipe(toThreadOperationFailed);
 +      return yield* client.request(method, prepared, decoder).pipe(toThreadOperationFailed);
 diff --git a/src/backend/shared-instincts-bridge.test.ts b/src/backend/shared-instincts-bridge.test.ts

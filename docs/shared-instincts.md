@@ -19,6 +19,9 @@ UUID before writing and caps its complete contents at 256 MiB. Immutable YAML
 definitions live under `.instincts/`, with linked version/evidence records.
 One atomic state publication commits observations, closure bounds and active
 version pointers. Admission and model capture reserve capacity before writing.
+Observation and preference text use redaction patterns for quoted JSON credential
+values. Evidence reads validate the stored digest before applying the current
+redaction patterns to the model-facing copy.
 
 ## Lifecycle
 
@@ -66,9 +69,9 @@ The controller provides working admission, selection, Dream, review, rollback
 and maintenance commands. Deployment remains subject to its reviewed manifest.
 
 - Claude Code 2.1.325 has native start/resume/prompt/end and context-transport proof in a temporary profile, with all three MCP tools exposed.
-- Codex CLI 0.167.2 has separate start/resume/prompt/end and full-context transport proof. Its hook disables native context spilling after the controller enforces the 16 KiB cap. Its native MCP client lists all three tools.
+- Codex CLI 0.169.0 receives context in the installed user profile after native trust review of the three exact hook definitions. Earlier isolated start/resume/prompt/end checks used 0.167.2. Its hook disables native context spilling after the controller enforces the 16 KiB cap. Its native MCP client lists all three tools.
 - Antigravity CLI uses SessionStart/PreInvocation and a managed launcher. Its native evidence appears in the runtime matrix.
-- The concrete OpenBot bridge is opt-in, uses a fixed local executable, and adds relevant context to each canonical turn. It retains that prepared input during archived-thread recovery. Explicit task close and chat clear follow host memory handling. Its tested source targets the official 0.60.0 tag. The installed AppImage matches the official release SHA-256. Rebuilding, activation and application-level delivery remain to be verified.
+- The concrete OpenBot bridge is opt-in, uses a fixed local executable, and adds relevant context to each canonical turn. It retains that prepared input during archived-thread recovery. Task closure, archival and chat/history clear follow host memory handling. Its source targets the installed official 0.71.0 release. The candidate passes a full build, focused tests and canonical service lifecycle checks with a stand-in provider. Its packaged local-server startup is verified in an isolated profile. Application activation and user-profile delivery await review.
 
 A qualified method is shared with relevant agents in its approved scope.
 Each packet identifies its evaluator profile and the consumer's own evidence.
