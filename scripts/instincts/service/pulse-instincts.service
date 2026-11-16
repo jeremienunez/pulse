@@ -4,8 +4,8 @@ ConditionPathExists=/media/jerem/ubuntu2/agent-instincts/jerem
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /usr/local/lib/pulse-instincts/pulse_instincts.py drain --root /media/jerem/ubuntu2/agent-instincts/jerem
-NoNewPrivileges=yes
-PrivateTmp=yes
-ProtectHome=read-only
-ReadWritePaths=/media/jerem/ubuntu2/agent-instincts/jerem
+Environment=PATH=%h/.local/bin:%h/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/media/jerem/ubuntu2/agent-instincts/runtime/venv/bin/python3 %h/.local/share/pulse/shared-instincts/current/scripts/pulse_instincts.py drain --all --root /media/jerem/ubuntu2/agent-instincts/jerem
+
+[Install]
+WantedBy=default.target

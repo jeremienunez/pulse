@@ -39,6 +39,7 @@ def complete_fixture(manifest: dict[str, Any], respond: Callable[[str, int, dict
                         model_reported=answer.get("model_reported"),
                         tools=answer.get("tools", []),
                         outcome=answer.get("outcome", "completed"),
+                        judgments=answer.get("judgments"),
                     )
                 )
     verdict = decide(job=job, results=results)

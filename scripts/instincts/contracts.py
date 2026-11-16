@@ -5,11 +5,12 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import yaml
-from jsonschema import Draft7Validator
+from jsonschema import Draft7Validator, FormatChecker
 
 
 CONTRACT_VERSION = "1.0"
@@ -38,6 +39,25 @@ ALLOWED_EVENTS = frozenset(
 )
 
 
+def redact_observation(record: dict) -> dict:
+    redacted = json.loads(canonical_json(record))
+    patterns = [
+        (r"-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----", "[private key removed]"),
+        (r"(?i)\b(?:Bearer\s+|sk-(?:ant-)?)[A-Za-z0-9_.-]{12,}", "[credential removed]"),
+        (r"(?i)\b(?:password|passwd|api[_-]?key|secret|access[_-]?token)\s*[:=]\s*[^\s,;]+", "[secret removed]"),
+        (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "[email removed]"),
+    ]
+    for field in ("summary", "evidence_excerpt", "action", "outcome"):
+        if isinstance(redacted.get(field), str):
+            for expression, replacement in patterns:
+                redacted[field] = re.sub(expression, replacement, redacted[field])
+    for index, reference in enumerate(redacted.get("evidence_refs", [])):
+        for expression, replacement in patterns:
+            reference = re.sub(expression, replacement, reference)
+        redacted["evidence_refs"][index] = reference
+    return redacted
+
+
 class ContractError(ValueError):
     """An untrusted definition or record violates a local contract."""
 
@@ -60,7 +80,8 @@ def _load_schema(path: Path) -> dict[str, Any]:
 
 
 def _first_schema_error(schema: dict[str, Any], value: object) -> str | None:
-    errors = sorted(Draft7Validator(schema).iter_errors(value), key=lambda item: list(item.path))
+    errors = sorted(Draft7Validator(schema, format_checker=FormatChecker()).iter_errors(value),
+                    key=lambda item: tuple(str(part) for part in item.path))
     if not errors:
         return None
     error = errors[0]
@@ -69,6 +90,8 @@ def _first_schema_error(schema: dict[str, Any], value: object) -> str | None:
 
 
 def _load_yaml_no_aliases(text: str) -> object:
+    if not isinstance(text, str) or len(text.encode("utf-8")) > 8192:
+        raise ContractError("instinct YAML exceeds the 8 KiB definition limit")
     try:
         events = list(yaml.parse(text, Loader=yaml.SafeLoader))
     except yaml.YAMLError as error:
@@ -76,9 +99,19 @@ def _load_yaml_no_aliases(text: str) -> object:
     if any(getattr(event, "anchor", None) is not None for event in events):
         raise ContractError("YAML anchors and aliases are not accepted")
     try:
-        return yaml.safe_load(text)
+        return yaml.load(text, Loader=UniqueKeyLoader)
     except yaml.YAMLError as error:  # pragma: no cover - parse normally catches it.
         raise ContractError(f"invalid YAML: {error}") from error
+
+
+class UniqueKeyLoader(yaml.SafeLoader):
+    def construct_mapping(self, node, deep=False):
+        keys = [self.construct_object(key) for key, _ in node.value]
+        if any(not isinstance(key, str) for key in keys):
+            raise ContractError("YAML mapping keys must be strings")
+        if len(keys) != len(set(keys)):
+            raise ContractError("YAML mapping contains duplicate keys")
+        return super().construct_mapping(node, deep=deep)
 
 
 def _require_strings(value: dict[str, Any], fields: tuple[str, ...]) -> None:
@@ -88,6 +121,8 @@ def _require_strings(value: dict[str, Any], fields: tuple[str, ...]) -> None:
 
 
 def validate_definition(value: object) -> dict[str, Any]:
+    if len(canonical_json(value).encode("utf-8")) > 8192:
+        raise ContractError("definition exceeds the 8 KiB limit")
     error = _first_schema_error(_load_schema(DEFINITION_SCHEMA_PATH), value)
     if error:
         raise ContractError(f"invalid instinct definition: {error}")
@@ -131,6 +166,8 @@ def validate_definition_set(values: list[object]) -> list[dict[str, Any]]:
     silently resolve a different definition later.
     """
 
+    if len(values) > 128:
+        raise ContractError("definition set exceeds the bounded inheritance limit")
     definitions = [validate_definition(value) for value in values]
     by_id = {definition["id"]: definition for definition in definitions}
     if len(by_id) != len(definitions):
@@ -168,8 +205,18 @@ def validate_record(value: object, kind: str) -> dict[str, Any]:
     if error:
         raise ContractError(f"invalid {kind} record: {error}")
     assert isinstance(value, dict)
+    if len(value.get("evidence_excerpt", "").encode("utf-8")) > 4096:
+        raise ContractError("durable evidence excerpt exceeds 4 KiB")
     if value.get("schema_version") != CONTRACT_VERSION:
         raise ContractError("record schema_version is unsupported")
+    for field in ("observed_at", "closed_at"):
+        if field in value:
+            try:
+                timestamp = datetime.fromisoformat(value[field].replace("Z", "+00:00"))
+                if timestamp.tzinfo is None:
+                    raise ValueError("missing timezone")
+            except ValueError as error:
+                raise ContractError(f"{field} must be an absolute timestamp with timezone") from error
     return value
 
 

@@ -1,65 +1,459 @@
-diff --git a/src/backend/agent/thread-lifecycle.ts b/src/backend/agent/thread-lifecycle.ts
-index 7a88af6..fdee5aa 100644
---- a/src/backend/agent/thread-lifecycle.ts
-+++ b/src/backend/agent/thread-lifecycle.ts
-@@ -52,1 +52,2 @@ import type { ConversationRuntime } from "./conversation-runtime";
- import { agentNamesById } from "./delivery-content";
-+import { NO_SHARED_INSTINCTS_BRIDGE, type SharedInstinctsBridge } from "../shared-instincts-bridge";
-@@ -174,1 +175,3 @@ export interface ThreadLifecycleOptions {
-   channelThread?: (threadId: string) => boolean;
-+  /** Optional local bridge. The default is deliberately inert. */
-+  sharedInstincts?: SharedInstinctsBridge;
-@@ -207,1 +210,2 @@ export class ThreadLifecycle {
-   readonly #channelThread: (threadId: string) => boolean;
-+  readonly #sharedInstincts: SharedInstinctsBridge;
-@@ -241,1 +245,2 @@ export class ThreadLifecycle {
-     this.#channelThread = options.channelThread ?? (() => false);
-+    this.#sharedInstincts = options.sharedInstincts ?? NO_SHARED_INSTINCTS_BRIDGE;
-@@ -1072,2 +1077,2 @@ export class ThreadLifecycle {
--    const instructions = developerInstructions(
-+    const baseInstructions = developerInstructions(
-       agent,
-@@ -1079,2 +1084,4 @@ export class ThreadLifecycle {
-     );
-+    const sharedInstructions = this.#sharedInstincts.instructions({ agentId: agent.id, provider: client.provider });
-+    const instructions = sharedInstructions ? `${baseInstructions}\n\n${sharedInstructions}` : baseInstructions;
-     return options.memoriesInTurns
-@@ -1101,2 +1108,6 @@ export class ThreadLifecycle {
-     return (yield* listHomeSkills()).filter((skill) => !read.has(skill.slug));
-   });
-+  recordSharedInstinctThreadClosed(agentId: string, threadId: string): void {
-+    this.#sharedInstincts.threadClosed({ agentId, threadId });
-+  }
-+
 diff --git a/src/backend/agent-service.ts b/src/backend/agent-service.ts
-index 5ef5bc1..f564bc3 100644
+index acebd74..3cee23f 100644
 --- a/src/backend/agent-service.ts
 +++ b/src/backend/agent-service.ts
-@@ -4303,3 +4303,4 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
-     });
-     this.#tasks.close(task);
-     yield* this.#memoryReview.threadClosed(task.agentId, task.threadId);
-+    this.#threads.recordSharedInstinctThreadClosed(task.agentId, task.threadId);
+@@ -252,0 +253 @@ import { type RoutineDueSource, RoutineTimer } from "./routine-timer";
++import { withSharedInstinctsServer } from "./shared-instincts-bridge";
+@@ -851,8 +852,6 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+-        ...(credentials.serverEnvironment
+-          ? {
+-              agentEnvironment: (inherited) => ({
+-                ...credentials.serverEnvironment,
+-                ...credentials.agentEnvironment?.(inherited),
+-              }),
+-            }
+-          : {}),
++        serverEnvironment: { ...credentials.serverEnvironment, PULSE_INSTINCTS_ORIGIN: "openbot" },
++        agentEnvironment: (inherited?: NodeJS.ProcessEnv) => ({
++          ...credentials.serverEnvironment,
++          ...credentials.agentEnvironment?.(inherited),
++          PULSE_INSTINCTS_ORIGIN: "openbot",
++        }),
+@@ -879 +878 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+-        mcpServers: () => this.#mcp.record(credentials.mcpServers()),
++        mcpServers: () => this.#mcp.record(withSharedInstinctsServer(credentials.mcpServers())),
+@@ -1047 +1046 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+-      mcpServers: () => this.#mcp.enabled(),
++      mcpServers: () => withSharedInstinctsServer(this.#mcp.enabled()),
+@@ -1051 +1050,4 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
+-      ...(credentials.agentEnvironment ? { agentEnvironment: credentials.agentEnvironment } : {}),
++      agentEnvironment: (inherited?: NodeJS.ProcessEnv) => ({
++        ...credentials.agentEnvironment?.(inherited),
++        PULSE_INSTINCTS_ORIGIN: "openbot",
++      }),
+@@ -3373,0 +3376 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
++    yield* this.#threads.recordSharedInstinctThreadClosed(agentId, threadId, "chat_cleared");
+@@ -4501,0 +4505 @@ export class AgentService extends EventEmitter<AgentServiceEvents> {
++    yield* this.#threads.recordSharedInstinctThreadClosed(task.agentId, task.threadId, "task_closed");
+diff --git a/src/backend/agent/thread-lifecycle.ts b/src/backend/agent/thread-lifecycle.ts
+index ff6b2f1..f1bc8e6 100644
+--- a/src/backend/agent/thread-lifecycle.ts
++++ b/src/backend/agent/thread-lifecycle.ts
+@@ -46,0 +47,6 @@ import { decodeRecordResponse, decodeThreadResponse, getString, type ResponseDec
++import {
++  createSharedInstinctsBridge,
++  type SharedInstinctsBridge,
++  type SharedInstinctsCloseKind,
++  withSharedInstinctsTurn,
++} from "../shared-instincts-bridge";
+@@ -170,0 +177 @@ export interface ThreadLifecycleOptions {
++  sharedInstincts?: SharedInstinctsBridge;
+@@ -215,0 +223 @@ export class ThreadLifecycle {
++  readonly #sharedInstincts: SharedInstinctsBridge;
+@@ -250,0 +259 @@ export class ThreadLifecycle {
++    this.#sharedInstincts = options.sharedInstincts ?? createSharedInstinctsBridge();
+@@ -842,0 +852,13 @@ export class ThreadLifecycle {
++    const memoryConfig = configs.find((config) => config.id === "pulse-shared-instincts-v1");
++    const memoryKey = memoryConfig ? codexMcpServerKey(memoryConfig, own.transports) : "";
++    const memoryServer = mcpServers[memoryKey];
++    const configuredMcpServers = memoryServer
++      ? {
++          ...mcpServers,
++          [memoryKey]: {
++            ...memoryServer,
++            default_tools_approval_mode: "approve",
++            tools: { select: { output_token_limit: 20000 } },
++          },
++        }
++      : mcpServers;
+@@ -845 +867 @@ export class ThreadLifecycle {
+-        ...(Object.keys(mcpServers).length > 0 ? { mcp_servers: mcpServers } : {}),
++        ...(Object.keys(configuredMcpServers).length > 0 ? { mcp_servers: configuredMcpServers } : {}),
+@@ -1171,0 +1194,18 @@ export class ThreadLifecycle {
++  recordSharedInstinctThreadClosed(
++    agentId: string,
++    threadId: string,
++    kind: SharedInstinctsCloseKind,
++  ): Effect.Effect<void> {
++    const agent = this.#conversation.requireKnownAgent(agentId);
++    return this.#sharedInstincts.closed(
++      {
++        threadId,
++        workspacePath: agent.workspacePath,
++        provider: agent.provider,
++        model: agent.model,
++        effort: agent.reasoningEffort ?? null,
++      },
++      kind,
++    );
++  }
++
+@@ -1357 +1397,16 @@ export class ThreadLifecycle {
+-      const response = yield* Effect.result(client.request(method, params, decoder).pipe(toThreadOperationFailed));
++      const externalThreadId = getString(params, "threadId");
++      const prepared =
++        method === "turn/start" && externalThreadId
++          ? yield* withSharedInstinctsTurn(
++              this.#sharedInstincts,
++              {
++                threadId: this.#conversation.publicThreadId(agent.id, externalThreadId),
++                workspacePath: agent.workspacePath,
++                provider: client.provider,
++                model: agent.model,
++                effort: agent.reasoningEffort ?? null,
++              },
++              params,
++            )
++          : params;
++      const response = yield* Effect.result(client.request(method, prepared, decoder).pipe(toThreadOperationFailed));
+@@ -1363 +1418 @@ export class ThreadLifecycle {
+-      return yield* client.request(method, params, decoder).pipe(toThreadOperationFailed);
++      return yield* client.request(method, prepared, decoder).pipe(toThreadOperationFailed);
+diff --git a/src/backend/shared-instincts-bridge.test.ts b/src/backend/shared-instincts-bridge.test.ts
+new file mode 100644
+index 0000000..961029b
+--- /dev/null
++++ b/src/backend/shared-instincts-bridge.test.ts
+@@ -0,0 +1,151 @@
++import { isDynamicRecord } from "@openbot/contracts/runtime-values";
++import { Effect } from "effect";
++import { assert, describe, expect, test } from "vitest";
++import {
++  createSharedInstinctsBridge,
++  NO_SHARED_INSTINCTS_BRIDGE,
++  withSharedInstinctsServer,
++  withSharedInstinctsTurn,
++} from "./shared-instincts-bridge";
++
++const identity = {
++  threadId: "chat-123",
++  workspacePath: "/project",
++  provider: "claude",
++  model: "claude-opus-5-5",
++  effort: "low",
++};
++const output = (text: string) => JSON.stringify({ status: "ok", hookSpecificOutput: { additionalContext: text } });
++
++describe("shared instincts local bridge", () => {
++  test("operator opt-in and fixed arguments", async () => {
++    expect(createSharedInstinctsBridge({ enabled: false })).toBe(NO_SHARED_INSTINCTS_BRIDGE);
++    const invocations: { executable: string; args: string[]; input: string }[] = [];
++    const bridge = createSharedInstinctsBridge({
++      enabled: true,
++      run: async (invocation) => {
++        invocations.push(invocation);
++        return { status: 0, stdout: output("Observe compact reusable experience.") };
++      },
++    });
++    expect(await Effect.runPromise(bridge.context(identity))).toBe("Observe compact reusable experience.");
++    const call = invocations[0];
++    assert(call);
++    expect(call.executable).toBe("/media/jerem/ubuntu2/agent-instincts/runtime/venv/bin/python3");
++    expect(call.args.slice(1, 6)).toEqual([
++      "adapter",
++      "--root",
++      "/media/jerem/ubuntu2/agent-instincts/jerem",
++      "--runtime",
++      "openbot",
++    ]);
++    const profileArgument = call.args.at(-1);
++    assert(profileArgument);
++    expect(JSON.parse(profileArgument)).toEqual({
++      runtime: "openbot",
++      provider: "claude",
++      model: "claude-opus-5-5",
++      effort: "low",
++    });
++    expect(JSON.parse(call.input)).toEqual({ kind: "chat_context", thread_id: "chat-123", cwd: "/project" });
++  });
++
++  test("resume retains canonical identity and only explicit events close it", async () => {
++    const events: object[] = [];
++    const bridge = createSharedInstinctsBridge({
++      enabled: true,
++      run: async ({ input }) => {
++        events.push(JSON.parse(input));
++        return { status: 0, stdout: output("context") };
++      },
++    });
++    await Effect.runPromise(bridge.context(identity));
++    await Effect.runPromise(bridge.context({ ...identity, model: "new-model" }));
++    await Effect.runPromise(bridge.closed(identity, "task_closed"));
++    await Effect.runPromise(bridge.closed(identity, "chat_cleared"));
++    expect(events).toEqual(
++      ["chat_context", "chat_context", "task_closed", "chat_cleared"].map((kind) => ({
++        kind,
++        thread_id: "chat-123",
++        cwd: "/project",
++      })),
++    );
++  });
++
++  test("failures and oversized output preserve the host with bounded diagnostics", async () => {
++    const warnings: string[] = [];
++    for (const stdout of ["PRIVATE invalid JSON", output("x".repeat(16385)), "x".repeat(65537)]) {
++      const bridge = createSharedInstinctsBridge({
++        enabled: true,
++        warn: (status) => warnings.push(status),
++        run: async () => ({ status: 0, stdout }),
++      });
++      expect(await Effect.runPromise(bridge.context(identity))).toBe("");
++    }
++    expect(warnings).toEqual(["invalid-output", "invalid-context", "controller-unavailable"]);
++    const unavailable = createSharedInstinctsBridge({
++      enabled: true,
++      warn: (status) => warnings.push(status),
++      run: async () => ({ status: null, stdout: "private", failed: true }),
++    });
++    expect(await Effect.runPromise(unavailable.context(identity))).toBe("");
++    expect(warnings.at(-1)).toBe("controller-unavailable");
++  });
++
++  test("malformed canonical identity never invokes the controller", async () => {
++    let called = false;
++    const bridge = createSharedInstinctsBridge({
++      enabled: true,
++      warn: () => {},
++      run: async () => {
++        called = true;
++        throw new Error("must not invoke");
++      },
++    });
++    expect(await Effect.runPromise(bridge.context({ ...identity, threadId: "../../other" }))).toBe("");
++    expect(called).toBe(false);
++  });
++
++  test("canonical turns route on current text while preserving user inputs and metadata", async () => {
++    const requests: object[] = [];
++    const bridge = createSharedInstinctsBridge({
++      enabled: true,
++      run: async ({ input }) => {
++        requests.push(JSON.parse(input));
++        return { status: 0, stdout: output("matching reflex") };
++      },
++    });
++    const input = [
++      { type: "text", text: "Name the invoice state" },
++      { type: "image", url: "fixture" },
++    ];
++    const params = { threadId: "provider-session", clientUserMessageId: "message-1", input, model: "same-model" };
++    const prepared = await Effect.runPromise(withSharedInstinctsTurn(bridge, identity, params));
++    assert(isDynamicRecord(prepared) && Array.isArray(prepared.input));
++    expect(prepared.input.slice(1)).toEqual(input);
++    expect(prepared.model).toBe("same-model");
++    expect(params.input).toBe(input);
++    expect(requests).toEqual([
++      {
++        kind: "chat_context",
++        thread_id: "chat-123",
++        cwd: "/project",
++        terms: "Name the invoice state",
++        user_message_id: "message-1",
++      },
++    ]);
++    expect(await Effect.runPromise(withSharedInstinctsTurn(NO_SHARED_INSTINCTS_BRIDGE, identity, params))).toBe(params);
++  });
++
++  test("the owned MCP server uses fixed paths and preserves existing servers", () => {
++    const added = withSharedInstinctsServer([], true);
++    expect(added).toHaveLength(1);
++    const owned = added[0];
++    assert(owned);
++    expect(owned.name).toBe("pulse_instincts");
++    expect(owned.args.slice(1, 3)).toEqual(["adapter", "--stdio"]);
++    expect(withSharedInstinctsServer(added, true)).toBe(added);
++    expect(withSharedInstinctsServer([], false)).toEqual([]);
++    expect(() => withSharedInstinctsServer([{ ...owned, command: "/unrelated" }], true)).toThrow();
++  });
++});
 diff --git a/src/backend/shared-instincts-bridge.ts b/src/backend/shared-instincts-bridge.ts
 new file mode 100644
-index 0000000..847cc9b
+index 0000000..3852a25
 --- /dev/null
 +++ b/src/backend/shared-instincts-bridge.ts
-@@ -0,0 +1,17 @@
-+import type { AgentProvider } from "./agent-client";
+@@ -0,0 +1,185 @@
++import { execFile } from "node:child_process";
++import { homedir } from "node:os";
++import { join } from "node:path";
++import type { McpServerConfig } from "@openbot/contracts/ipc";
++import { isDynamicRecord } from "@openbot/contracts/runtime-values";
++import { createOpenBotLogger } from "@openbot/logging";
++import { Effect, Result } from "effect";
++import { decodeRecordResponse, getRecord, getString } from "./protocol";
 +
-+/**
-+ * Boundary for an optional, locally-owned shared-instincts integration.
-+ * The default implementation intentionally contributes no instructions and
-+ * records no event. A host must provide a source-bound implementation before
-+ * OpenBot can claim shared-instinct coverage.
-+ */
++export interface SharedInstinctsIdentity {
++  threadId: string;
++  workspacePath: string;
++  provider: string;
++  model: string;
++  effort: string | null;
++  terms?: string;
++  userMessageId?: string;
++}
++export type SharedInstinctsCloseKind = "task_closed" | "chat_cleared";
 +export interface SharedInstinctsBridge {
-+  instructions(input: { agentId: string; provider: AgentProvider }): string | null;
-+  threadClosed(input: { agentId: string; threadId: string }): void;
++  context(identity: SharedInstinctsIdentity): Effect.Effect<string>;
++  closed(identity: SharedInstinctsIdentity, kind: SharedInstinctsCloseKind): Effect.Effect<void>;
++}
++export const NO_SHARED_INSTINCTS_BRIDGE: SharedInstinctsBridge = {
++  context: () => Effect.succeed(""),
++  closed: () => Effect.void,
++};
++interface Invocation {
++  executable: string;
++  args: string[];
++  input: string;
++}
++interface ControllerResult {
++  status: number | null;
++  stdout: string;
++  failed?: boolean;
++}
++type Runner = (invocation: Invocation, signal: AbortSignal) => Promise<ControllerResult>;
++const PYTHON = "/media/jerem/ubuntu2/agent-instincts/runtime/venv/bin/python3";
++const CONTROLLER = join(homedir(), ".local/share/pulse/shared-instincts/current/scripts/pulse_instincts.py");
++const STORE = "/media/jerem/ubuntu2/agent-instincts/jerem";
++const MAX_OUTPUT = 64 * 1024;
++const logger = createOpenBotLogger("shared-instincts");
++
++export function withSharedInstinctsServer(
++  servers: readonly McpServerConfig[],
++  enabled = process.env.PULSE_SHARED_INSTINCTS_ENABLED === "1",
++): readonly McpServerConfig[] {
++  if (!enabled) return servers;
++  const config: McpServerConfig = {
++    id: "pulse-shared-instincts-v1",
++    name: "pulse_instincts",
++    transport: "stdio",
++    enabled: true,
++    command: PYTHON,
++    args: [CONTROLLER, "adapter", "--stdio", "--root", STORE],
++    env: [{ key: "PULSE_INSTINCTS_ORIGIN", value: "openbot" }],
++    envPassthrough: [],
++    workingDirectory: "",
++    url: "",
++    headers: [],
++  };
++  const existing = servers.find((entry) => entry.id === config.id || entry.name === config.name);
++  if (existing) {
++    if (existing.command !== config.command || JSON.stringify(existing.args) !== JSON.stringify(config.args))
++      throw new Error("The pulse_instincts server name has a different configuration.");
++    return servers;
++  }
++  return [...servers, config];
 +}
 +
-+export const NO_SHARED_INSTINCTS_BRIDGE: SharedInstinctsBridge = {
-+  instructions: () => null,
-+  threadClosed: () => {},
-+};
++/** Adds scoped context to one canonical turn and keeps its original input. */
++export function withSharedInstinctsTurn(
++  bridge: SharedInstinctsBridge,
++  identity: SharedInstinctsIdentity,
++  params: unknown,
++): Effect.Effect<unknown> {
++  return Effect.gen(function* () {
++    if (!isDynamicRecord(params) || !Array.isArray(params.input)) return params;
++    const fragments: string[] = [];
++    for (const item of params.input) {
++      const text = getString(item, "text");
++      if (text) fragments.push(text);
++    }
++    const messageId = getString(params, "clientUserMessageId");
++    const context = yield* bridge.context({
++      ...identity,
++      terms: fragments.join("\n").slice(0, 16384),
++      ...(messageId ? { userMessageId: messageId } : {}),
++    });
++    if (!context) return params;
++    return { ...params, input: [{ type: "text", text: `Shared agent context\n${context}` }, ...params.input] };
++  });
++}
++
++const runController: Runner = ({ executable, args, input }, signal) =>
++  new Promise((resolve) => {
++    const child = execFile(
++      executable,
++      args,
++      {
++        encoding: "utf8",
++        shell: false,
++        timeout: 3000,
++        killSignal: "SIGKILL",
++        maxBuffer: MAX_OUTPUT,
++        signal,
++      },
++      (error, stdout) => resolve({ status: error ? null : 0, stdout, failed: Boolean(error) }),
++    );
++    child.stdin?.end(input);
++  });
++
++/** Owns the fixed controller process and its timeout. */
++export function createSharedInstinctsBridge(
++  options: { enabled?: boolean; run?: Runner; warn?: (status: string) => void } = {},
++): SharedInstinctsBridge {
++  if (!(options.enabled ?? process.env.PULSE_SHARED_INSTINCTS_ENABLED === "1")) return NO_SHARED_INSTINCTS_BRIDGE;
++  const run = options.run ?? runController;
++  const warn = options.warn ?? ((status: string) => logger.warn("Shared instincts controller status.", { status }));
++  const invoke = Effect.fn("SharedInstinctsBridge.invoke")(function* (identity: SharedInstinctsIdentity, kind: string) {
++    if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(identity.threadId) || !identity.workspacePath) {
++      warn("invalid-identity");
++      return null;
++    }
++    const profile = JSON.stringify({
++      effort: identity.effort ?? "unknown",
++      model: identity.model,
++      provider: identity.provider,
++      runtime: "openbot",
++    });
++    const completed = yield* Effect.result(
++      Effect.tryPromise({
++        try: (signal) =>
++          run(
++            {
++              executable: PYTHON,
++              args: [CONTROLLER, "adapter", "--root", STORE, "--runtime", "openbot", "--profile", profile],
++              input: JSON.stringify({
++                kind,
++                thread_id: identity.threadId,
++                cwd: identity.workspacePath,
++                ...(identity.terms ? { terms: identity.terms } : {}),
++                ...(identity.userMessageId ? { user_message_id: identity.userMessageId } : {}),
++              }),
++            },
++            signal,
++          ),
++        catch: () => "controller-failed" as const,
++      }),
++    );
++    if (Result.isFailure(completed)) {
++      warn("controller-failed");
++      return null;
++    }
++    const result = completed.success;
++    if (result.failed || result.status !== 0 || Buffer.byteLength(result.stdout) > MAX_OUTPUT) {
++      warn("controller-unavailable");
++      return null;
++    }
++    try {
++      const value = decodeRecordResponse(JSON.parse(result.stdout));
++      if (value.status !== "ok" && value.status !== "ignored") {
++        warn("invalid-output");
++        return null;
++      }
++      return { context: getString(getRecord(value, "hookSpecificOutput"), "additionalContext") };
++    } catch {
++      warn("invalid-output");
++      return null;
++    }
++  });
++  return {
++    context: Effect.fn("SharedInstinctsBridge.context")(function* (identity: SharedInstinctsIdentity) {
++      const result = yield* invoke(identity, "chat_context");
++      if (!result) return "";
++      if (typeof result.context !== "string" || Buffer.byteLength(result.context) > 16 * 1024) {
++        warn("invalid-context");
++        return "";
++      }
++      return result.context;
++    }),
++    closed: (identity, kind) => invoke(identity, kind).pipe(Effect.asVoid),
++  };
++}

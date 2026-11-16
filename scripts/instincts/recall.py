@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Any
 
-from .contracts import canonical_json, validate_definition
+from .contracts import canonical_json, digest, validate_definition
 
 
 MAX_INSTINCTS = 6
 MAX_LINK_DEPTH = 2
 MAX_PACKET_BYTES = 16 * 1024
-TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9_-]*")
+TOKEN_RE = re.compile(r"[^\W_]+(?:[-_][^\W_]+)*", re.UNICODE)
 
 
 class RecallError(ValueError):
@@ -21,7 +22,9 @@ class RecallError(ValueError):
 
 def _tokens(value: object) -> set[str]:
     if isinstance(value, str):
-        return set(TOKEN_RE.findall(value.lower()))
+        normalized = unicodedata.normalize("NFKD", value.casefold())
+        normalized = "".join(char for char in normalized if not unicodedata.combining(char))
+        return set(TOKEN_RE.findall(normalized))
     if isinstance(value, list):
         return {token for item in value for token in _tokens(item)}
     return set()
@@ -41,21 +44,21 @@ class Candidate:
     reasons: tuple[str, ...]
 
 
-def _valid_scope(entry: dict[str, Any], project_id: str, profile: str, event: str, terms: set[str]) -> tuple[int, tuple[str, ...]] | None:
+def _valid_scope(entry: dict[str, Any], project_id: str, event: str, terms: set[str]) -> tuple[int, tuple[str, ...]] | None:
     scope = entry.get("scope")
     if scope not in {"common", "project"}:
         raise RecallError("registry scope must be common or project")
     if scope == "project" and entry.get("project_id") != project_id:
         return None
-    profiles = entry.get("qualified_profiles", [])
-    if not isinstance(profiles, list) or profile not in profiles:
+    profiles = entry.get("evaluation_profiles", entry.get("qualified_profiles", []))
+    if not isinstance(profiles, list) or not profiles:
         return None
     events = entry.get("events", [])
-    if not isinstance(events, list) or event not in events:
+    if not isinstance(events, list) or (event != "context_refresh" and event not in events):
         return None
     keywords = _tokens(entry.get("keywords", []))
     overlap = sorted(keywords & terms)
-    if scope == "common" and not overlap:
+    if not overlap and (scope == "common" or keywords):
         return None
     score = (100 if scope == "project" else 10) + 10 * len(overlap)
     reasons = [f"scope:{scope}", f"event:{event}"]
@@ -64,10 +67,9 @@ def _valid_scope(entry: dict[str, Any], project_id: str, profile: str, event: st
 
 
 def _preference_items(preferences: list[dict[str, Any]], project_id: str) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
-    selected: list[dict[str, Any]] = []
+    selected: dict[str, dict[str, Any]] = {}
     omitted: list[dict[str, str]] = []
-    seen: set[str] = set()
-    for preference in sorted(preferences, key=lambda item: str(item.get("id", ""))):
+    for preference in sorted(preferences, key=lambda item: (item.get("scope") == "project", str(item.get("id", "")))):
         identifier = preference.get("id")
         scope = preference.get("scope")
         text = preference.get("text")
@@ -78,11 +80,14 @@ def _preference_items(preferences: list[dict[str, Any]], project_id: str) -> tup
         if scope == "project" and preference.get("project_id") != project_id:
             omitted.append({"id": identifier, "reason": "other-project"})
             continue
-        if identifier in seen:
-            raise RecallError("preference ids must be unique")
-        seen.add(identifier)
-        selected.append({"kind": "preference", "id": identifier, "scope": scope, "text": text, "source": preference.get("source", "user")})
-    return selected, omitted
+        if identifier in selected and selected[identifier]["scope"] == scope:
+            raise RecallError("preference ids must be unique within their scope")
+        item = {"kind": "preference", "id": identifier, "scope": scope, "text": text,
+                "source": preference.get("source", "user")}
+        if preference.get("source_ref"):
+            item["source_ref"] = preference["source_ref"]
+        selected[identifier] = item
+    return sorted(selected.values(), key=lambda item: (item["scope"] != "project", item["id"])), omitted
 
 
 def select_context(
@@ -133,7 +138,7 @@ def select_context(
         if definition is None:
             omitted.append({"id": f"{identifier}@{version}", "reason": "definition-unavailable"})
             continue
-        match = _valid_scope(entry, project_id, profile, event, terms)
+        match = _valid_scope(entry, project_id, event, terms)
         if match is None:
             omitted.append({"id": f"{identifier}@{version}", "reason": "not-applicable"})
             continue
@@ -158,7 +163,7 @@ def select_context(
             if linked_entry is None or linked_definition is None:
                 omitted.append({"id": f"{linked_key[0]}@{linked_key[1]}", "reason": "linked-definition-unavailable"})
                 continue
-            linked_match = _valid_scope(linked_entry, project_id, profile, event, terms)
+            linked_match = _valid_scope(linked_entry, project_id, event, terms)
             if linked_match is None:
                 omitted.append({"id": f"{linked_key[0]}@{linked_key[1]}", "reason": "linked-not-applicable"})
                 continue
@@ -179,6 +184,11 @@ def select_context(
             "definition": candidate.definition,
             "reasons": list(candidate.reasons),
             "depth": candidate.depth,
+            "verification": {
+                "evaluation_profiles": candidate.entry.get("evaluation_profiles", candidate.entry.get("qualified_profiles", [])),
+                "consumer_profile": profile, "consumer_qualification": "unverified",
+                "consumer_observations": candidate.entry.get("consumer_observations", 0),
+            },
         }
         if len([row for row in packet if row["kind"] == "instinct"]) >= max_instincts:
             omitted.append({"id": f"{candidate.key[0]}@{candidate.key[1]}", "reason": "instinct-limit"})
@@ -201,3 +211,45 @@ def select_context(
     output["packet_bytes"] = _bytes(delivered)
     output["delivery_digest"] = "sha256:" + __import__("hashlib").sha256(canonical_json(output).encode("utf-8")).hexdigest()
     return output
+
+
+def select_from_store(store, request: dict, *, record_receipt: bool = False,
+                      max_packet_bytes: int = MAX_PACKET_BYTES) -> dict:
+    state = store.snapshot()
+    active = set(state["active_versions"].values())
+    definitions = {}
+    registry = {}
+    rows = sorted(state["candidates"].values(), key=lambda row: row.get("scope") == "project")
+    for row in rows:
+        version_id = row.get("version_id")
+        if version_id not in active or row.get("status") != "active" or not row.get("qualification", {}).get("activation_eligible"):
+            continue
+        if row["scope"] == "project" and row.get("project_id") != request.get("project_id"):
+            continue
+        version = state["versions"].get(version_id)
+        if not version:
+            raise RecallError("active version has no durable record")
+        payload = store._read_json(store._path(version["path"]))
+        if digest(payload) != version["digest"] or payload["definition"] != row["definition"]:
+            raise RecallError("active version integrity check failed")
+        definition = payload["definition"]
+        same_scope = store._active_versions_for(state, definition["id"], row["scope"], row.get("project_id"))
+        if len(same_scope) > 1:
+            raise RecallError("legacy active versions conflict and need explicit review")
+        key = (definition["id"], definition["version"])
+        if key in definitions and definitions[key] != definition:
+            raise RecallError("active definition id/version has conflicting bytes")
+        definitions[key] = definition
+        registry[key] = {"id": key[0], "version": key[1],
+            "scope": row["scope"], "project_id": row.get("project_id"),
+            "events": definition["watched_events"], "keywords": row["keywords"],
+            "links": row.get("links", []), "evaluation_profiles": [row["profile"]],
+            "consumer_observations": sum(evidence["observations"] for evidence in state["runtime_evidence"].values()
+                if evidence["instinct_id"] == key[0] and evidence["version"] == key[1]
+                and evidence["source"] == request.get("runtime")
+                and evidence["project_id"] == request.get("project_id"))}
+    packet = select_context(definitions=list(definitions.values()), registry=list(registry.values()),
+        preferences=list(state["preferences"].values()), request=request, max_packet_bytes=max_packet_bytes)
+    if record_receipt:
+        packet["receipt"] = store.record_delivery({"stage": "prepared", "packet": packet})
+    return packet

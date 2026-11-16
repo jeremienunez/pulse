@@ -1,7 +1,7 @@
 # Shared-instinct controller evaluation log
 
-Status: implementation baseline and fixture retest recorded; no active shared
-instinct is deployed.
+Status: controller and temporary-profile verification recorded on 2026-11-16.
+Deployment awaits the candidate review.
 
 ## Baseline
 
@@ -20,17 +20,36 @@ consult/work behavior is covered by existing regression tests.
 
 ## Retest
 
-- Python controller suite: 39 tests passed.
+- Python controller suite: 75 tests passed.
 - CLI bridge: 14 tests passed, including tool-free evaluate arguments and
   canonical model extraction from one-model Claude `modelUsage` output.
-- One native Claude transport smoke returned a tool-free response from
-  `claude-opus-5-5`; it is not a full behaviour qualification and does not
-  activate an instinct.
+- Native Claude transport records effective `claude-opus-5-5`, low effort and
+  zero tools. A complete twelve-response comparison retained an uncertain
+  judgment in review. Native activation eligibility remains pending.
+- Claude and Codex temporary profiles receive complete contextual guidance
+  across native start, prompt, resume and end events. Their MCP clients list
+  `select`, `observe` and `remember_preference`.
+- Antigravity receives start and pre-invocation context. The managed launcher
+  closes its admitted range. Its MCP client lists the same three tools.
+
+## Guidance pressure evidence
+
+The frozen corpus contains `verified-outcome`, `missing-identity` and
+`manual-facts`. Baseline and retest used `claude-opus-5-5`, low effort, with no
+tools. All three decisions passed the root review. These passing cases require
+no added behavioral warning. The user-approved routing change clarifies the
+evaluator's method proof and each consumer's separate evidence. Its final source
+received a further replay of the identical corpus, with all three cases passing.
+
+Full prompts, responses, exact source digests, wire receipts and root verdicts
+are retained in the canonical run under
+`stages/04_execute/output/verification/functional-20261116/`.
 
 ## Limits
 
-The current corpus fixtures validate the controller only. Per-runtime context
-delivery, session-end capture and full baseline/candidate qualification remain
-explicitly pending in the runtime matrix. A later active rule requires a new
-frozen corpus and exact-profile replay; this record cannot be reused after
-guidance, profile or corpus bytes change.
+Fixture-qualified reflexes used in transport probes establish delivery.
+Method quality and each consumer's behavior have separate receipts in the
+runtime matrix. OpenBot has a source-bound patch, six focused tests and a Node
+type check. Application-level delivery awaits its isolated build and deployment.
+Early Antigravity probes caused unintended native generations. Those records
+are retained separately from the later zero-token probes.

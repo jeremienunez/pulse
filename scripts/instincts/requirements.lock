@@ -1,9 +1,8 @@
-# Validation baseline observed 2026-11-06.  This is not a downloadable lock.
-# I1 verifies the system-provided packages; I8 must replace this file with a
-# reproducible, hash-verified deployment dependency artifact before activation.
-PyYAML==6.0.3
-jsonschema==4.19.2
-attrs==25.4.0
-referencing==0.36.2
-jsonschema-specifications==2023.12.1
-rpds-py==0.27.1
+# CPython 3.14, Linux x86_64. PyPI wheels verified on 2026-11-16.
+# Install with --require-hashes --only-binary=:all: in an isolated environment.
+PyYAML==6.0.3 --hash=sha256:c458b6d084f9b935061bc36216e8a69a7e293a2f1e68bf956dcd9e6cbcd143f5
+jsonschema==4.19.2 --hash=sha256:eee9e502c788e89cb166d4d37f43084e3b64ab405c795c03d343a4dbc2c810fc
+attrs==25.4.0 --hash=sha256:adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373
+referencing==0.36.2 --hash=sha256:e8699adbbf8b5c7de96d8ffa0eb5c158b3beafce084968e2ea8bb08c6794dcd0
+jsonschema-specifications==2023.12.1 --hash=sha256:87e4fdf3a94858b8a2ba2778d9ba57d8a9cafca7c7489c46ba0d30a8bc6a9c3c
+rpds-py==0.27.1 --hash=sha256:12ed005216a51b1d6e2b02a7bd31885fe317e45897de81d86dcce7d74618ffff

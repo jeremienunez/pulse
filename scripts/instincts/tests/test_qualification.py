@@ -32,7 +32,10 @@ class QualificationTests(unittest.TestCase):
             response = case["expectations"][0]
             if condition == "baseline" and case["case_id"] == "trigger":
                 response = "other wording"
-            return {"response": response, "model_reported": "claude-opus-5-5", "tools": []}
+            judgments = [{"criterion_id": f"{case['case_id']}:e1", "quote": response,
+                "verdict": "fail" if condition == "baseline" and case["case_id"] == "trigger" else "pass",
+                "reason": "Controlled fixture judgement."}]
+            return {"response": response, "model_reported": "claude-opus-5-5", "tools": [], "judgments": judgments}
         result = complete_fixture(self.manifest(), respond)
         self.assertEqual(result["status"], "qualified")
         self.assertFalse(result["activation_eligible"])

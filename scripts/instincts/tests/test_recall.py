@@ -36,6 +36,19 @@ REQUEST = {"project_id": "pulse", "profile": "claude-opus-5-5", "event": "before
 
 
 class RecallTests(unittest.TestCase):
+    def test_context_refresh_routes_accented_task_terms_across_consumers(self) -> None:
+        record = definition("jerem/decomposition")
+        record["watched_events"] = ["before_architecture_change"]
+        metadata = entry("jerem/decomposition", keywords=["découpage"])
+        metadata["events"] = record["watched_events"]
+        request = {**REQUEST, "profile": "codex-unverified", "event": "context_refresh", "terms": "decoupage des tâches"}
+        selected = select_context(definitions=[record], registry=[metadata], preferences=[], request=request)
+        self.assertEqual(selected["items"][0]["id"], "jerem/decomposition")
+        self.assertEqual(selected["items"][0]["verification"]["consumer_qualification"], "unverified")
+        unrelated_event = select_context(definitions=[record], registry=[metadata], preferences=[],
+                                        request={**request, "event": "before_file_edit"})
+        self.assertEqual(unrelated_event["items"], [])
+
     def test_project_and_keyword_matches_select_without_unrelated_fallback(self) -> None:
         result = select_context(
             definitions=[definition("jerem/project"), definition("jerem/naming"), definition("jerem/unrelated")],

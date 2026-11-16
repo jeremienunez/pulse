@@ -15,7 +15,8 @@ One job: turn observed execution and review evidence into durable source-level i
 4. Promote only durable findings into `.pulse/memory/`; never store secrets or raw transcript noise.
 5. A verified outcome may strengthen a pending shared-instinct candidate, but
    compounding does not activate that instinct. Qualification and publication
-   retain their own evidence and profile boundary.
+   retain their own method evidence and evaluator profile. Delivery and
+   behavioral feedback remain attributed to each consuming tool.
 
 ## Outputs
 

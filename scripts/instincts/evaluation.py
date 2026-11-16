@@ -1,59 +1,72 @@
-"""Frozen behavioural cases and conservative, deterministic result comparison."""
+"""Frozen case contracts and evidence-backed behavioural judgments."""
 
 from __future__ import annotations
 
-from hashlib import sha256
+import json
 from typing import Any
 
-from .contracts import canonical_json
+from .contracts import digest
 
 
 class EvaluationError(ValueError):
     pass
 
 
-def digest(value: object) -> str:
-    return "sha256:" + sha256(canonical_json(value).encode("utf-8")).hexdigest()
-
-
-def freeze_cases(cases: list[dict[str, Any]]) -> dict[str, Any]:
-    if len(cases) != 3:
-        raise EvaluationError("each evaluation requires trigger, negative, and unrelated cases")
-    allowed_roles = {"trigger", "negative", "unrelated"}
-    if {case.get("role") for case in cases} != allowed_roles:
-        raise EvaluationError("case roles must be exactly trigger, negative, unrelated")
-    identifiers = [case.get("case_id") for case in cases]
-    if len(set(identifiers)) != len(identifiers) or any(not isinstance(identifier, str) or not identifier for identifier in identifiers):
+def freeze_cases(cases: list[dict[str, Any]]) -> dict:
+    if len(cases) != 3 or {row.get("role") for row in cases} != {"trigger", "negative", "unrelated"}:
+        raise EvaluationError("cases must contain exactly trigger, negative and unrelated roles")
+    identifiers = [row.get("case_id") for row in cases]
+    if any(not isinstance(value, str) or not value for value in identifiers) or len(set(identifiers)) != 3:
         raise EvaluationError("case ids must be unique nonempty strings")
-    for case in cases:
+    frozen = json.loads(json.dumps(cases))
+    for case in frozen:
         if not isinstance(case.get("prompt"), str) or not case["prompt"].strip():
             raise EvaluationError("case prompt must be nonempty")
         expectations = case.get("expectations")
-        if not isinstance(expectations, list) or not expectations or any(not isinstance(item, str) or not item for item in expectations):
-            raise EvaluationError("each case needs frozen expectations")
-    ordered = sorted(cases, key=lambda item: item["case_id"])
-    return {"schema_version": "1.0", "cases": ordered, "digest": digest(ordered)}
+        if not isinstance(expectations, list) or not expectations or any(
+                not isinstance(value, str) or not value.strip() for value in expectations):
+            raise EvaluationError("every case needs frozen expectations")
+        if len(expectations) > 8 or len(set(expectations)) != len(expectations):
+            raise EvaluationError("case criteria must be unique and bounded")
+    frozen.sort(key=lambda row: row["case_id"])
+    return {"schema_version": "1.0", "cases": frozen, "digest": digest(frozen)}
 
 
-def score_response(case: dict[str, Any], response: str) -> dict[str, Any]:
+def score_response(case: dict, response: str, judgments: list[dict] | None = None) -> dict:
     if not isinstance(response, str) or not response.strip():
         raise EvaluationError("response is empty")
-    lowered = response.lower()
-    results = []
-    for expectation in case["expectations"]:
-        tokens = [token for token in expectation.lower().replace("/", " ").split() if len(token) > 3]
-        passed = bool(tokens) and any(token in lowered for token in tokens)
-        results.append({"expectation": expectation, "passed": passed})
-    return {"case_id": case["case_id"], "role": case["role"], "passed": all(item["passed"] for item in results), "criteria": results}
+    if judgments is None:
+        return {"case_id": case["case_id"], "role": case["role"], "passed": None, "criteria": []}
+    expected = [f"{case['case_id']}:e{index + 1}" for index in range(len(case["expectations"]))]
+    if len(judgments) != len(expected) or {row.get("criterion_id") for row in judgments} != set(expected):
+        raise EvaluationError("judgment coverage differs from frozen criteria")
+    by_id = {row["criterion_id"]: row for row in judgments}
+    for identifier in expected:
+        row = by_id[identifier]
+        if row.get("verdict") not in {"pass", "fail", "uncertain"}:
+            raise EvaluationError("unknown criterion verdict")
+        if not isinstance(row.get("quote"), str) or not row["quote"] or row["quote"] not in response:
+            raise EvaluationError("judgment quote must occur in the actual response")
+        if not isinstance(row.get("reason"), str) or not row["reason"].strip():
+            raise EvaluationError("judgment must explain its criterion verdict")
+    ordered = [by_id[identifier] for identifier in expected]
+    passed = None if any(row["verdict"] == "uncertain" for row in ordered) else all(
+        row["verdict"] == "pass" for row in ordered)
+    return {"case_id": case["case_id"], "role": case["role"], "passed": passed, "criteria": ordered}
 
 
-def compare_runs(*, baseline: list[dict[str, Any]], candidate: list[dict[str, Any]]) -> dict[str, Any]:
-    base = {item.get("case_id"): item for item in baseline}
-    current = {item.get("case_id"): item for item in candidate}
-    if set(base) != set(current) or None in base:
-        raise EvaluationError("baseline and candidate must cover the same frozen cases")
-    regressions = sorted(identifier for identifier in base if base[identifier].get("passed") and not current[identifier].get("passed"))
-    trigger_ids = [identifier for identifier, item in current.items() if item.get("role") == "trigger"]
-    corrected = sorted(identifier for identifier in trigger_ids if not base[identifier].get("passed") and current[identifier].get("passed"))
-    candidate_pass = all(item.get("passed") for item in current.values())
-    return {"comparable": True, "regressions": regressions, "corrected": corrected, "candidate_pass": candidate_pass, "eligible": candidate_pass and bool(corrected) and not regressions}
+def compare_runs(*, baseline: list[dict], candidate: list[dict]) -> dict:
+    base = {row["case_id"]: row for row in baseline}
+    current = {row["case_id"]: row for row in candidate}
+    if len(base) != len(baseline) or len(current) != len(candidate) or set(base) != set(current):
+        raise EvaluationError("duplicated or mismatched frozen cases")
+    if any(base[key]["role"] != current[key]["role"] for key in base):
+        raise EvaluationError("case role changed between conditions")
+    uncertain = any(row.get("passed") is None for row in [*baseline, *candidate])
+    regressions = [key for key in base if base[key].get("passed") is True and current[key].get("passed") is False]
+    corrected = [key for key in base if base[key]["role"] == "trigger"
+                 and base[key].get("passed") is False and current[key].get("passed") is True]
+    all_pass = all(row.get("passed") is True for row in candidate)
+    return {"comparable": not uncertain, "regressions": sorted(regressions),
+            "corrected": sorted(corrected), "candidate_pass": all_pass,
+            "eligible": not uncertain and all_pass and bool(corrected) and not regressions}

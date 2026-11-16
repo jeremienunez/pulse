@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -12,15 +13,19 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[3]
 MANIFEST = REPO / "integrations/openbot/shared-instincts-source.json"
 PATCH = REPO / "integrations/openbot/shared-instincts.patch"
-DEFAULT_SOURCE = Path("/media/jerem/ubuntu2/onii-white-label/2026-10-31/source")
 
 
 class OpenBotPatchTests(unittest.TestCase):
     def source(self) -> Path:
-        return Path(os.environ.get("OPENBOT_SHARED_INSTINCTS_SOURCE", DEFAULT_SOURCE))
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        source = Path(os.environ.get("OPENBOT_SHARED_INSTINCTS_SOURCE", manifest["source_root"]))
+        if not source.is_dir():
+            self.skipTest("Pinned OpenBot source snapshot is unavailable for the application-specific check")
+        return source
 
     def test_manifest_binds_current_preimages_and_patch_scope(self) -> None:
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual(hashlib.sha256(PATCH.read_bytes()).hexdigest(), manifest["patch_sha256"])
         source = self.source()
         for entry in manifest["files"]:
             target = source / entry["path"]
@@ -48,14 +53,22 @@ class OpenBotPatchTests(unittest.TestCase):
             apply = ["git", "apply", "--unidiff-zero", "--check", str(PATCH)]
             subprocess.run(apply, cwd=temporary, check=True)
             subprocess.run(["git", "apply", "--unidiff-zero", str(PATCH)], cwd=temporary, check=True)
+            for entry in manifest["files"]:
+                self.assertEqual(hashlib.sha256((temporary / entry["path"]).read_bytes()).hexdigest(),
+                                 entry["postimage_sha256"])
             bridge = temporary / "src/backend/shared-instincts-bridge.ts"
             self.assertIn("NO_SHARED_INSTINCTS_BRIDGE", bridge.read_text(encoding="utf-8"))
             lifecycle = (temporary / "src/backend/agent/thread-lifecycle.ts").read_text(encoding="utf-8")
             service = (temporary / "src/backend/agent-service.ts").read_text(encoding="utf-8")
             self.assertIn("recordSharedInstinctThreadClosed", lifecycle)
             self.assertIn("recordSharedInstinctThreadClosed", service)
-            self.assertIn('agentNamesById } from "./delivery-content";\nimport { NO_SHARED_INSTINCTS_BRIDGE', lifecycle)
-            self.assertIn('this.#memoryReview.threadClosed(task.agentId, task.threadId);\n    this.#threads.recordSharedInstinctThreadClosed', service)
+            self.assertIn('options.sharedInstincts ?? createSharedInstinctsBridge()', lifecycle)
+            self.assertTrue(re.search(r'withSharedInstinctsTurn\(\s*this\.#sharedInstincts', lifecycle))
+            self.assertIn('threadId: this.#conversation.publicThreadId(agent.id, externalThreadId)', lifecycle)
+            self.assertEqual(lifecycle.count('client.request(method, prepared, decoder)'), 2)
+            self.assertIn('this.#memoryReview.threadClosed(task.agentId, task.threadId);\n    yield* this.#threads.recordSharedInstinctThreadClosed', service)
+            self.assertIn('this.#memoryReview.chatCleared(agentId);\n    yield* this.#threads.recordSharedInstinctThreadClosed', service)
+            self.assertEqual(service.count('this.#threads.recordSharedInstinctThreadClosed('), 2)
         finally:
             shutil.rmtree(temporary)
 

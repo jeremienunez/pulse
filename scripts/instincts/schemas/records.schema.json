@@ -2,8 +2,66 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$defs": {
     "identifier": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
-    "observation": {"type": "object", "additionalProperties": false, "required": ["schema_version", "observation_id", "source", "project_id", "session_id", "sequence", "observed_at", "selected_instincts", "summary"], "properties": {"schema_version": {"const": "1.0"}, "observation_id": {"$ref": "#/$defs/identifier"}, "source": {"enum": ["claude", "codex", "antigravity", "openbot", "user"]}, "project_id": {"$ref": "#/$defs/identifier"}, "session_id": {"$ref": "#/$defs/identifier"}, "sequence": {"type": "integer", "minimum": 0}, "observed_at": {"type": "string", "format": "date-time"}, "selected_instincts": {"type": "array", "maxItems": 6, "items": {"type": "object", "additionalProperties": false, "required": ["id", "version"], "properties": {"id": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"}, "version": {"type": "string"}}}}, "summary": {"type": "string", "minLength": 1, "maxLength": 16384}, "evidence_refs": {"type": "array", "maxItems": 16, "items": {"type": "string", "minLength": 1}}}},
-    "closure": {"type": "object", "additionalProperties": false, "required": ["schema_version", "closure_id", "source", "project_id", "session_id", "upper_sequence", "closed_at"], "properties": {"schema_version": {"const": "1.0"}, "closure_id": {"$ref": "#/$defs/identifier"}, "source": {"enum": ["claude", "codex", "antigravity", "openbot"]}, "project_id": {"$ref": "#/$defs/identifier"}, "session_id": {"$ref": "#/$defs/identifier"}, "upper_sequence": {"type": "integer", "minimum": 0}, "closed_at": {"type": "string", "format": "date-time"}}},
-    "candidate": {"type": "object", "additionalProperties": false, "required": ["schema_version", "candidate_id", "instinct_id", "base_version", "scope", "disposition"], "properties": {"schema_version": {"const": "1.0"}, "candidate_id": {"$ref": "#/$defs/identifier"}, "instinct_id": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"}, "base_version": {"type": ["string", "null"]}, "scope": {"enum": ["common", "project"]}, "disposition": {"enum": ["pending_review", "rejected", "qualified", "active"]}}}
+    "instinct_id": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+    "source": {"enum": ["claude", "codex", "antigravity", "openbot", "user"]},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "observation_id", "source", "project_id", "session_id", "sequence", "observed_at", "selected_instincts", "summary"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "observation_id": {"$ref": "#/$defs/identifier"},
+        "source": {"$ref": "#/$defs/source"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "session_id": {"$ref": "#/$defs/identifier"},
+        "sequence": {"type": "integer", "minimum": 0},
+        "observed_at": {"$ref": "#/$defs/timestamp"},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 8192},
+        "domain": {"enum": ["naming", "decomposition", "action"]},
+        "scope": {"enum": ["common", "project"]},
+        "evidence_kind": {"enum": ["reported", "observed", "verified", "user_preference"]},
+        "evidence_excerpt": {"type": "string", "maxLength": 4096},
+        "action": {"type": "string", "maxLength": 1024},
+        "outcome": {"type": "string", "maxLength": 1024},
+        "run_ref": {"type": "string", "maxLength": 512},
+        "run_verified": {"type": "boolean"},
+        "selected_preferences": {"type": "array", "maxItems": 256, "items": {"type": "string", "maxLength": 128}},
+        "selected_instincts": {
+          "type": "array", "maxItems": 6,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["id", "version"],
+            "properties": {"id": {"$ref": "#/$defs/instinct_id"}, "version": {"type": "string", "maxLength": 64}}
+          }
+        },
+        "evidence_refs": {"type": "array", "maxItems": 16, "items": {"type": "string", "minLength": 1, "maxLength": 512}}
+      }
+    },
+    "closure": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "closure_id", "source", "project_id", "session_id", "upper_sequence", "closed_at"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "closure_id": {"$ref": "#/$defs/identifier"},
+        "source": {"$ref": "#/$defs/source"},
+        "project_id": {"$ref": "#/$defs/identifier"},
+        "session_id": {"$ref": "#/$defs/identifier"},
+        "upper_sequence": {"type": "integer", "minimum": 0},
+        "closed_at": {"$ref": "#/$defs/timestamp"}
+      }
+    },
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "candidate_id", "instinct_id", "base_version", "scope", "disposition"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "candidate_id": {"$ref": "#/$defs/identifier"},
+        "instinct_id": {"$ref": "#/$defs/instinct_id"},
+        "base_version": {"type": ["string", "null"]},
+        "scope": {"enum": ["common", "project"]},
+        "disposition": {"enum": ["pending_review", "rejected", "qualified", "active"]}
+      }
+    }
   }
 }
